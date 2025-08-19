@@ -5,9 +5,9 @@ VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{827E0CD3-B72D-47B6-A68D-7590B98EB39B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Xunit.V3.IntegrationTesting", "src\Xunit.V3.IntegrationTesting\Xunit.V3.IntegrationTesting.csproj", "{28E70734-48E2-41AA-92BA-F3DFA5AB2B3D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Xunit.v3.IntegrationTesting", "src\Xunit.v3.IntegrationTesting\Xunit.v3.IntegrationTesting.csproj", "{28E70734-48E2-41AA-92BA-F3DFA5AB2B3D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Xunit.V3.IntegrationTesting.Manual", "src\Xunit.V3.IntegrationTesting.Manual\Xunit.v3.IntegrationTesting.Manual.csproj", "{184068A4-47D0-4D36-BDFB-E8B7C45C1B59}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Xunit.v3.IntegrationTesting.Manual", "src\Xunit.v3.IntegrationTesting.Manual\Xunit.v3.IntegrationTesting.Manual.csproj", "{184068A4-47D0-4D36-BDFB-E8B7C45C1B59}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

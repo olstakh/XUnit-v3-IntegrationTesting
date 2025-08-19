@@ -8,7 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Xunit.V3.IntegrationTesting\Xunit.V3.IntegrationTesting.csproj" />
+    <ProjectReference Include="..\Xunit.v3.IntegrationTesting\Xunit.v3.IntegrationTesting.csproj" />
   </ItemGroup>
 
   <ItemGroup>
