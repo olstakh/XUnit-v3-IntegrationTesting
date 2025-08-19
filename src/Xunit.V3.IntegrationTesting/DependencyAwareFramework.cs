@@ -6,7 +6,6 @@ namespace Xunit.V3.IntegrationTesting;
 public class DependencyAwareFramework : XunitTestFramework
 {
     private readonly string? _configFile;
-    private ITestFrameworkDiscoverer? _discoverer;
 
     public DependencyAwareFramework()
         : base()
@@ -19,14 +18,8 @@ public class DependencyAwareFramework : XunitTestFramework
         _configFile = configFile;
     }
 
-    protected override ITestFrameworkDiscoverer CreateDiscoverer(Assembly assembly)
-    {
-        _discoverer = new DependencyAwareTestDiscoverer(base.CreateDiscoverer(assembly));
-        return _discoverer;
-    }
-
     protected override ITestFrameworkExecutor CreateExecutor(Assembly assembly)
     {
-        return new DependencyAwareFrameworkExecutor(new XunitTestAssembly(assembly, _configFile, assembly.GetName().Version), _discoverer);
+        return new DependencyAwareFrameworkExecutor(new XunitTestAssembly(assembly, _configFile, assembly.GetName().Version), new DependencyAwareTestDiscoverer(base.CreateDiscoverer(assembly)));
     }
 }

@@ -78,6 +78,10 @@ public class DependencyResolver
                 {
                     Visit(dependency, testCaseDict, dependencies, visited, visiting, ordered);
                 }
+                else
+                {
+                    throw new InvalidOperationException($"Dependency '{dependency}' for test '{testName}' not found.");
+                }
             }
         }
 
