@@ -1,4 +1,4 @@
-namespace Xunit.V3.IntegrationTesting;
+namespace Xunit.v3.IntegrationTesting;
 
 public class OrientedGraph<TNode>
     where TNode : notnull

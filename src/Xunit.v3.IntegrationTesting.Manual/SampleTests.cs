@@ -1,8 +1,8 @@
 ﻿using Xunit;
 using Xunit.v3;
-using Fact = Xunit.V3.IntegrationTesting.DependsOnAttribute;
+using Fact = Xunit.v3.IntegrationTesting.DependsOnAttribute;
 
-namespace Xunit.V3.IntegrationTesting.Manual;
+namespace Xunit.v3.IntegrationTesting.Manual;
 
 public class IntegrationTests
 {

@@ -1,7 +1,7 @@
 using Xunit.Sdk;
 using Xunit.v3;
 
-namespace Xunit.V3.IntegrationTesting;
+namespace Xunit.v3.IntegrationTesting;
 
 internal class TestCaseComparer<TTestCase> : IEqualityComparer<TTestCase>
     where TTestCase : notnull, ITestCase

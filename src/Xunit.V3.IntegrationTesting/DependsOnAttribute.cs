@@ -5,7 +5,7 @@ using System.Runtime.CompilerServices;
 using Xunit.Sdk;
 using Xunit.v3;
 
-namespace Xunit.V3.IntegrationTesting;
+namespace Xunit.v3.IntegrationTesting;
 
 /// <summary>
 /// Attribute that is applied to a method to indicate that it is a fact that should be run

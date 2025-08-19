@@ -4,7 +4,7 @@ using System.Reflection;
 using Xunit.Sdk;
 using Xunit.v3;
 
-namespace Xunit.V3.IntegrationTesting;
+namespace Xunit.v3.IntegrationTesting;
 
 public static class OrientedGraphExtensions
 {

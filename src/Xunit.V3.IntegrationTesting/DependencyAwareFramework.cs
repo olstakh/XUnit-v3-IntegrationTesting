@@ -1,7 +1,7 @@
 using Xunit.v3;
 using System.Reflection;
 
-namespace Xunit.V3.IntegrationTesting;
+namespace Xunit.v3.IntegrationTesting;
 
 public class DependencyAwareFramework : XunitTestFramework
 {
