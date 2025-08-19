@@ -39,6 +39,7 @@ public class DependencyAwareFrameworkExecutor : XunitTestFrameworkExecutor
     }
 }
 
+// How to get it properly?
 class DiscoveryOptions : ITestFrameworkDiscoveryOptions
 {
     public TValue? GetValue<TValue>(string name)

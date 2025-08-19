@@ -11,7 +11,7 @@ public class DependencyResolver
     public static List<ITestCase> OrderTestsByDependencies(IEnumerable<IXunitTestCase> testCases)
     {
         var testCaseDict = testCases.ToDictionary(tc => GetTestName(tc), tc => tc);
-        var dependencies = new Dictionary<string, HashSet<string>>();
+        var dependencies = new Dictionary<string, IReadOnlySet<string>>();
         var visited = new HashSet<string>();
         var visiting = new HashSet<string>();
         var ordered = new List<ITestCase>();
@@ -22,7 +22,7 @@ public class DependencyResolver
             var testName = GetTestName(testCase);
             var dependsOnAttrs = testCase.TestMethod.Method.GetCustomAttributes(typeof(DependsOnAttribute), false);
 
-            dependencies[testName] = new HashSet<string>();
+            var currentDependencies = new HashSet<string>();
 
             foreach (var attr in dependsOnAttrs)
             {
@@ -30,10 +30,12 @@ public class DependencyResolver
                 {
                     foreach (var dependency in dependsOn.Dependencies)
                     {
-                        dependencies[testName].Add(dependency);
+                        currentDependencies.Add(dependency);
                     }
                 }
             }
+
+            dependencies[testName] = currentDependencies;
         }
 
         // Perform topological sort with cycle detection
@@ -50,8 +52,8 @@ public class DependencyResolver
 
     private static void Visit(
         string testName,
-        Dictionary<string, IXunitTestCase> testCaseDict,
-        Dictionary<string, HashSet<string>> dependencies,
+        IReadOnlyDictionary<string, IXunitTestCase> testCaseDict,
+        IReadOnlyDictionary<string, IReadOnlySet<string>> dependencies,
         HashSet<string> visited,
         HashSet<string> visiting,
         List<ITestCase> ordered)
@@ -90,6 +92,11 @@ public class DependencyResolver
 
     private static string GetTestName(ITestCase testCase)
     {
+        if (testCase.TestMethod == null)
+        {
+            // Should never happen
+            throw new InvalidOperationException("Test method is not initialized in the current context.");
+        }
         return $"{testCase.TestMethod.TestClass.TestClassName}.{testCase.TestMethodName}";
     }
 }

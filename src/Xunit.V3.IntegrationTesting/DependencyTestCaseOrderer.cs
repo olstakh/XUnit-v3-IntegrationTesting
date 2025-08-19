@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Globalization;
 using Xunit.Sdk;
 using Xunit.v3;
 
@@ -16,7 +17,11 @@ public class DependencyTestCaseOrderer : ITestCaseOrderer
         }
         catch (InvalidOperationException ex) when (ex.Message.Contains("Circular dependency"))
         {
-            throw new Exception($"Test ordering failed: {ex.Message}");
+            throw new TestPipelineException(
+                string.Format(
+                    CultureInfo.CurrentCulture,
+                    // Produce a list of circular dependency chain in the exception
+                     $"There's a circular dependency involving the following tests: TBD"));
         }
     }
 

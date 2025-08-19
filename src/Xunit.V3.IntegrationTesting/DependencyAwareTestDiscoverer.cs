@@ -18,7 +18,6 @@ public class DependencyAwareTestDiscoverer : ITestFrameworkDiscoverer
     {
         return _innerDiscoverer.Find((testCase) =>
         {
-            TestContext.Current.SendDiagnosticMessage($"Discovering test case: {testCase.TestMethodName}");
             return callback(testCase);
         }, discoveryOptions, types, cancellationToken);
     }

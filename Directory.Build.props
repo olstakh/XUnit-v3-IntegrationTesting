@@ -8,6 +8,7 @@
     <ImplicitUsings>Enable</ImplicitUsings>
     <LangVersion>Latest</LangVersion>
     <DebugType>embedded</DebugType>
+    <NoWarn>$(NoWarn);CS1591</NoWarn>
   </PropertyGroup>
 
   <!-- Packaging -->

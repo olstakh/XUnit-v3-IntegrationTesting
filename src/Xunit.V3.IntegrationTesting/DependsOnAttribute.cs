@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Globalization;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using Xunit.Sdk;
 using Xunit.v3;
 
 namespace Xunit.V3.IntegrationTesting;
@@ -124,6 +126,104 @@ internal class SkipValidator
         }
     }
 
+    private static bool ShouldSkipTestOriginalSetup(DependsOnAttribute dependsOn, IXunitTestCase testCase)
+    {
+        var originalSkipWhenField = typeof(DependsOnAttribute).GetField("_originalSkipWhen", BindingFlags.NonPublic | BindingFlags.Instance);
+        var originalSkipWhenFieldValue = (string?)originalSkipWhenField?.GetValue(dependsOn);
+
+        var originalSkipUnlessField = typeof(DependsOnAttribute).GetField("_originalSkipUnless", BindingFlags.NonPublic | BindingFlags.Instance);
+        var originalSkipUnlessFieldValue = (string?)originalSkipUnlessField?.GetValue(dependsOn);
+
+        var originalSkipReasonField = typeof(DependsOnAttribute).GetField("_originalSkip", BindingFlags.NonPublic | BindingFlags.Instance);
+        var originalSkipReasonFieldValue = (string?)originalSkipReasonField?.GetValue(dependsOn);
+
+        var originalSkipTypeField = typeof(DependsOnAttribute).GetField("_originalSkipType", BindingFlags.NonPublic | BindingFlags.Instance);
+        var originalSkipTypeFieldValue = (Type?)originalSkipTypeField?.GetValue(dependsOn);
+
+        #region Original implementation of XunitTestRunnerBaseContext.GetRuntimeSkipReason
+
+        if (originalSkipUnlessFieldValue is null && originalSkipWhenFieldValue is null)
+        {
+            return false;
+        }
+
+        if (originalSkipUnlessFieldValue is not null && originalSkipWhenFieldValue is not null)
+        {
+            throw new TestPipelineException(
+                string.Format(
+                    CultureInfo.CurrentCulture,
+                    "Both 'SkipUnless' and 'SkipWhen' are set on test method '{0}.{1}'; they are mutually exclusive",
+                    testCase.TestClassName,
+                    testCase.TestMethodName
+                )
+            );
+        }
+
+        if (originalSkipReasonFieldValue is null)
+        {
+            throw new TestPipelineException(
+                string.Format(
+                    CultureInfo.CurrentCulture,
+                    "You must set 'Skip' when you set 'SkipUnless' or 'SkipWhen' on test method '{0}.{1}' to set the message for conditional skips",
+                    testCase.TestClassName,
+                    testCase.TestMethodName
+                )
+            );
+        }
+
+        var propertyType = originalSkipTypeFieldValue ?? testCase.TestClass.Class;
+        var propertyName = (originalSkipUnlessFieldValue ?? originalSkipWhenFieldValue)!;
+
+        var property =
+            propertyType.GetProperty(propertyName, BindingFlags.Public | BindingFlags.Static)
+                ?? throw new TestPipelineException(
+                    string.Format(
+                        CultureInfo.CurrentCulture,
+                        "Cannot find public static property '{0}' on type '{1}' for dynamic skip on test method '{2}.{3}'",
+                        propertyName,
+                        propertyType,
+                        testCase.TestClassName,
+                        testCase.TestMethodName
+                    )
+                );
+
+        var getMethod =
+            property.GetGetMethod()
+                ?? throw new TestPipelineException(
+                    string.Format(
+                        CultureInfo.CurrentCulture,
+                        "Public static property '{0}' on type '{1}' must be readable for dynamic skip on test method '{2}.{3}'",
+                        propertyName,
+                        propertyType,
+                        testCase.TestClassName,
+                        testCase.TestMethodName
+                    )
+                );
+
+        if (getMethod.ReturnType != typeof(bool) || getMethod.Invoke(null, []) is not bool result)
+            throw new TestPipelineException(
+                string.Format(
+                    CultureInfo.CurrentCulture,
+                    "Public static property '{0}' on type '{1}' must return bool for dynamic skip on test method '{2}.{3}'",
+                    propertyName,
+                    propertyType,
+                    testCase.TestClassName,
+                    testCase.TestMethodName
+                )
+            );
+
+        var shouldSkip = (originalSkipUnlessFieldValue, originalSkipWhenFieldValue, result) switch
+        {
+            (not null, _, false) => true,
+            (_, not null, true) => true,
+            _ => false,
+        };
+
+        return shouldSkip;
+        
+        #endregion
+    }
+
     private static bool ShouldSkipTest()
     {
         var currentTestMethod = TestContext.Current.TestMethod as IXunitTestMethod;
@@ -131,14 +231,22 @@ internal class SkipValidator
         if (currentTestMethod == null)
             return false; // send diagnostic later
 
-        // Get dependencyOn attribute
-        var dependencyOn = currentTestMethod.Method.GetCustomAttribute<DependsOnAttribute>(false);
+        var currentTestCase = TestContext.Current.TestCase as IXunitTestCase;
 
-        if (dependencyOn == null)
-            return false;
+        if (currentTestCase == null)
+            return false; // send diagnostic later
+
+        // Get dependencyOn attribute
+        var dependsOn = currentTestMethod.Method.GetCustomAttribute<DependsOnAttribute>(false);
+
+        if (dependsOn == null)
+            return false; // send diagnostic later, we shouldn't end up here
+
+        if (ShouldSkipTestOriginalSetup(dependsOn, currentTestCase))
+            return true;
 
         // Get dependencies
-        var dependencies = dependencyOn.Dependencies;
+        var dependencies = dependsOn.Dependencies;
 
         if (dependencies == null || dependencies.Length == 0)
             return false;
