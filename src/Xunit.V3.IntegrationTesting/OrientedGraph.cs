@@ -100,7 +100,7 @@ public class OrientedGraph<TNode>
         var idx = stack.FindIndex(n => _comparer.Equals(n, node));
         if (idx != -1)
         {
-            return stack[idx ..].Append(node).ToList();
+            return stack.Skip(idx).Append(node).ToList();
         }
 
         if (visited.Contains(node))

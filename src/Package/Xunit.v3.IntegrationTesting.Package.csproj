@@ -1,0 +1,44 @@
+﻿<Project Sdk="Microsoft.Build.NoTargets">
+  <PropertyGroup>
+    <TargetFrameworks>netstandard2.0</TargetFrameworks>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <DevelopmentDependency>true</DevelopmentDependency>
+    <PackageId>Xunit.v3.IntegrationTesting</PackageId>
+    <SuppressDependenciesWhenPacking>true</SuppressDependenciesWhenPacking>
+    <!--<TargetsForTfmSpecificContentInPackage>$(TargetsForTfmSpecificContentInPackage);GetMyPackageFiles</TargetsForTfmSpecificContentInPackage>-->
+    <IncludeSymbols>false</IncludeSymbols>
+    <PackageOutputPath>$(RepoRoot)\artifacts</PackageOutputPath>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+
+    <!-- Avoid cycle when dogfooding the published package. -->
+    <DisableRefTrimPackageRef>true</DisableRefTrimPackageRef>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Xunit.v3.IntegrationTesting\Xunit.v3.IntegrationTesting.csproj"
+                      OutputItemType="ReferenceProtectorOutputGroup"
+                      PackagePath="build" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="..\Build\*">
+      <Pack>true</Pack>
+      <PackagePath>build</PackagePath>
+    </Content>
+    <Content Include="..\BuildMultiTargeting\*">
+      <Pack>true</Pack>
+      <PackagePath>buildMultiTargeting</PackagePath>
+    </Content>
+    <Content Include="..\..\README.md">
+      <Pack>true</Pack>
+      <PackagePath>\</PackagePath>
+    </Content>
+  </ItemGroup>
+  <!--
+  <Target Name="GetMyPackageFiles" DependsOnTargets="ResolveProjectReferences">
+    <ItemGroup>
+      <TfmSpecificPackageFile Include="%(ReferenceProtectorOutputGroup.RootDir)%(ReferenceProtectorOutputGroup.Directory)*.dll"
+                              Pack="true"
+                              PackagePath="%(ReferenceProtectorOutputGroup.PackagePath)" />
+    </ItemGroup>
+  </Target>
+  -->
+</Project>
