@@ -41,11 +41,16 @@ public class OrientedGraph<TNode>
         return _adjacencyList.Keys;
     }
 
+    public bool ContainsNode(TNode node)
+    {
+        return _adjacencyList.ContainsKey(node);
+    }
+
     public IEnumerable<TNode> TopologicalSort()
     {
         var visited = new HashSet<TNode>(_comparer);
         var stack = new Stack<TNode>();
-        
+
         foreach (var node in GetAllNodes())
         {
             if (!visited.Contains(node))

@@ -1,4 +1,5 @@
 using System.Security.Cryptography;
+using Xunit.Internal;
 using Xunit.Sdk;
 using Xunit.v3;
 
@@ -34,15 +35,41 @@ public class DependencyAwareFrameworkExecutor : XunitTestFrameworkExecutor
                 }
                 else
                 {
-                    executionMessageSink.OnMessage(new DiagnosticMessage($"Skipping non-Xunit test case: {testCase.TestClassName}.{testCase.TestMethodName}"));
+                    executionMessageSink.OnMessage(new DiagnosticMessage($"[TEST CASE DISCOVERER WARNING] Skipping non-Xunit test case: {testCase.TestClassName}.{testCase.TestMethodName}"));
                 }
                 return await Task.FromResult(true);
             },
             new DiscoveryOptions(),
             cancellationToken: cancellationToken);
 
+        var graph = allTestCases.ToOrientedGraph(out var issues);
+
+        foreach (var issue in issues)
+        {
+            executionMessageSink.OnMessage(new DiagnosticMessage($"[TEST CASE EXECUTOR WARNING] {issue}"));
+        }
+
+        HashSet<IXunitTestCase> necessaryTests = new();
+        foreach (var testCase in testCases)
+        {
+            if (graph.ContainsNode(testCase))
+            {
+                necessaryTests.AddRange(graph.GetSubTree(testCase));
+            }
+            else
+            {
+                executionMessageSink.OnMessage(new DiagnosticMessage($"[TEST CASE EXECUTOR WARNING] Test case {testCase.TestClassName}.{testCase.TestMethodName} was not discovered"));
+                necessaryTests.Add(testCase);
+            }
+        }
+
+        if (testCases.Count < necessaryTests.Count)
+        {
+            executionMessageSink.OnMessage(new DiagnosticMessage($"[TEST CASE EXECUTOR INFO] {testCases.Count} tests were requested - {necessaryTests.Count} will be executed due to dependencies between tests"));
+        }
+
         // TODO: filter out unnecessary tests
-        await base.RunTestCases(allTestCases.OfType<IXunitTestCase>().ToList(), executionMessageSink, executionOptions, cancellationToken);
+        await base.RunTestCases(necessaryTests, executionMessageSink, executionOptions, cancellationToken);
     }
 }
 

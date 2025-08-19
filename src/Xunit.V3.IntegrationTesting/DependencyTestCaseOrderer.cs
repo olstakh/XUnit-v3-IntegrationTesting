@@ -8,11 +8,16 @@ namespace Xunit.V3.IntegrationTesting;
 public class DependencyTestCaseOrderer : ITestCaseOrderer
 {
     public IEnumerable<TTestCase> OrderTestCases<TTestCase>(IEnumerable<TTestCase> testCases)
-        where TTestCase : ITestCase
+        where TTestCase : notnull, ITestCase
     {
         try
         {
-            var orderedCases = DependencyResolver.OrderTestsByDependencies(testCases.Cast<IXunitTestCase>());
+            var orderedCases = testCases.ToOrientedGraph(out var issues).TopologicalSort();
+            foreach (var issue in issues)
+            {
+                TestContext.Current.SendDiagnosticMessage("[TEST CASE ORDERER WARNING] " + issue);
+            }
+
             return orderedCases.Cast<TTestCase>();
         }
         catch (InvalidOperationException ex) when (ex.Message.Contains("Circular dependency"))
