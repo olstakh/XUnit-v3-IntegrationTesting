@@ -20,6 +20,6 @@ public class DependencyAwareFramework : XunitTestFramework
 
     protected override ITestFrameworkExecutor CreateExecutor(Assembly assembly)
     {
-        return new DependencyAwareFrameworkExecutor(new XunitTestAssembly(assembly, _configFile, assembly.GetName().Version), new DependencyAwareTestDiscoverer(base.CreateDiscoverer(assembly)));
+        return new DependencyAwareFrameworkExecutor(new XunitTestAssembly(assembly, _configFile, assembly.GetName().Version));
     }
 }

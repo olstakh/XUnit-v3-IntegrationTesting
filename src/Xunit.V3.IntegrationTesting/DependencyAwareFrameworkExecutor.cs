@@ -6,28 +6,17 @@ using Xunit.v3;
 
 namespace Xunit.v3.IntegrationTesting;
 
-public class DependencyAwareFrameworkExecutor : XunitTestFrameworkExecutor
+public class DependencyAwareFrameworkExecutor(IXunitTestAssembly testAssembly) : XunitTestFrameworkExecutor(testAssembly)
 {
-    private readonly ITestFrameworkDiscoverer _discoverer;
-
-    public DependencyAwareFrameworkExecutor(IXunitTestAssembly testAssembly, ITestFrameworkDiscoverer? discoverer)
-        : base(testAssembly)
-    {
-        _discoverer = discoverer ?? new DependencyAwareTestDiscoverer(base.CreateDiscoverer());
-    }
-
-    protected override ITestFrameworkDiscoverer CreateDiscoverer()
-    {
-        return _discoverer;
-    }
-
     public override async ValueTask RunTestCases(IReadOnlyCollection<IXunitTestCase> testCases, IMessageSink executionMessageSink, ITestFrameworkExecutionOptions executionOptions, CancellationToken cancellationToken)
     {
         executionMessageSink.OnMessage(new DiagnosticMessage("Running test cases using custom dependency-aware executor..."));
 
         List<IXunitTestCase> allTestCases = new();
 
-        await _discoverer.Find(
+        var discoverer = CreateDiscoverer();
+
+        await discoverer.Find(
             async testCase =>
             {
                 if (testCase is IXunitTestCase xunitTestCase)
