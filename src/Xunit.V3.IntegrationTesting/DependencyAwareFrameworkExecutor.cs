@@ -34,7 +34,8 @@ public class DependencyAwareFrameworkExecutor : XunitTestFrameworkExecutor
             new DiscoveryOptions(),
             cancellationToken: cancellationToken);
 
-        await base.RunTestCases(testCases, executionMessageSink, executionOptions, cancellationToken);
+        // TODO: filter out unnecessary tests
+        await base.RunTestCases(_testCases.OfType<IXunitTestCase>().ToList(), executionMessageSink, executionOptions, cancellationToken);
     }
 }
 
