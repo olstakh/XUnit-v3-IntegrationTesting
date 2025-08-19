@@ -1,3 +1,5 @@
+using System.ComponentModel.Design.Serialization;
+using System.Globalization;
 using System.Reflection;
 using Xunit.Sdk;
 using Xunit.v3;
@@ -14,29 +16,37 @@ public static class OrientedGraphExtensions
 
         foreach (var tc in testCases)
         {
+            graph.AddNode(tc);
             if (tc is not IXunitTestCase testCase)
             {
-                graph.AddNode(tc);
                 continue; // Skip non-Xunit test cases
             }
 
             var dependsOnAttrs = testCase.TestMethod.Method.GetCustomAttribute<DependsOnAttribute>(false) ?? new(); // send diagnostic if null?
             foreach (var dependency in dependsOnAttrs.Dependencies)
             {
-                var dependentTest = testCases.SingleOrDefault(tc => TestClassComparer.Instance.Equals(tc.TestMethod?.TestClass, testCase.TestClass) && tc.TestMethodName == dependency);
-                if (dependentTest != null)
+                var dependentTest = testCases.Where(tc => TestClassComparer.Instance.Equals(tc.TestMethod?.TestClass, testCase.TestClass) && tc.TestMethodName == dependency).ToList();
+                if (dependentTest.Count > 1)
                 {
-                    graph.AddEdge(tc, dependentTest);
+                    throw new Exception(
+                        string.Format(
+                            CultureInfo.CurrentCulture,
+                            "Multiple tests found with the same name '{0}' in class '{1}'. Total test cases: '{2}'. This is not allowed.",
+                            dependency,
+                            testCase.TestClassName,
+                            string.Join(", ", dependentTest.Select(t => $"{t.TestClassName}.{t.TestMethodName}"))));
                 }
-                else
-                {
-                    issues.Add(
-                        $"Dependency '{dependency}' for test '{testCase.TestClassName}.{testCase.TestMethodName}' not found.");
-                }
+                if (dependentTest.Count > 0)
+                    {
+                        graph.AddEdge(tc, dependentTest.Single());
+                    }
+                    else
+                    {
+                        issues.Add(
+                            $"Dependency '{dependency}' for test '{testCase.TestClassName}.{testCase.TestMethodName}' not found.");
+                    }
             }
         }
-
-        graph.ValidateNoCycles();
 
         return graph;
     }

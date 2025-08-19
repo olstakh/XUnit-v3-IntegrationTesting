@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Globalization;
+using System.Reflection;
 using Xunit.Sdk;
 using Xunit.v3;
 
@@ -10,24 +11,30 @@ public class DependencyTestCaseOrderer : ITestCaseOrderer
     public IEnumerable<TTestCase> OrderTestCases<TTestCase>(IEnumerable<TTestCase> testCases)
         where TTestCase : notnull, ITestCase
     {
-        try
-        {
-            var orderedCases = testCases.ToOrientedGraph(out var issues).TopologicalSort();
-            foreach (var issue in issues)
-            {
-                TestContext.Current.SendDiagnosticMessage("[TEST CASE ORDERER WARNING] " + issue);
-            }
+        var graph = testCases.ToOrientedGraph(out var issues);
+        var cycle = graph.FindCycle();
 
-            return orderedCases.Cast<TTestCase>();
-        }
-        catch (InvalidOperationException ex) when (ex.Message.Contains("Circular dependency"))
+        if (cycle.Count > 0)
         {
+            var circularDependencyMessage = string.Format(
+                CultureInfo.CurrentCulture,
+                "There's a circular dependency involving the following tests: {0}",
+                string.Join(" -> ", cycle.Select(tc => $"{tc.TestClassName}.{tc.TestMethodName}")));
+
+            TestContext.Current.SendDiagnosticMessage("[TEST CASE ORDERER ERROR] " +
+                circularDependencyMessage);
+
             throw new TestPipelineException(
-                string.Format(
-                    CultureInfo.CurrentCulture,
-                    // Produce a list of circular dependency chain in the exception
-                     $"There's a circular dependency involving the following tests: TBD"));
+                circularDependencyMessage);
         }
+
+        var orderedCases = graph.TopologicalSort();
+        foreach (var issue in issues)
+        {
+            TestContext.Current.SendDiagnosticMessage("[TEST CASE ORDERER WARNING] " + issue);
+        }
+
+        return orderedCases.Cast<TTestCase>();
     }
 
     public IReadOnlyCollection<TTestCase> OrderTestCases<TTestCase>(IReadOnlyCollection<TTestCase> testCases) where TTestCase : notnull, ITestCase

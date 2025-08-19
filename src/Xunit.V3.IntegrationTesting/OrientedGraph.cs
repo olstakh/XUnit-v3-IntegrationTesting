@@ -49,7 +49,7 @@ public class OrientedGraph<TNode>
     public IEnumerable<TNode> TopologicalSort()
     {
         var visited = new HashSet<TNode>(_comparer);
-        var stack = new Stack<TNode>();
+        var stack = new List<TNode>();
 
         foreach (var node in GetAllNodes())
         {
@@ -67,48 +67,63 @@ public class OrientedGraph<TNode>
     public IEnumerable<TNode> GetSubTree(TNode node)
     {
         var visited = new HashSet<TNode>(_comparer);
-        var stack = new Stack<TNode>();
+        var stack = new List<TNode>();
 
         Visit(node, visited, stack);
 
         return visited;
     }
 
-    public void ValidateNoCycles()
+    public IReadOnlyList<TNode> FindCycle()
     {
         var visited = new HashSet<TNode>(_comparer);
-        var stack = new Stack<TNode>();
+        var stack = new List<TNode>();
 
         foreach (var node in GetAllNodes())
         {
             if (!visited.Contains(node))
             {
-                Visit(node, visited, stack);
+                var cycle = Visit(node, visited, stack);
+                if (cycle.Count > 0)
+                {
+                    return cycle;
+                }
             }
         }
+
+        return Array.Empty<TNode>();
     }
 
-    private void Visit(TNode node, HashSet<TNode> visited, Stack<TNode> stack)
+    private IReadOnlyList<TNode> Visit(TNode node, HashSet<TNode> visited, List<TNode> stack)
     {
         // TODO: make more efficient instead of traversing the stack
-        if (stack.Contains(node))
+        var idx = stack.FindIndex(n => _comparer.Equals(n, node));
+        if (idx != -1)
         {
-            throw new InvalidOperationException($"Cycle detected involving node: {node}");
+            return stack[idx ..].Append(node).ToList();
         }
 
         if (visited.Contains(node))
         {
-            return;
+            return Array.Empty<TNode>();
         }
 
-        stack.Push(node);
+        stack.Add(node);
+
+        List<TNode> anyCycle = new();
 
         foreach (var neighbor in GetNeighbors(node))
         {
-            Visit(neighbor, visited, stack);
+            var cycle = Visit(neighbor, visited, stack);
+            if (cycle.Count > 0 && anyCycle.Count == 0)
+            {
+                anyCycle = cycle.ToList();
+            }
         }
 
         visited.Add(node);
-        stack.Pop();
+        stack.RemoveAt(stack.Count - 1);
+
+        return anyCycle;
     }
 }

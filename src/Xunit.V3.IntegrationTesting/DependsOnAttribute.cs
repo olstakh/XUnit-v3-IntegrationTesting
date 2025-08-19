@@ -42,10 +42,10 @@ public class DependsOnAttribute(
     /// </summary>
     public string[] Dependencies { get; set; } = Array.Empty<string>();
 
-    private string? _originalSkip;
-    private string? _originalSkipWhen;
-    private string? _originalSkipUnless;
-    private Type? _originalSkipType;
+    internal string? OriginalSkip;
+    internal string? OriginalSkipWhen;
+    internal string? OriginalSkipUnless;
+    internal Type? OriginalSkipType;
 
     private const string _customSkip = "One or more dependencies were skipped or had failed.";
 
@@ -54,11 +54,11 @@ public class DependsOnAttribute(
     {
         get
         {
-            return _originalSkip == null ? _customSkip : $"{_originalSkip} or {_customSkip}";
+            return OriginalSkip == null ? _customSkip : $"{OriginalSkip} or {_customSkip}";
         }
         set
         {
-            _originalSkip = value;
+            OriginalSkip = value;
         }
     }
 
@@ -71,7 +71,7 @@ public class DependsOnAttribute(
         }
         set
         {
-            _originalSkipWhen = value;
+            OriginalSkipWhen = value;
         }
     }
 
@@ -84,7 +84,7 @@ public class DependsOnAttribute(
         }
         set
         {
-            _originalSkipUnless = value;
+            OriginalSkipUnless = value;
         }
     }
 
@@ -97,7 +97,7 @@ public class DependsOnAttribute(
         }
         set
         {
-            _originalSkipType = value;
+            OriginalSkipType = value;
         }
     }
 
@@ -128,17 +128,17 @@ internal class SkipValidator
 
     private static bool ShouldSkipTestOriginalSetup(DependsOnAttribute dependsOn, IXunitTestCase testCase)
     {
-        var originalSkipWhenField = typeof(DependsOnAttribute).GetField("_originalSkipWhen", BindingFlags.NonPublic | BindingFlags.Instance);
-        var originalSkipWhenFieldValue = (string?)originalSkipWhenField?.GetValue(dependsOn);
+        // var originalSkipWhenField = typeof(DependsOnAttribute).GetField("_originalSkipWhen", BindingFlags.NonPublic | BindingFlags.Instance);
+        var originalSkipWhenFieldValue = (string?)dependsOn.OriginalSkipWhen;
 
-        var originalSkipUnlessField = typeof(DependsOnAttribute).GetField("_originalSkipUnless", BindingFlags.NonPublic | BindingFlags.Instance);
-        var originalSkipUnlessFieldValue = (string?)originalSkipUnlessField?.GetValue(dependsOn);
+        // var originalSkipUnlessField = typeof(DependsOnAttribute).GetField("_originalSkipUnless", BindingFlags.NonPublic | BindingFlags.Instance);
+        var originalSkipUnlessFieldValue = (string?)dependsOn.OriginalSkipUnless;
 
-        var originalSkipReasonField = typeof(DependsOnAttribute).GetField("_originalSkip", BindingFlags.NonPublic | BindingFlags.Instance);
-        var originalSkipReasonFieldValue = (string?)originalSkipReasonField?.GetValue(dependsOn);
+        // var originalSkipReasonField = typeof(DependsOnAttribute).GetField("_originalSkip", BindingFlags.NonPublic | BindingFlags.Instance);
+        var originalSkipReasonFieldValue = (string?)dependsOn.OriginalSkip;
 
-        var originalSkipTypeField = typeof(DependsOnAttribute).GetField("_originalSkipType", BindingFlags.NonPublic | BindingFlags.Instance);
-        var originalSkipTypeFieldValue = (Type?)originalSkipTypeField?.GetValue(dependsOn);
+        // var originalSkipTypeField = typeof(DependsOnAttribute).GetField("_originalSkipType", BindingFlags.NonPublic | BindingFlags.Instance);
+        var originalSkipTypeFieldValue = (Type?)dependsOn.OriginalSkipType;
 
         #region Original implementation of XunitTestRunnerBaseContext.GetRuntimeSkipReason
 

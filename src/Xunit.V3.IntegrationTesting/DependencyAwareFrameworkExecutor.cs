@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.Security.Cryptography;
 using Xunit.Internal;
 using Xunit.Sdk;
@@ -49,7 +50,7 @@ public class DependencyAwareFrameworkExecutor : XunitTestFrameworkExecutor
             executionMessageSink.OnMessage(new DiagnosticMessage($"[TEST CASE EXECUTOR WARNING] {issue}"));
         }
 
-        HashSet<IXunitTestCase> necessaryTests = new();
+        HashSet<IXunitTestCase> necessaryTests = new(TestCaseComparer<IXunitTestCase>.Instance);
         foreach (var testCase in testCases)
         {
             if (graph.ContainsNode(testCase))
@@ -66,6 +67,19 @@ public class DependencyAwareFrameworkExecutor : XunitTestFrameworkExecutor
         if (testCases.Count < necessaryTests.Count)
         {
             executionMessageSink.OnMessage(new DiagnosticMessage($"[TEST CASE EXECUTOR INFO] {testCases.Count} tests were requested - {necessaryTests.Count} will be executed due to dependencies between tests"));
+        }
+
+        var necessaryGraph = necessaryTests.ToOrientedGraph(out var _);
+        var cycle = necessaryGraph.FindCycle();
+        if (cycle.Count > 0)
+        {
+            /*
+            throw new TestPipelineException(
+                string.Format(
+                    CultureInfo.CurrentCulture,
+                    "There's a circular dependency involving the following tests: {0}",
+                    string.Join(" -> ", cycle.Select(tc => $"{tc.TestClassName}.{tc.TestMethodName}"))));
+            */
         }
 
         // TODO: filter out unnecessary tests
