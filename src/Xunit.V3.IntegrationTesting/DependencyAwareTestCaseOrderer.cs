@@ -6,7 +6,7 @@ using Xunit.v3;
 
 namespace Xunit.v3.IntegrationTesting;
 
-public class DependencyTestCaseOrderer : ITestCaseOrderer
+public class DependencyAwareTestCaseOrderer : ITestCaseOrderer
 {
     public IEnumerable<TTestCase> OrderTestCases<TTestCase>(IEnumerable<TTestCase> testCases)
         where TTestCase : notnull, ITestCase
