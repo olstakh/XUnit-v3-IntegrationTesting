@@ -5,7 +5,7 @@
     <DevelopmentDependency>true</DevelopmentDependency>
     <PackageId>Xunit.v3.IntegrationTesting</PackageId>
     <SuppressDependenciesWhenPacking>true</SuppressDependenciesWhenPacking>
-    <!--<TargetsForTfmSpecificContentInPackage>$(TargetsForTfmSpecificContentInPackage);GetMyPackageFiles</TargetsForTfmSpecificContentInPackage>-->
+    <TargetsForTfmSpecificContentInPackage>$(TargetsForTfmSpecificContentInPackage);GetMyPackageFiles</TargetsForTfmSpecificContentInPackage>
     <IncludeSymbols>false</IncludeSymbols>
     <PackageOutputPath>$(RepoRoot)\artifacts</PackageOutputPath>
     <PackageReadmeFile>README.md</PackageReadmeFile>
@@ -32,7 +32,6 @@
       <PackagePath>\</PackagePath>
     </Content>
   </ItemGroup>
-  <!--
   <Target Name="GetMyPackageFiles" DependsOnTargets="ResolveProjectReferences">
     <ItemGroup>
       <TfmSpecificPackageFile Include="%(ReferenceProtectorOutputGroup.RootDir)%(ReferenceProtectorOutputGroup.Directory)*.dll"
@@ -40,5 +39,4 @@
                               PackagePath="%(ReferenceProtectorOutputGroup.PackagePath)" />
     </ItemGroup>
   </Target>
-  -->
 </Project>
