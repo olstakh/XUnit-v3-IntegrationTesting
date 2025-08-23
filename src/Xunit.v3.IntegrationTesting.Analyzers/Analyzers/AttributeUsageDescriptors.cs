@@ -30,4 +30,22 @@ internal static class AttributeUsageDescriptors
         DiagnosticSeverity.Warning,
         isEnabledByDefault: true,
         description: "Any method with [DependsOn] must have DependencyAwareTestCaseOrderer set TestCaseOrderer, in order for test to be ordered according to defined dependencies.");
+
+    public static readonly DiagnosticDescriptor DependsOnMissingMethod = new DiagnosticDescriptor(
+        "XIT0004",
+        "Missing test dependency",
+        "Method '{0}' depends on method '{1}' but it is missing from the class",
+        "Usage",
+        DiagnosticSeverity.Warning,
+        isEnabledByDefault: true,
+        description: "[DependsOn] attribute requires all listed dependencies to be present in the class.");
+
+    public static readonly DiagnosticDescriptor DependsOnInvalidMethod = new DiagnosticDescriptor(
+        "XIT0005",
+        "Invalid test dependency",
+        "Method '{0}' depends on method '{1}', which should be decorated with [DependsOn] attribute",
+        "Usage",
+        DiagnosticSeverity.Warning,
+        isEnabledByDefault: true,
+        description: "All test dependencies should be decorated with [DependsOn] attribute.");
 }
