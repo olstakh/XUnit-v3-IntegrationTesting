@@ -7,7 +7,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 namespace Xunit.v3.IntegrationTesting.Analyzers;
 
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
-public class AttributeUsageAnalyzer : DiagnosticAnalyzer
+public class AttributeUsageTestCaseOrdererAnalyzer : DiagnosticAnalyzer
 {
     public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => [
         AttributeUsageDescriptors.NotSupportedClassLevelTestCaseOrderer,
