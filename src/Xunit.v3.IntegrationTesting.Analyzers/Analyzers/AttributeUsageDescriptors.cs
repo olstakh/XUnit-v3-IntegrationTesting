@@ -48,4 +48,14 @@ internal static class AttributeUsageDescriptors
         DiagnosticSeverity.Warning,
         isEnabledByDefault: true,
         description: "All test dependencies should be decorated with [DependsOn] attribute.");
+
+    public static readonly DiagnosticDescriptor MissingTestFrameworkAttribute = new DiagnosticDescriptor(
+        "XIT0006",
+        "Missing TestFramework assembly attribute",
+        "Assembly is missing [assembly: TestFramework(typeof(DependencyAwareFramework))]. This can affect filtered test runs (filtering test cases in command line or selecting subset of tests in UI).",
+        "Usage",
+        DiagnosticSeverity.Warning,
+        isEnabledByDefault: true,
+        description: "Assemblies using DependsOn attribute on tests should declare [assembly: TestFramework(typeof(DependencyAwareFramework))] to support full test discovery during filtered test execution.");
+
 }
