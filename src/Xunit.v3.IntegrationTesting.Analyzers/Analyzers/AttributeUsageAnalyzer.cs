@@ -71,6 +71,7 @@ public class AttributeUsageAnalyzer : DiagnosticAnalyzer
             return;
         }
 
+        // Check for TestCaseOrdererAttribute on assembly
         bool hasAssemblyOrderer = false;
         foreach (var attr in compilation.Assembly.GetAttributes())
         {
@@ -88,10 +89,51 @@ public class AttributeUsageAnalyzer : DiagnosticAnalyzer
             }
         }
 
-        if (!hasAssemblyOrderer)
+        if (hasAssemblyOrderer)
         {
-            var methodName = methodDecl.Identifier.Text;
-            context.ReportDiagnostic(Diagnostic.Create(Rule, methodDecl.Identifier.GetLocation(), methodName));
+            return;
         }
+
+        // Check for TestCaseOrdererAttribute on containing class
+        bool hasClassOrderer = false;
+        var classDecl = methodDecl.Ancestors().OfType<ClassDeclarationSyntax>().FirstOrDefault();
+        if (classDecl != null)
+        {
+            foreach (var attrList in classDecl.AttributeLists)
+            {
+                foreach (var attr in attrList.Attributes)
+                {
+                    var attrType = semanticModel.GetTypeInfo(attr).Type;
+                    if (SymbolEqualityComparer.Default.Equals(attrType, testCaseOrdererAttributeSymbol))
+                    {
+                        // Check if the argument is typeof(DependencyAwareTestCaseOrderer)
+                        if (attr.ArgumentList != null && attr.ArgumentList.Arguments.Count == 1 &&
+                            attr.ArgumentList.Arguments[0].Expression is TypeOfExpressionSyntax typeOfExpr)
+                        {
+                            var typeSymbol = semanticModel.GetTypeInfo(typeOfExpr.Type).Type;
+                            {
+                                if (SymbolEqualityComparer.Default.Equals(typeSymbol, dependencyAwareOrdererSymbol))
+                                {
+                                    hasClassOrderer = true;
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                }
+                if (hasClassOrderer)
+                {
+                    break;
+                }
+            }
+        }
+        
+        if (hasClassOrderer)
+        {
+            return;
+        }
+
+        var methodName = methodDecl.Identifier.Text;
+        context.ReportDiagnostic(Diagnostic.Create(Rule, methodDecl.Identifier.GetLocation(), methodName));
     }
 }
