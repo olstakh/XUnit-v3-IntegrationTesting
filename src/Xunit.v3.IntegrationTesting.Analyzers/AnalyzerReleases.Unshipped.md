@@ -9,3 +9,4 @@ XIT0001 | Usage | Warning | Not supported class-level test case orderer. Use Dep
 XIT0002 | Usage | Warning | Missing test case orderer. Use DependencyAwareTestCaseOrderer
 XIT0003 | Usage | Warning | Not supported assembly-level test case orderer. Use DependencyAwareTestCaseOrderer
 XIT0004 | Usage | Warning | Missing test dependency
+XIT0005 | Usage | Warning | Dependent tests should have DependsOn attribute

@@ -9,6 +9,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Xunit.v3.IntegrationTesting\Xunit.v3.IntegrationTesting.csproj" />
+    <ProjectReference Include="..\Xunit.v3.IntegrationTesting.Analyzers\Xunit.v3.IntegrationTesting.Analyzers.csproj" OutputItemType="Analyzer" />
   </ItemGroup>
 
   <ItemGroup>
