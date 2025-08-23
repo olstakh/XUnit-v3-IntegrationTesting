@@ -9,22 +9,11 @@ namespace Xunit.v3.IntegrationTesting.Analyzers;
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
 public class AttributeUsageAnalyzer : DiagnosticAnalyzer
 {
-    public const string DiagnosticId = "XIT001";
-    private static readonly LocalizableString Title = "DependsOn attribute requires DependencyAwareTestCaseOrderer";
-    private static readonly LocalizableString MessageFormat = "Method '{0}' uses [DependsOn] but no [assembly: TestCaseOrderer(typeof(DependencyAwareTestCaseOrderer))] is defined";
-    private static readonly LocalizableString Description = "Any method with [DependsOn] must have DependencyAwareTestCaseOrderer set as assembly TestCaseOrderer, in order for test to be ordered according to defined dependencies.";
-    private const string Category = "Usage";
-
-    private static readonly DiagnosticDescriptor Rule = new DiagnosticDescriptor(
-        DiagnosticId,
-        Title,
-        MessageFormat,
-        Category,
-        DiagnosticSeverity.Warning,
-        isEnabledByDefault: true,
-        description: Description);
-
-    public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
+    public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => [
+        AttributeUsageDescriptors.NotSupportedClassLevelTestCaseOrderer,
+        AttributeUsageDescriptors.NotSupportedAssemblyLevelTestCaseOrderer,
+        AttributeUsageDescriptors.MissingTestCaseOrderer
+    ];
 
     public override void Initialize(AnalysisContext context)
     {
@@ -36,6 +25,7 @@ public class AttributeUsageAnalyzer : DiagnosticAnalyzer
     private void AnalyzeMethodDeclaration(SyntaxNodeAnalysisContext context)
     {
         var methodDecl = (MethodDeclarationSyntax)context.Node;
+        var methodName = methodDecl.Identifier.Text;
         var semanticModel = context.SemanticModel;
         var compilation = semanticModel.Compilation;
 
@@ -48,6 +38,7 @@ public class AttributeUsageAnalyzer : DiagnosticAnalyzer
             return;
         }
 
+        // Check for DependsOnAttribute on a method
         bool hasDependsOn = false;
         foreach (var attrList in methodDecl.AttributeLists)
         {
@@ -71,30 +62,7 @@ public class AttributeUsageAnalyzer : DiagnosticAnalyzer
             return;
         }
 
-        // Check for TestCaseOrdererAttribute on assembly
-        bool hasAssemblyOrderer = false;
-        foreach (var attr in compilation.Assembly.GetAttributes())
-        {
-            if (SymbolEqualityComparer.Default.Equals(attr.AttributeClass, testCaseOrdererAttributeSymbol))
-            {
-                if (attr.ConstructorArguments.Length == 1)
-                {
-                    var arg = attr.ConstructorArguments[0];
-                    if (arg.Kind == TypedConstantKind.Type && SymbolEqualityComparer.Default.Equals(arg.Value as INamedTypeSymbol, dependencyAwareOrdererSymbol))
-                    {
-                        hasAssemblyOrderer = true;
-                        break;
-                    }
-                }
-            }
-        }
-
-        if (hasAssemblyOrderer)
-        {
-            return;
-        }
-
-        // Check for TestCaseOrdererAttribute on containing class
+        // Check for TestCaseOrdererAttribute on a containing class
         bool hasClassOrderer = false;
         var classDecl = methodDecl.Ancestors().OfType<ClassDeclarationSyntax>().FirstOrDefault();
         if (classDecl != null)
@@ -106,34 +74,65 @@ public class AttributeUsageAnalyzer : DiagnosticAnalyzer
                     var attrType = semanticModel.GetTypeInfo(attr).Type;
                     if (SymbolEqualityComparer.Default.Equals(attrType, testCaseOrdererAttributeSymbol))
                     {
+                        hasClassOrderer = true;
                         // Check if the argument is typeof(DependencyAwareTestCaseOrderer)
                         if (attr.ArgumentList != null && attr.ArgumentList.Arguments.Count == 1 &&
                             attr.ArgumentList.Arguments[0].Expression is TypeOfExpressionSyntax typeOfExpr)
                         {
                             var typeSymbol = semanticModel.GetTypeInfo(typeOfExpr.Type).Type;
+                            if (SymbolEqualityComparer.Default.Equals(typeSymbol, dependencyAwareOrdererSymbol))
                             {
-                                if (SymbolEqualityComparer.Default.Equals(typeSymbol, dependencyAwareOrdererSymbol))
-                                {
-                                    hasClassOrderer = true;
-                                    break;
-                                }
+                                break;
                             }
                         }
+
+                        context.ReportDiagnostic(Diagnostic.Create(
+                            AttributeUsageDescriptors.NotSupportedClassLevelTestCaseOrderer, methodDecl.Identifier.GetLocation(), methodName));
+
+                        break;
                     }
                 }
+
                 if (hasClassOrderer)
                 {
                     break;
                 }
             }
         }
-        
+
         if (hasClassOrderer)
         {
             return;
         }
 
-        var methodName = methodDecl.Identifier.Text;
-        context.ReportDiagnostic(Diagnostic.Create(Rule, methodDecl.Identifier.GetLocation(), methodName));
+        // Check for TestCaseOrdererAttribute on assembly
+        bool hasAssemblyOrderer = false;
+        foreach (var attr in compilation.Assembly.GetAttributes())
+        {
+            if (SymbolEqualityComparer.Default.Equals(attr.AttributeClass, testCaseOrdererAttributeSymbol))
+            {
+                hasAssemblyOrderer = true;
+                if (attr.ConstructorArguments.Length == 1)
+                {
+                    var arg = attr.ConstructorArguments[0];
+                    if (arg.Kind == TypedConstantKind.Type && SymbolEqualityComparer.Default.Equals(arg.Value as INamedTypeSymbol, dependencyAwareOrdererSymbol))
+                    {
+                        break;
+                    }
+                }
+
+                context.ReportDiagnostic(Diagnostic.Create(
+                    AttributeUsageDescriptors.NotSupportedAssemblyLevelTestCaseOrderer, methodDecl.Identifier.GetLocation(), methodName));
+                break;
+            }
+        }
+
+        if (hasAssemblyOrderer)
+        {
+            return;
+        }
+
+        context.ReportDiagnostic(Diagnostic.Create(
+            AttributeUsageDescriptors.MissingTestCaseOrderer, methodDecl.Identifier.GetLocation(), methodName));
     }
 }
