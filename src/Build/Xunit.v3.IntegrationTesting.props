@@ -1,11 +1,16 @@
 <Project>
+  <PropertyGroup>
+    <UseDependencyAwareTestFramework Condition=" '$(UseDependencyAwareTestFramework)' == '' ">true</UseDependencyAwareTestFramework>
+    <UseDependencyAwareTestCaseOrderer Condition=" '$(UseDependencyAwareTestCaseOrderer)' == '' ">true</UseDependencyAwareTestCaseOrderer>
+  </PropertyGroup>
+
   <ItemGroup>
-    <AssemblyAttribute Include="Xunit.TestFramework">
+    <AssemblyAttribute Include="Xunit.TestFramework" Condition="'$(UseDependencyAwareTestFramework)' != 'false'">
       <_Parameter1>Xunit.v3.IntegrationTesting.DependencyAwareFramework</_Parameter1>
       <!--https://learn.microsoft.com/zh-cn/visualstudio/msbuild/writecodefragment-task?view=vs-2022#generate-assembly-level-attributes-->
       <_Parameter1_TypeName>System.Type</_Parameter1_TypeName>            
     </AssemblyAttribute>
-    <AssemblyAttribute Include="Xunit.TestCaseOrderer">
+    <AssemblyAttribute Include="Xunit.TestCaseOrderer" Condition="'$(UseDependencyAwareTestCaseOrderer)' != 'false'">
       <_Parameter1>Xunit.v3.IntegrationTesting.DependencyAwareTestCaseOrderer</_Parameter1>
       <!--https://learn.microsoft.com/zh-cn/visualstudio/msbuild/writecodefragment-task?view=vs-2022#generate-assembly-level-attributes-->
       <_Parameter1_TypeName>System.Type</_Parameter1_TypeName>            

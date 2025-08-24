@@ -17,6 +17,9 @@
     <ProjectReference Include="..\Xunit.v3.IntegrationTesting\Xunit.v3.IntegrationTesting.csproj"
                       OutputItemType="ReferenceProtectorOutputGroup"
                       PackagePath="lib\netstandard2.0" />
+    <ProjectReference Include="..\Xunit.v3.IntegrationTesting.Analyzers\Xunit.v3.IntegrationTesting.Analyzers.csproj"
+                      OutputItemType="ReferenceProtectorOutputGroup"
+                      PackagePath="analyzers/dotnet/cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="..\Build\*">
