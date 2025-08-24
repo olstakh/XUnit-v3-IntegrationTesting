@@ -8,6 +8,7 @@ using Fact = Xunit.v3.IntegrationTesting.DependsOnAttribute;
 
 namespace Xunit.v3.IntegrationTesting.Manual;
 
+[Trait("Category", "LocalOnly")] // Some of these tests are expected to fail locally, don't run in CI pipeline
 public class IntegrationTests
 {
     [@Fact]
