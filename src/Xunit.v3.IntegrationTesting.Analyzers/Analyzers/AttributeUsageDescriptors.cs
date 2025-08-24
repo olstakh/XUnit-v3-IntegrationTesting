@@ -56,6 +56,16 @@ internal static class AttributeUsageDescriptors
         "Usage",
         DiagnosticSeverity.Warning,
         isEnabledByDefault: true,
+        customTags: WellKnownDiagnosticTags.CompilationEnd,
         description: "Assemblies using DependsOn attribute on tests should declare [assembly: TestFramework(typeof(DependencyAwareFramework))] to support full test discovery during filtered test execution.");
 
+    public static readonly DiagnosticDescriptor NotSupportedTestFrameworkAttribute = new DiagnosticDescriptor(
+        "XIT0007",
+        "Not supported TestFramework assembly attribute",
+        "Assembly has existing [assembly: TestFramework(typeof(...))] attribute. Consider using DependencyAwareFramework instead. Otherwise filtered test runs might be affected.",
+        "Usage",
+        DiagnosticSeverity.Warning,
+        isEnabledByDefault: true,
+        customTags: WellKnownDiagnosticTags.CompilationEnd,
+        description: "Assemblies using DependsOn attribute on tests should declare [assembly: TestFramework(typeof(DependencyAwareFramework))] to support full test discovery during filtered test execution.");
 }

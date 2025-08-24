@@ -29,6 +29,30 @@ public class AttributeUsageTestFrameworkAnalyzerTests
     }
 
     [Fact]
+    public async Task Validate_NotSupportedTestFrameworkAttribute_DiagnosticAsync()
+    {
+        var source = /* lang=c#-test */ @"
+            using Xunit;
+            using Xunit.v3;
+
+            [assembly: TestFramework(typeof(CustomTestFramework))]
+
+            public class MyTests
+            {
+                [Fact]
+                public void Test1() { }
+            }
+
+            public class CustomTestFramework : XunitTestFramework {}
+        ";
+
+        var analyzer = GetAnalyzer(source);
+        analyzer.ExpectedDiagnostics.Add(DiagnosticResult.CompilerWarning(AttributeUsageDescriptors.NotSupportedTestFrameworkAttribute.Id).WithNoLocation());
+
+        await analyzer.RunAsync(TestContext.Current.CancellationToken);
+    }    
+
+    [Fact]
     public async Task Validate_TestFrameworkAttribute_NoDiagnosticAsync()
     {
         var source = /* lang=c#-test */ @"

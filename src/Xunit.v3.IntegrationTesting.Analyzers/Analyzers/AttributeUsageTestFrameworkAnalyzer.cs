@@ -9,7 +9,10 @@ namespace Xunit.v3.IntegrationTesting.Analyzers;
 public class AttributeUsageTestFrameworkAnalyzer : DiagnosticAnalyzer
 {
     public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
-        ImmutableArray.Create(AttributeUsageDescriptors.MissingTestFrameworkAttribute);
+        ImmutableArray.Create([
+            AttributeUsageDescriptors.MissingTestFrameworkAttribute,
+            AttributeUsageDescriptors.NotSupportedTestFrameworkAttribute
+        ]);
 
     public override void Initialize(AnalysisContext context)
     {
@@ -31,20 +34,24 @@ public class AttributeUsageTestFrameworkAnalyzer : DiagnosticAnalyzer
         {
             if (SymbolEqualityComparer.Default.Equals(attr.AttributeClass, testFrameworkAttributeSymbol))
             {
+                found = true;
                 if (attr.ConstructorArguments.Length == 1)
                 {
                     var arg = attr.ConstructorArguments[0];
                     if (arg.Kind == TypedConstantKind.Type && SymbolEqualityComparer.Default.Equals(arg.Value as INamedTypeSymbol, dependencyAwareFrameworkSymbol))
                     {
-                        found = true;
                         break;
                     }
                 }
+                context.ReportDiagnostic(Diagnostic.Create(AttributeUsageDescriptors.NotSupportedTestFrameworkAttribute, Location.None));
             }
         }
-        if (!found)
+
+        if (found)
         {
-            context.ReportDiagnostic(Diagnostic.Create(AttributeUsageDescriptors.MissingTestFrameworkAttribute, Location.None));
+            return;
         }
+        
+        context.ReportDiagnostic(Diagnostic.Create(AttributeUsageDescriptors.MissingTestFrameworkAttribute, Location.None));
     }
 }
