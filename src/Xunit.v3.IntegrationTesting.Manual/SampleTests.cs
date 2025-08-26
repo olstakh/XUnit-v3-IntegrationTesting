@@ -1,7 +1,7 @@
 ﻿using Xunit;
 using Xunit.v3;
 using Xunit.v3.IntegrationTesting;
-using Fact = Xunit.v3.IntegrationTesting.DependsOnAttribute;
+using Fact = Xunit.v3.IntegrationTesting.FactDependsOnAttribute;
 
 [assembly: TestCaseOrderer(typeof(DependencyAwareTestCaseOrderer))]
 [assembly: TestFramework(typeof(DependencyAwareFramework))]

@@ -14,7 +14,7 @@ namespace Xunit.v3.IntegrationTesting;
 /// </summary>
 [XunitTestCaseDiscoverer(typeof(FactDiscoverer))]
 [AttributeUsage(AttributeTargets.Method | AttributeTargets.Class, AllowMultiple = true)]
-public class DependsOnAttribute(
+public class FactDependsOnAttribute(
         [CallerFilePath] string? sourceFilePath = null,
         [CallerLineNumber] int sourceLineNumber = -1    
     ) : Attribute, IFactAttribute, IBeforeAfterTestAttribute
@@ -126,18 +126,11 @@ internal class SkipValidator
         }
     }
 
-    private static bool ShouldSkipTestOriginalSetup(DependsOnAttribute dependsOn, IXunitTestCase testCase)
+    private static bool ShouldSkipTestOriginalSetup(FactDependsOnAttribute dependsOn, IXunitTestCase testCase)
     {
-        // var originalSkipWhenField = typeof(DependsOnAttribute).GetField("_originalSkipWhen", BindingFlags.NonPublic | BindingFlags.Instance);
         var originalSkipWhenFieldValue = (string?)dependsOn.OriginalSkipWhen;
-
-        // var originalSkipUnlessField = typeof(DependsOnAttribute).GetField("_originalSkipUnless", BindingFlags.NonPublic | BindingFlags.Instance);
         var originalSkipUnlessFieldValue = (string?)dependsOn.OriginalSkipUnless;
-
-        // var originalSkipReasonField = typeof(DependsOnAttribute).GetField("_originalSkip", BindingFlags.NonPublic | BindingFlags.Instance);
         var originalSkipReasonFieldValue = (string?)dependsOn.OriginalSkip;
-
-        // var originalSkipTypeField = typeof(DependsOnAttribute).GetField("_originalSkipType", BindingFlags.NonPublic | BindingFlags.Instance);
         var originalSkipTypeFieldValue = (Type?)dependsOn.OriginalSkipType;
 
         #region Original implementation of XunitTestRunnerBaseContext.GetRuntimeSkipReason
@@ -237,7 +230,7 @@ internal class SkipValidator
             return false; // send diagnostic later
 
         // Get dependencyOn attribute
-        var dependsOn = currentTestMethod.Method.GetCustomAttribute<DependsOnAttribute>(false);
+        var dependsOn = currentTestMethod.Method.GetCustomAttribute<FactDependsOnAttribute>(false);
 
         if (dependsOn == null)
             return false; // send diagnostic later, we shouldn't end up here

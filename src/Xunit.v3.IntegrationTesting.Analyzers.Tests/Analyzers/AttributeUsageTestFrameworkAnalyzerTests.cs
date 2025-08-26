@@ -80,7 +80,7 @@ public class AttributeUsageTestFrameworkAnalyzerTests
         TestCode = source,
         TestState =
         {
-            AdditionalReferences = { typeof(DependsOnAttribute).Assembly }
+            AdditionalReferences = { typeof(FactDependsOnAttribute).Assembly }
         },
         ReferenceAssemblies = ReferenceAssemblies.Net.Net90.AddPackages(new PackageIdentity[]
         {

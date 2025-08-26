@@ -22,7 +22,7 @@ public static class OrientedGraphExtensions
                 continue; // Skip non-Xunit test cases
             }
 
-            var dependsOnAttrs = testCase.TestMethod.Method.GetCustomAttribute<DependsOnAttribute>(false) ?? new(); // send diagnostic if null?
+            var dependsOnAttrs = testCase.TestMethod.Method.GetCustomAttribute<FactDependsOnAttribute>(false) ?? new(); // send diagnostic if null?
             foreach (var dependency in dependsOnAttrs.Dependencies)
             {
                 var dependentTest = testCases.Where(tc => TestClassComparer.Instance.Equals(tc.TestMethod?.TestClass, testCase.TestClass) && tc.TestMethodName == dependency).ToList();

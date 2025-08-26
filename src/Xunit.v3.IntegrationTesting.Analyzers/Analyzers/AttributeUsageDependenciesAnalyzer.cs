@@ -13,7 +13,8 @@ public class AttributeUsageDependenciesAnalyzer : DiagnosticAnalyzer
     public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
         ImmutableArray.Create([
             AttributeUsageDescriptors.DependsOnMissingMethod,
-            AttributeUsageDescriptors.DependsOnInvalidMethod
+            AttributeUsageDescriptors.DependsOnInvalidMethod,
+            AttributeUsageDescriptors.UseFactDependsOnAttribute
         ]);
 
     public override void Initialize(AnalysisContext context)
@@ -29,12 +30,20 @@ public class AttributeUsageDependenciesAnalyzer : DiagnosticAnalyzer
         var semanticModel = context.SemanticModel;
         var compilation = semanticModel.Compilation;
 
-        var dependsOnAttributeSymbol = compilation.GetTypeByMetadataName("Xunit.v3.IntegrationTesting.DependsOnAttribute");
+        var dependsOnAttributeSymbol = compilation.GetTypeByMetadataName("Xunit.v3.IntegrationTesting.FactDependsOnAttribute");
+            var factAttributeSymbol = compilation.GetTypeByMetadataName("Xunit.FactAttribute");
         if (dependsOnAttributeSymbol == null)
             return;
+            if (factAttributeSymbol == null)
+                return;
 
-        // Check if method has [DependsOn]
+        var methodSymbol = semanticModel.GetDeclaredSymbol(methodDecl) as IMethodSymbol;
+        if (methodSymbol == null)
+            return;            
+
+        // Check if method has [FactDependsOn]
         AttributeSyntax? dependsOnAttrSyntax = null;
+        AttributeSyntax? factAttributeSyntax = null;
         foreach (var attrList in methodDecl.AttributeLists)
         {
             foreach (var attr in attrList.Attributes)
@@ -45,19 +54,28 @@ public class AttributeUsageDependenciesAnalyzer : DiagnosticAnalyzer
                     dependsOnAttrSyntax = attr;
                     break;
                 }
+                if (SymbolEqualityComparer.Default.Equals(attrType, factAttributeSymbol))
+                {
+                    factAttributeSyntax = attr;
+                    break;
+                }
             }
             if (dependsOnAttrSyntax != null)
                 break;
         }
-        if (dependsOnAttrSyntax == null)
-            return;
 
+        if (dependsOnAttrSyntax == null)
+        {
+            // If FactDependsOn is missing but Fact is present, report diagnostic
+            if (factAttributeSyntax != null)
+            {
+                context.ReportDiagnostic(Diagnostic.Create(AttributeUsageDescriptors.UseFactDependsOnAttribute, factAttributeSyntax.GetLocation(), methodDecl.Identifier.Text));
+            }
+            return;
+        }
 
         // Get dependencies property from attribute syntax (support string literals and nameof)
         var dependencies = new List<string>();
-        var methodSymbol = semanticModel.GetDeclaredSymbol(methodDecl) as IMethodSymbol;
-        if (methodSymbol == null)
-            return;
 
         if (dependsOnAttrSyntax?.ArgumentList != null)
         {
@@ -128,7 +146,7 @@ public class AttributeUsageDependenciesAnalyzer : DiagnosticAnalyzer
             }
             else
             {
-                // Check if dependency method has [DependsOn]
+                // Check if dependency method has [FactDependsOn]
                 var hasDependsOn = depMethod.GetAttributes().Any(a => SymbolEqualityComparer.Default.Equals(a.AttributeClass, dependsOnAttributeSymbol));
                 if (!hasDependsOn)
                 {

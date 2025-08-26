@@ -6,30 +6,30 @@ internal static class AttributeUsageDescriptors
 {
     public static readonly DiagnosticDescriptor NotSupportedClassLevelTestCaseOrderer = new DiagnosticDescriptor(
         "XIT0001",
-        "DependsOn attribute requires DependencyAwareTestCaseOrderer to respect test dependencies",
-        "Method '{0}' uses [DependsOn] attribute, but class-level test orderer is not DependencyAwareTestCaseOrderer",
+        "FactDependsOn attribute requires DependencyAwareTestCaseOrderer to respect test dependencies",
+        "Method '{0}' uses [FactDependsOn] attribute, but class-level test orderer is not DependencyAwareTestCaseOrderer",
         "Usage",
         DiagnosticSeverity.Warning,
         isEnabledByDefault: true,
-        description: "Any method with [DependsOn] must have DependencyAwareTestCaseOrderer set TestCaseOrderer, in order for test to be ordered according to defined dependencies.");
+        description: "Any method with [FactDependsOn] must have DependencyAwareTestCaseOrderer set TestCaseOrderer, in order for test to be ordered according to defined dependencies.");
 
     public static readonly DiagnosticDescriptor NotSupportedAssemblyLevelTestCaseOrderer = new DiagnosticDescriptor(
         "XIT0002",
-        "DependsOn attribute requires DependencyAwareTestCaseOrderer to respect test dependencies",
-        "Method '{0}' uses [DependsOn] attribute, but assembly-level test orderer is not DependencyAwareTestCaseOrderer",
+        "FactDependsOn attribute requires DependencyAwareTestCaseOrderer to respect test dependencies",
+        "Method '{0}' uses [FactDependsOn] attribute, but assembly-level test orderer is not DependencyAwareTestCaseOrderer",
         "Usage",
         DiagnosticSeverity.Warning,
         isEnabledByDefault: true,
-        description: "Any method with [DependsOn] must have DependencyAwareTestCaseOrderer set TestCaseOrderer, in order for test to be ordered according to defined dependencies.");
+        description: "Any method with [FactDependsOn] must have DependencyAwareTestCaseOrderer set TestCaseOrderer, in order for test to be ordered according to defined dependencies.");
 
     public static readonly DiagnosticDescriptor MissingTestCaseOrderer = new DiagnosticDescriptor(
         "XIT0003",
-        "DependsOn attribute requires DependencyAwareTestCaseOrderer to respect test dependencies",
-        "Method '{0}' uses [DependsOn] attribute, but DependencyAwareTestCaseOrderer is not set as class-level or assembly-level test case orderer",
+        "FactDependsOn attribute requires DependencyAwareTestCaseOrderer to respect test dependencies",
+        "Method '{0}' uses [FactDependsOn] attribute, but DependencyAwareTestCaseOrderer is not set as class-level or assembly-level test case orderer",
         "Usage",
         DiagnosticSeverity.Warning,
         isEnabledByDefault: true,
-        description: "Any method with [DependsOn] must have DependencyAwareTestCaseOrderer set TestCaseOrderer, in order for test to be ordered according to defined dependencies.");
+        description: "Any method with [FactDependsOn] must have DependencyAwareTestCaseOrderer set TestCaseOrderer, in order for test to be ordered according to defined dependencies.");
 
     public static readonly DiagnosticDescriptor DependsOnMissingMethod = new DiagnosticDescriptor(
         "XIT0004",
@@ -38,16 +38,16 @@ internal static class AttributeUsageDescriptors
         "Usage",
         DiagnosticSeverity.Warning,
         isEnabledByDefault: true,
-        description: "[DependsOn] attribute requires all listed dependencies to be present in the class.");
+        description: "[FactDependsOn] attribute requires all listed dependencies to be present in the class.");
 
     public static readonly DiagnosticDescriptor DependsOnInvalidMethod = new DiagnosticDescriptor(
         "XIT0005",
         "Invalid test dependency",
-        "Method '{0}' depends on method '{1}', which should be decorated with [DependsOn] attribute",
+        "Method '{0}' depends on method '{1}', which should be decorated with [FactDependsOn] attribute",
         "Usage",
         DiagnosticSeverity.Warning,
         isEnabledByDefault: true,
-        description: "All test dependencies should be decorated with [DependsOn] attribute.");
+        description: "All test dependencies should be decorated with [FactDependsOn] attribute.");
 
     public static readonly DiagnosticDescriptor MissingTestFrameworkAttribute = new DiagnosticDescriptor(
         "XIT0006",
@@ -57,7 +57,7 @@ internal static class AttributeUsageDescriptors
         DiagnosticSeverity.Warning,
         isEnabledByDefault: true,
         customTags: WellKnownDiagnosticTags.CompilationEnd,
-        description: "Assemblies using DependsOn attribute on tests should declare [assembly: TestFramework(typeof(DependencyAwareFramework))] to support full test discovery during filtered test execution.");
+        description: "Assemblies using FactDependsOn attribute on tests should declare [assembly: TestFramework(typeof(DependencyAwareFramework))] to support full test discovery during filtered test execution.");
 
     public static readonly DiagnosticDescriptor NotSupportedTestFrameworkAttribute = new DiagnosticDescriptor(
         "XIT0007",
@@ -67,5 +67,14 @@ internal static class AttributeUsageDescriptors
         DiagnosticSeverity.Warning,
         isEnabledByDefault: true,
         customTags: WellKnownDiagnosticTags.CompilationEnd,
-        description: "Assemblies using DependsOn attribute on tests should declare [assembly: TestFramework(typeof(DependencyAwareFramework))] to support full test discovery during filtered test execution.");
+        description: "Assemblies using FactDependsOn attribute on tests should declare [assembly: TestFramework(typeof(DependencyAwareFramework))] to support full test discovery during filtered test execution.");
+
+    public static readonly DiagnosticDescriptor UseFactDependsOnAttribute = new DiagnosticDescriptor(
+        "XIT0008",
+        "Use FactDependsOn attribute",
+        "Method '{0}' should use [FactDependsOn] attribute to declare its dependencies",
+        "Usage",
+        DiagnosticSeverity.Info,
+        isEnabledByDefault: true,
+        description: "All test methods should use [FactDependsOn] attribute to be available for dependency tracking during execution.");
 }

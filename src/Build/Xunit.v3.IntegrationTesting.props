@@ -2,6 +2,7 @@
   <PropertyGroup>
     <UseDependencyAwareTestFramework Condition=" '$(UseDependencyAwareTestFramework)' == '' ">true</UseDependencyAwareTestFramework>
     <UseDependencyAwareTestCaseOrderer Condition=" '$(UseDependencyAwareTestCaseOrderer)' == '' ">true</UseDependencyAwareTestCaseOrderer>
+    <AutoAddGlobalNamespace Condition=" '$(AutoAddGlobalNamespace)' == '' ">true</AutoAddGlobalNamespace>
   </PropertyGroup>
 
   <ItemGroup>
@@ -15,5 +16,6 @@
       <!--https://learn.microsoft.com/zh-cn/visualstudio/msbuild/writecodefragment-task?view=vs-2022#generate-assembly-level-attributes-->
       <_Parameter1_TypeName>System.Type</_Parameter1_TypeName>            
     </AssemblyAttribute>
+    <Using Include="Xunit.v3.IntegrationTesting" Condition="'$(AutoAddGlobalNamespace)' != 'false'" />
   </ItemGroup>
 </Project>

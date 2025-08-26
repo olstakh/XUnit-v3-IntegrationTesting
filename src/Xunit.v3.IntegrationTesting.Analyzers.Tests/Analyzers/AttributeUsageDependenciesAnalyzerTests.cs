@@ -22,7 +22,7 @@ public class AttributeUsageDependenciesAnalyzerTests
             {
                 const string NonExistentMethodConst = ""NonExistentMethod"";
 
-                [DependsOn(Dependencies = PLACEHOLDER)]
+                [FactDependsOn(Dependencies = PLACEHOLDER)]
                 public void {|XIT0004:Test1|}() { }
             }
         ";
@@ -52,10 +52,10 @@ public class AttributeUsageDependenciesAnalyzerTests
             {
                 const string InvalidMethodConst = nameof(InvalidMethod);
 
-                [DependsOn(Dependencies = PLACEHOLDER)]
+                [FactDependsOn(Dependencies = PLACEHOLDER)]
                 public void {|XIT0005:Test1|}() { }
 
-                [Fact]
+                [{|XIT0008:Fact|}]
                 public void InvalidMethod() { }
             }
         ";
@@ -73,10 +73,10 @@ public class AttributeUsageDependenciesAnalyzerTests
 
             public class MyTests
             {
-                [DependsOn(Dependencies = [""Test2""])]
+                [FactDependsOn(Dependencies = [""Test2""])]
                 public void Test1() { }
 
-                [DependsOn]
+                [FactDependsOn]
                 public void Test2() { }
             }
         ";
@@ -91,7 +91,7 @@ public class AttributeUsageDependenciesAnalyzerTests
         TestCode = source,
         TestState =
         {
-            AdditionalReferences = { typeof(DependsOnAttribute).Assembly }
+            AdditionalReferences = { typeof(FactDependsOnAttribute).Assembly }
         },
         ReferenceAssemblies = ReferenceAssemblies.Net.Net90.AddPackages(new PackageIdentity[]
         {
