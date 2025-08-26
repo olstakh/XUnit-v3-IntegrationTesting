@@ -52,3 +52,29 @@ Following properties are available to be changed in `<PropertyGroup>` section of
 Custom test framework (i.e. `DependencyAwareFramework`) is used to support partial test runs (like selecting some tests in test explorer, or filtering tests in a command line). Because some of the selected/filtered tests might have dependencies that were not selected. This custom framework simply discovers all the tests, to make sure all dependencies are run, even if they were filtered out / not selected. This can be omitted, in which case such partial runs may be affected
 
 Custom test case orderer (i.e. `DependencyAwareTestCaseOrderer`) is needed to ensure test case are ordered based on specified dependencies. If your test project already has assembly-level case orderer defined - you can add this attribute on a class level, which will take precedence. Otherwise test order will not be guaranteed to be dependency-aware, which will result in many skipped tests
+
+# Rules
+
+Following rules are included as part of the package:
+
+| Id      | Default severity | Description |
+|---------|------------------|-------------|
+| XIT0001 | Warning | Class-level `TestCaseOrderer(...)` should be `DependencyAwareTestCaseOrderer` |
+| XIT0002 | Warning | Assembly-level `TestCaseOrderer(...)` should be `DependencyAwareTestCaseOrderer` |
+| XIT0003 | Warning | Project is missing class-level and assembly-level `TestCaseOrderer` attribute |
+| XIT0004 | Warning | `FactDependsOn` has a dependency on a test method that doesn't exist |
+| XIT0005 | Warning | `FactDependsOn` has a dependency on a test method, not decorated with `FactDependsOn` attribute |
+| XIT0006 | Warning | Assembly-level `TestFramework(...)` should be `DependencyAwareFramework` |
+| XIT0007 | Warning | Project is missing assembly-level `TestFramework` attribute |
+| XIT0008 | Info | `Fact` attribute should be replaced with `FactDependsOn` |
+
+# Common questions
+
+Q. Why do i need to change `Fact` to `FactDependsOn` for all the tests, and not just for those that have dependencies?
+A. `FactDependsOn` implements `IBeforeAfterTestAttribute` interface, making not of a current test result, in case someone depends on it. Otherwise if a test with `FactDependsOn` attribute depends on a test with `Fact` attribute - it will always be skipped
+
+Q. I have a custom `SkipWhen` / `SkipUnless` / `SkipType` properties defined in `Fact` attribute - will they be respected when it's `FactDependsOn` attribute?
+A. Yes. When decision is computed whether or not to skip the test - first the original `SkipWhen` / `SkipUnless` is executed, and it the result is that we should proceed - then dependency logic will be run. The original `Skip` message (defined by user) is appended with `or One or more dependencies were skipped or had failed.`
+
+Q. If i have a test with dependencies and i run only this one test - dependencies will be executed as well?
+A. Yes, that's the purpose of `TestFramework(typeof(DependencyAwareFramework))` - to load other needed tests. Unfortunately - they will not have visible results in VSTest UI (i.e. Test explorer) - but they will be executed and present in logs
