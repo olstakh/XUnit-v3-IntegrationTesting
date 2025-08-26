@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.Build.NoTargets">
   <PropertyGroup>
-    <TargetFrameworks>netstandard2.0</TargetFrameworks>
+    <TargetFramework>netstandard2.0</TargetFramework>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <DevelopmentDependency>true</DevelopmentDependency>
     <PackageId>Xunit.v3.IntegrationTesting</PackageId>
@@ -15,10 +15,10 @@
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\Xunit.v3.IntegrationTesting\Xunit.v3.IntegrationTesting.csproj"
-                      OutputItemType="ReferenceProtectorOutputGroup"
+                      OutputItemType="IntegrationTestingOutputGroup"
                       PackagePath="lib\netstandard2.0" />
     <ProjectReference Include="..\Xunit.v3.IntegrationTesting.Analyzers\Xunit.v3.IntegrationTesting.Analyzers.csproj"
-                      OutputItemType="ReferenceProtectorOutputGroup"
+                      OutputItemType="IntegrationTestingOutputGroup"
                       PackagePath="analyzers/dotnet/cs" />
   </ItemGroup>
   <ItemGroup>
@@ -37,9 +37,9 @@
   </ItemGroup>
   <Target Name="GetMyPackageFiles" DependsOnTargets="ResolveProjectReferences">
     <ItemGroup>
-      <TfmSpecificPackageFile Include="%(ReferenceProtectorOutputGroup.RootDir)%(ReferenceProtectorOutputGroup.Directory)*.dll"
+      <TfmSpecificPackageFile Include="%(IntegrationTestingOutputGroup.RootDir)%(IntegrationTestingOutputGroup.Directory)*.dll"
                               Pack="true"
-                              PackagePath="%(ReferenceProtectorOutputGroup.PackagePath)" />
+                              PackagePath="%(IntegrationTestingOutputGroup.PackagePath)" />
     </ItemGroup>
   </Target>
 </Project>
