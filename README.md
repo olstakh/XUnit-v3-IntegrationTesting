@@ -14,5 +14,5 @@ This package provides the ability to establish dependencies between tests. Meani
 2. Update `[Fact]` attributes in your tests to `[FactDependsOn]`. This can be done by running string replacement from `[Fact(` to `[FactDependsOn(`, or by running the following command in the command line:
 
 ```
-dotnet format
+dotnet format analyzers --diagnostics XIT0008 --severity info --verbosity detailed
 ```

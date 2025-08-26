@@ -68,4 +68,13 @@ internal static class AttributeUsageDescriptors
         isEnabledByDefault: true,
         customTags: WellKnownDiagnosticTags.CompilationEnd,
         description: "Assemblies using FactDependsOn attribute on tests should declare [assembly: TestFramework(typeof(DependencyAwareFramework))] to support full test discovery during filtered test execution.");
+
+    public static readonly DiagnosticDescriptor UseFactDependsOnAttribute = new DiagnosticDescriptor(
+        "XIT0008",
+        "Use FactDependsOn attribute",
+        "Method '{0}' should use [FactDependsOn] attribute to declare its dependencies",
+        "Usage",
+        DiagnosticSeverity.Info,
+        isEnabledByDefault: true,
+        description: "All test methods should use [FactDependsOn] attribute to be available for dependency tracking during execution.");
 }

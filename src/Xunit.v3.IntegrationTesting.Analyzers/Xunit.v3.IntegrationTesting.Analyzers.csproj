@@ -4,12 +4,19 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <EnforceExtendedAnalyzerRules>true</EnforceExtendedAnalyzerRules>
-    <Nullable>enable</Nullable>    
+    <Nullable>enable</Nullable>
+    <!--
+      Don't know how else to get Microsoft.CodeAnalysis.CodeFixers without referencing
+      Microsoft.CodeAnalysis.CSharp.Workspaces
+      https://github.com/dotnet/roslyn-analyzers/issues/7438
+    -->
+    <NoWarn>$(NoWarn);RS1038</NoWarn>   
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.CodeAnalysis.Common" />
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp" />
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" />
   </ItemGroup>
 
   <ItemGroup>

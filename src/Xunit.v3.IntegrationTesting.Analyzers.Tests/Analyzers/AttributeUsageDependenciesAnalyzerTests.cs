@@ -55,7 +55,7 @@ public class AttributeUsageDependenciesAnalyzerTests
                 [FactDependsOn(Dependencies = PLACEHOLDER)]
                 public void {|XIT0005:Test1|}() { }
 
-                [Fact]
+                [{|XIT0008:Fact|}]
                 public void InvalidMethod() { }
             }
         ";
