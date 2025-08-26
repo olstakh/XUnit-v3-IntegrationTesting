@@ -16,3 +16,39 @@ This package provides the ability to establish dependencies between tests. Meani
 ```
 dotnet format analyzers --diagnostics XIT0008 --severity info --verbosity detailed
 ```
+
+This assumes namespace `Xunit.v3.IntegrationTesting` is opened (which is by default added to global usings with `<AutoAddGlobalNamespace>true</AutoAddGlobalNamespace>`). This can be disabled and namespace can be opened by other available means (or even using full name for `Xunit.v3.IntegrationTesting.FactDependsOn` attribute)
+
+3. Update `FactDependsOn` attribute with dependencies for those tests that need it. For example
+```csharp
+[FactDependsOn(Dependencies = [nameof(Test2), nameof(Test3)])]
+public void Test1() {}
+
+[FactDependsOn]
+public void Test2() {}
+
+[FactDependsOn]
+public void Test3() {}
+```
+Now `Test1` will be run after `Test2` and `Test3` and only if both have passed.
+
+
+If the test project doesn't have custom xunit framework extension (i.e. `[assembly: TestFramework(...)]` attribute), or assembly-level test case orderer (i.e. `[assembly: TestCaseOrderer(...)]`) - nothing else is needed.
+
+# How it works
+Package includes custom `TestCaseOrderer`, which guarantees tests are run in the order of their dependencies. Test is executed only if all dependent tests have executed and succeeded. Otherwise test is [skipped dynamically](https://xunit.net/docs/getting-started/v3/whats-new#dynamically-skippable-tests)
+
+# Configuration
+
+Following properties are available to be changed in `<PropertyGroup>` section of the project
+
+| Name | Default value | Description |
+|------|---------------|-------------|
+| AutoAddGlobalNamespace | `true` | Adds `global using Xunit.v3.IntegrationTesting;` to the project |
+| UseDependencyAwareTestFramework | `true` | Adds `[assembly: Xunit.TestFramework(Xunit.v3.IntegrationTesting.DependencyAwareFramework)]`. This adds support for filtered test runs |
+| UseDependencyAwareTestCaseOrderer | `true` | Adds `[assembly: Xunit.TestCaseOrderer(typeof(Xunit.v3.IntegrationTesting.DependencyAwareTestCaseOrderer))]`. This ensures test ordering based on provided dependencies |
+
+## Notes
+Custom test framework (i.e. `DependencyAwareFramework`) is used to support partial test runs (like selecting some tests in test explorer, or filtering tests in a command line). Because some of the selected/filtered tests might have dependencies that were not selected. This custom framework simply discovers all the tests, to make sure all dependencies are run, even if they were filtered out / not selected. This can be omitted, in which case such partial runs may be affected
+
+Custom test case orderer (i.e. `DependencyAwareTestCaseOrderer`) is needed to ensure test case are ordered based on specified dependencies. If your test project already has assembly-level case orderer defined - you can add this attribute on a class level, which will take precedence. Otherwise test order will not be guaranteed to be dependency-aware, which will result in many skipped tests
