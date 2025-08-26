@@ -29,11 +29,11 @@ public class AttributeUsageDependenciesAnalyzer : DiagnosticAnalyzer
         var semanticModel = context.SemanticModel;
         var compilation = semanticModel.Compilation;
 
-        var dependsOnAttributeSymbol = compilation.GetTypeByMetadataName("Xunit.v3.IntegrationTesting.DependsOnAttribute");
+        var dependsOnAttributeSymbol = compilation.GetTypeByMetadataName("Xunit.v3.IntegrationTesting.FactDependsOnAttribute");
         if (dependsOnAttributeSymbol == null)
             return;
 
-        // Check if method has [DependsOn]
+        // Check if method has [FactDependsOn]
         AttributeSyntax? dependsOnAttrSyntax = null;
         foreach (var attrList in methodDecl.AttributeLists)
         {
@@ -128,7 +128,7 @@ public class AttributeUsageDependenciesAnalyzer : DiagnosticAnalyzer
             }
             else
             {
-                // Check if dependency method has [DependsOn]
+                // Check if dependency method has [FactDependsOn]
                 var hasDependsOn = depMethod.GetAttributes().Any(a => SymbolEqualityComparer.Default.Equals(a.AttributeClass, dependsOnAttributeSymbol));
                 if (!hasDependsOn)
                 {

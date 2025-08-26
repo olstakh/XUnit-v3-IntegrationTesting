@@ -19,7 +19,7 @@ public class AttributeUsageTestCaseOrdererAnalyzerTests
             [TestCaseOrderer(typeof(CustomOrderer))]
             public class MyTests
             {
-                [DependsOn]
+                [FactDependsOn]
                 public void {|XIT0001:Test1|}() { }
             }
 
@@ -51,7 +51,7 @@ public class AttributeUsageTestCaseOrdererAnalyzerTests
             [assembly: TestCaseOrderer(typeof(CustomOrderer))]
             public class MyTests
             {
-                [DependsOn]
+                [FactDependsOn]
                 public void {|XIT0002:Test1|}() { }
             }
 
@@ -79,7 +79,7 @@ public class AttributeUsageTestCaseOrdererAnalyzerTests
 
             public class MyTests
             {
-                [DependsOn]
+                [FactDependsOn]
                 public void {|XIT0003:Test1|}() { }
             }
         ";
@@ -100,7 +100,7 @@ public class AttributeUsageTestCaseOrdererAnalyzerTests
             [assembly: TestCaseOrderer(typeof(DependencyAwareTestCaseOrderer))]
             public class MyTests
             {
-                [DependsOn]
+                [FactDependsOn]
                 public void Test1() { }
             }
         ";
@@ -121,7 +121,7 @@ public class AttributeUsageTestCaseOrdererAnalyzerTests
             [TestCaseOrderer(typeof(DependencyAwareTestCaseOrderer))]
             public class MyTests
             {
-                [DependsOn]
+                [FactDependsOn]
                 public void Test1() { }
             }
         ";
@@ -156,7 +156,7 @@ public class AttributeUsageTestCaseOrdererAnalyzerTests
         TestCode = source,
         TestState =
         {
-            AdditionalReferences = { typeof(DependsOnAttribute).Assembly }
+            AdditionalReferences = { typeof(FactDependsOnAttribute).Assembly }
         },
         ReferenceAssemblies = ReferenceAssemblies.Net.Net90.AddPackages(new PackageIdentity[]
         {

@@ -29,7 +29,7 @@ public class AttributeUsageTestCaseOrdererAnalyzer : DiagnosticAnalyzer
         var semanticModel = context.SemanticModel;
         var compilation = semanticModel.Compilation;
 
-        var dependsOnAttributeSymbol = compilation.GetTypeByMetadataName("Xunit.v3.IntegrationTesting.DependsOnAttribute");
+        var dependsOnAttributeSymbol = compilation.GetTypeByMetadataName("Xunit.v3.IntegrationTesting.FactDependsOnAttribute");
         var testCaseOrdererAttributeSymbol = compilation.GetTypeByMetadataName("Xunit.TestCaseOrdererAttribute");
         var dependencyAwareOrdererSymbol = compilation.GetTypeByMetadataName("Xunit.v3.IntegrationTesting.DependencyAwareTestCaseOrderer");
 
@@ -38,7 +38,7 @@ public class AttributeUsageTestCaseOrdererAnalyzer : DiagnosticAnalyzer
             return;
         }
 
-        // Check for DependsOnAttribute on a method
+        // Check for FactDependsOnAttribute on a method
         bool hasDependsOn = false;
         foreach (var attrList in methodDecl.AttributeLists)
         {
