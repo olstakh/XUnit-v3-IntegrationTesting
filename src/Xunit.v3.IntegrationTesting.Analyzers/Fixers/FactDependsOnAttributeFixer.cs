@@ -47,11 +47,14 @@ public class FactDependsOnAttributeFixer : CodeFixProvider
 
     private async Task<Document> ReplaceFactWithFactDependsOnAsync(Document document, AttributeSyntax factAttribute, CancellationToken cancellationToken)
     {
-        var factDependsOn = factAttribute.WithName(SyntaxFactory.IdentifierName("FactDependsOn"));
-        var root = await document.GetSyntaxRootAsync(cancellationToken);
+        var root = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
         if (root == null)
             return document;
-        var newRoot = root.ReplaceNode(factAttribute, factDependsOn);
+
+        var factDependsOn = factAttribute.WithName(SyntaxFactory.IdentifierName("FactDependsOn"));
+
+        SyntaxNode newRoot = root.ReplaceNode(factAttribute, factDependsOn);
+
         return document.WithSyntaxRoot(newRoot);
     }
 }
