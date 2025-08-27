@@ -11,30 +11,37 @@ public class DependencyAwareTestCaseOrderer : ITestCaseOrderer
     public IEnumerable<TTestCase> OrderTestCases<TTestCase>(IEnumerable<TTestCase> testCases)
         where TTestCase : notnull, ITestCase
     {
-        var graph = testCases.ToOrientedGraph(out var issues);
-        var cycle = graph.FindCycle();
+        try
+        {
+            var graph = testCases.ToOrientedGraph(out var issues);
+            var orderedCases = graph.TopologicalSort();
 
-        if (cycle.Count > 0)
+            foreach (var issue in issues)
+            {
+                TestContext.Current.SendDiagnosticMessage("[TEST CASE ORDERER WARNING] " + issue);
+            }
+
+            return orderedCases.Cast<TTestCase>();
+        }
+        catch (CircularDependencyException<IXunitTestCase> ex)
         {
             var circularDependencyMessage = string.Format(
                 CultureInfo.CurrentCulture,
                 "There's a circular dependency involving the following tests: {0}",
-                string.Join(" -> ", cycle.Select(tc => $"{tc.TestClassName}.{tc.TestMethodName}")));
+                string.Join(" -> ", ex.DependencyCycle.Select(tc => $"{tc.TestClassName}.{tc.TestMethodName}")));
 
             TestContext.Current.SendDiagnosticMessage("[TEST CASE ORDERER ERROR] " +
                 circularDependencyMessage);
 
             throw new TestPipelineException(
-                circularDependencyMessage);
+                circularDependencyMessage, ex);
         }
-
-        var orderedCases = graph.TopologicalSort();
-        foreach (var issue in issues)
+        catch (Exception ex)
         {
-            TestContext.Current.SendDiagnosticMessage("[TEST CASE ORDERER WARNING] " + issue);
+            var message = "An unexpected error occurred while ordering test cases: " + ex.Message;
+            TestContext.Current.SendDiagnosticMessage("[TEST CASE ORDERER ERROR] " + message);
+            throw new TestPipelineException(message, ex);
         }
-
-        return orderedCases.Cast<TTestCase>();
     }
 
     public IReadOnlyCollection<TTestCase> OrderTestCases<TTestCase>(IReadOnlyCollection<TTestCase> testCases) where TTestCase : notnull, ITestCase

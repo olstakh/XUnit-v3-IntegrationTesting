@@ -55,7 +55,14 @@ public class OrientedGraph<TNode>
         {
             if (!visited.Contains(node))
             {
-                Visit(node, visited, stack);
+                var cycle = Visit(node, visited, stack);
+                if (cycle.Count > 0)
+                {
+                    throw new CircularDependencyException<TNode>("Graph contains a cycle; topological sort is not possible.")
+                    {
+                        DependencyCycle = cycle
+                    };
+                }
             }
         }
 
@@ -69,31 +76,12 @@ public class OrientedGraph<TNode>
         var visited = new HashSet<TNode>(_comparer);
         var stack = new List<TNode>();
 
-        Visit(node, visited, stack);
+        _ = Visit(node, visited, stack);
 
         return visited;
     }
 
-    public IReadOnlyList<TNode> FindCycle()
-    {
-        var visited = new HashSet<TNode>(_comparer);
-        var stack = new List<TNode>();
-
-        foreach (var node in GetAllNodes())
-        {
-            if (!visited.Contains(node))
-            {
-                var cycle = Visit(node, visited, stack);
-                if (cycle.Count > 0)
-                {
-                    return cycle;
-                }
-            }
-        }
-
-        return Array.Empty<TNode>();
-    }
-
+    // returns first found cycle if any
     private IReadOnlyList<TNode> Visit(TNode node, HashSet<TNode> visited, List<TNode> stack)
     {
         // TODO: make more efficient instead of traversing the stack

@@ -37,14 +37,14 @@ public static class OrientedGraphExtensions
                             string.Join(", ", dependentTest.Select(t => $"{t.TestClassName}.{t.TestMethodName}"))));
                 }
                 if (dependentTest.Count > 0)
-                    {
-                        graph.AddEdge(tc, dependentTest.Single());
-                    }
-                    else
-                    {
-                        issues.Add(
-                            $"Dependency '{dependency}' for test '{testCase.TestClassName}.{testCase.TestMethodName}' not found.");
-                    }
+                {
+                    graph.AddEdge(tc, dependentTest.Single());
+                }
+                else
+                {
+                    issues.Add(
+                        $"Dependency '{dependency}' for test '{testCase.TestClassName}.{testCase.TestMethodName}' not found.");
+                }
             }
         }
 

@@ -58,19 +58,6 @@ public class DependencyAwareFrameworkExecutor(IXunitTestAssembly testAssembly) :
             executionMessageSink.OnMessage(new DiagnosticMessage($"[TEST CASE EXECUTOR INFO] {testCases.Count} tests were requested - {necessaryTests.Count} will be executed due to dependencies between tests"));
         }
 
-        var necessaryGraph = necessaryTests.ToOrientedGraph(out var _);
-        var cycle = necessaryGraph.FindCycle();
-        if (cycle.Count > 0)
-        {
-            /*
-            throw new TestPipelineException(
-                string.Format(
-                    CultureInfo.CurrentCulture,
-                    "There's a circular dependency involving the following tests: {0}",
-                    string.Join(" -> ", cycle.Select(tc => $"{tc.TestClassName}.{tc.TestMethodName}"))));
-            */
-        }
-
         // TODO: filter out unnecessary tests
         await base.RunTestCases(necessaryTests, executionMessageSink, executionOptions, cancellationToken);
     }
