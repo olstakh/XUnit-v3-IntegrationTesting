@@ -11,4 +11,8 @@
     <PackageReference Include="xunit.v3.extensibility.core" />
   </ItemGroup>
 
+  <ItemGroup>
+    <InternalsVisibleTo Include="Xunit.v3.IntegrationTesting.Tests" />
+  </ItemGroup>
+
 </Project>
