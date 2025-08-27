@@ -58,7 +58,6 @@ public class DependencyAwareFrameworkExecutor(IXunitTestAssembly testAssembly) :
             executionMessageSink.OnMessage(new DiagnosticMessage($"[TEST CASE EXECUTOR INFO] {testCases.Count} tests were requested - {necessaryTests.Count} will be executed due to dependencies between tests"));
         }
 
-        // TODO: filter out unnecessary tests
         await base.RunTestCases(necessaryTests, executionMessageSink, executionOptions, cancellationToken);
     }
 }
