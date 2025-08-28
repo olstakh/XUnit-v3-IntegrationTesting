@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.Build.NoTargets">
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFrameworks>netstandard2.0</TargetFrameworks>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <DevelopmentDependency>true</DevelopmentDependency>
     <PackageId>xunit.v3.integrationtesting</PackageId>
