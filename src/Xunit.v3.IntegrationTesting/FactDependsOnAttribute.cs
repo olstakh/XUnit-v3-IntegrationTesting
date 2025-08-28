@@ -13,7 +13,7 @@ namespace Xunit.v3.IntegrationTesting;
 /// Allows to specify test dependencies that must run and succeed for current test not to be skipped
 /// </summary>
 [XunitTestCaseDiscoverer(typeof(FactDiscoverer))]
-[AttributeUsage(AttributeTargets.Method | AttributeTargets.Class, AllowMultiple = true)]
+[AttributeUsage(AttributeTargets.Method, AllowMultiple = false)]
 public class FactDependsOnAttribute(
         [CallerFilePath] string? sourceFilePath = null,
         [CallerLineNumber] int sourceLineNumber = -1    
