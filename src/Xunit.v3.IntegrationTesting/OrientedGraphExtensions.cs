@@ -34,7 +34,7 @@ public static class OrientedGraphExtensions
                             "Multiple tests found with the same name '{0}' in class '{1}'. Total test cases: '{2}'. This is not allowed.",
                             dependency,
                             testCase.TestClassName,
-                            string.Join(", ", dependentTest.Select(t => $"{t.TestClassName}.{t.TestMethodName}"))));
+                            dependentTest.Count()));
                 }
                 if (dependentTest.Count > 0)
                 {
