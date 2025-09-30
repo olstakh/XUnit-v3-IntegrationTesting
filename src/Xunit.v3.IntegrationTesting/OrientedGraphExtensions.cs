@@ -50,4 +50,72 @@ public static class OrientedGraphExtensions
 
         return graph;
     }
+
+    public static OrientedGraph<TTestCollection> CollectionsToOrientedGraph<TTestCollection>(this IEnumerable<TTestCollection> testCollections, out List<string> issues)
+        where TTestCollection : ITestCollection
+    {
+        var graph = new OrientedGraph<TTestCollection>(TestCollectionComparerLocal<TTestCollection>.Instance);
+        issues = new List<string>();
+
+        foreach (var tc in testCollections)
+        {
+            graph.AddNode(tc);
+            if (tc is not IXunitTestCollection testCollection)
+            {
+                continue; // Skip non-Xunit test collections
+            }
+            var collectionDefinition = testCollection.TryGetCollectionDefinition();
+            if (collectionDefinition == null)
+            {
+                continue; // Skip test collections without a collection definition
+            }
+
+            var dependsOnAttrs = collectionDefinition.GetCustomAttribute<DependsOnClassesAttribute>(false) ?? new(); // send diagnostic if null?
+            foreach (var dependency in dependsOnAttrs.Dependencies)
+            {
+                var dependentCollection = testCollections.Where(t => t is IXunitTestCollection tc &&  tc.TryGetCollectionDefinition() == dependency).ToList();
+                if (dependentCollection.Count > 1)
+                {
+                    throw new Exception(
+                        string.Format(
+                            CultureInfo.CurrentCulture,
+                            "Multiple test collections found with the same name '{0}'. Total collections: '{1}'. This is not allowed.",
+                            dependency,
+                            dependentCollection.Count()));
+                }
+                if (dependentCollection.Count > 0)
+                {
+                    graph.AddEdge(tc, dependentCollection.Single());
+                }
+                else
+                {
+                    issues.Add(
+                        $"Dependency '{dependency.Name}' for test collection '{tc.TestCollectionDisplayName}' not found.");
+                }
+            }
+        }
+
+        return graph;
+    }
+}
+
+/// <summary>
+/// Can't use built in <see cref="TestCollectionComparer{TTestCollection}"/> because it requires TTestCollection to be a class,
+/// and <see cref="ITestCollectionOrderer.OrderTestCollections{TTestCollection}(IReadOnlyCollection{TTestCollection})"/> does not have such a restriction.
+/// This is a local version that does not have that restriction.
+/// </summary>
+public class TestCollectionComparerLocal<TTestCollection> : IEqualityComparer<TTestCollection>
+    where TTestCollection : ITestCollection
+{
+    public static readonly TestCollectionComparerLocal<TTestCollection> Instance = new();
+
+    /// <inheritdoc/>
+    public bool Equals(
+        TTestCollection? x,
+        TTestCollection? y) =>
+            (x is null && y is null) || (x is not null && y is not null && x.UniqueID == y.UniqueID);
+
+    /// <inheritdoc/>
+    public int GetHashCode(TTestCollection obj) =>
+        obj.UniqueID.GetHashCode();
 }
