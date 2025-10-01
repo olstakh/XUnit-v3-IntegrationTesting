@@ -56,6 +56,8 @@ public static class OrientedGraphExtensions
     {
         var graph = new OrientedGraph<TTestCollection>(TestCollectionComparerLocal<TTestCollection>.Instance);
         issues = new List<string>();
+        
+        HashSet<IXunitTestCollection> collectionsWithParallelism = new();
 
         foreach (var tc in testCollections)
         {
@@ -70,22 +72,29 @@ public static class OrientedGraphExtensions
                 continue; // Skip test collections without a collection definition
             }
 
+            bool hasAtLeastOneDependency = false;
             var dependsOnAttrs = collectionDefinition.GetCustomAttribute<DependsOnClassesAttribute>(false) ?? new(); // send diagnostic if null?
             foreach (var dependency in dependsOnAttrs.Dependencies)
             {
-                var dependentCollection = testCollections.Where(t => t is IXunitTestCollection tc &&  tc.TryGetCollectionDefinition() == dependency).ToList();
-                if (dependentCollection.Count > 1)
+                var dependentCollections = testCollections.Where(t => t is IXunitTestCollection tc && tc.TryGetCollectionDefinition() == dependency).ToList();
+                if (dependentCollections.Count > 1)
                 {
                     throw new Exception(
                         string.Format(
                             CultureInfo.CurrentCulture,
                             "Multiple test collections found with the same name '{0}'. Total collections: '{1}'. This is not allowed.",
                             dependency,
-                            dependentCollection.Count()));
+                            dependentCollections.Count()));
                 }
-                if (dependentCollection.Count > 0)
+                if (dependentCollections.Count > 0)
                 {
-                    graph.AddEdge(tc, dependentCollection.Single());
+                    var dependentCollection = dependentCollections.Single();
+                    if (dependentCollection as IXunitTestCollection is { DisableParallelization: false } x)
+                    {
+                        collectionsWithParallelism.Add(x);
+                    }
+                    hasAtLeastOneDependency = true;
+                    graph.AddEdge(tc, dependentCollection);
                 }
                 else
                 {
@@ -93,6 +102,18 @@ public static class OrientedGraphExtensions
                         $"Dependency '{dependency.Name}' for test collection '{tc.TestCollectionDisplayName}' not found.");
                 }
             }
+
+            if (hasAtLeastOneDependency && testCollection is IXunitTestCollection { DisableParallelization: false } x)
+            {
+                collectionsWithParallelism.Add(x);
+            }
+        }
+
+        foreach (var c in collectionsWithParallelism)
+        {
+            issues.Add(
+                $"Test collection '{c.TestCollectionDisplayName}' has dependencies (or is dependent on) and does not have parallelization disabled. " +
+                "This means its order is not guaranteed. To fix this, add [CollectionDefinition(DisableParallelization = true)] to the collection definition class.");
         }
 
         return graph;

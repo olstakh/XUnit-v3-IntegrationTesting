@@ -14,12 +14,12 @@ internal static class IXunitTestCollectionExtensions
         {
             return testCollection.CollectionDefinition;
         }
-
+        
         var match = s_collectionNameRegex.Match(testCollection.TestCollectionDisplayName);
         if (match.Success)
         {
             var className = match.Groups["className"].Value;
-            return Type.GetType(className);
+            return testCollection.TestAssembly.Assembly.GetType(className);
         }
 
         return null;
