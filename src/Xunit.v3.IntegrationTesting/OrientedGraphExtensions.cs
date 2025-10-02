@@ -89,9 +89,9 @@ public static class OrientedGraphExtensions
                 if (dependentCollections.Count > 0)
                 {
                     var dependentCollection = dependentCollections.Single();
-                    if (dependentCollection as IXunitTestCollection is { DisableParallelization: false } x)
+                    if (dependentCollection as IXunitTestCollection is { DisableParallelization: false } y)
                     {
-                        collectionsWithParallelism.Add(x);
+                        collectionsWithParallelism.Add(y);
                     }
                     hasAtLeastOneDependency = true;
                     graph.AddEdge(tc, dependentCollection);
