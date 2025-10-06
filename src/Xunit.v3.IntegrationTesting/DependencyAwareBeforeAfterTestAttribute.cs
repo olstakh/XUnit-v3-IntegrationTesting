@@ -10,7 +10,7 @@ public class DependencyAwareBeforeAfterTestAttribute : BeforeAfterTestAttribute
 
         static string ReadableTestId(IXunitTest test)
         {
-            return $"{test.TestCase.TestClassName}.{test.TestCase.TestMethodName}";
+            return $"{test.TestCase.TestCollection.TestCollectionDisplayName}.{test.TestCase.TestClassName}.{test.TestCase.TestMethodName}";
         }
     }
 

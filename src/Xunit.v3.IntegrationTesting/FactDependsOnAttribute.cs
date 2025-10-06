@@ -233,7 +233,7 @@ internal class SkipValidator
         // Check if all dependent methods have passed
         foreach (var dependency in dependencies)
         {
-            if (!TestContext.Current.KeyValueStorage.TryGetValue($"{currentTestMethod.TestClass.TestClassName}.{dependency}", out var result)
+            if (!TestContext.Current.KeyValueStorage.TryGetValue($"{currentTestCase.TestCollection.TestCollectionDisplayName}.{currentTestMethod.TestClass.TestClassName}.{dependency}", out var result)
                 || !Enum.TryParse<TestResult>((string?)result, out var testResult)
                 || testResult != TestResult.Passed)
             {
