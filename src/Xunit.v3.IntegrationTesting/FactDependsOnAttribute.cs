@@ -4,6 +4,7 @@ using System.Reflection;
 using System.Runtime.CompilerServices;
 using Xunit.Sdk;
 using Xunit.v3;
+using Xunit.v3.IntegrationTesting.Extensions;
 
 namespace Xunit.v3.IntegrationTesting;
 
@@ -199,24 +200,69 @@ internal class SkipValidator
         };
 
         return shouldSkip;
-        
+
         #endregion
     }
 
     private static bool ShouldSkipTest()
     {
-        var currentTestMethod = TestContext.Current.TestMethod as IXunitTestMethod;
-
-        if (currentTestMethod == null)
-            return false; // send diagnostic later
-
         var currentTestCase = TestContext.Current.TestCase as IXunitTestCase;
 
         if (currentTestCase == null)
             return false; // send diagnostic later
 
+        if (ShouldSkipBasedOnCollectionDependencies(currentTestCase))
+            return true;
+
+        if (ShouldSkipBasedOnMethodDependencies(currentTestCase))
+            return true;
+
+        return false;
+    }
+
+    private static bool ShouldSkipBasedOnCollectionDependencies(IXunitTestCase currentTestCase)
+    {
         // Get dependencyOn attribute
-        var dependsOn = currentTestMethod.Method.GetCustomAttribute<FactDependsOnAttribute>(false);
+        var dependsOn = currentTestCase.TestCollection.CollectionDefinition?.GetCustomAttribute<DependsOnCollectionsAttribute>(false);
+
+        if (dependsOn == null)
+            return false; // send diagnostic later, we shouldn't end up here
+
+         // Get dependencies
+        var dependencies = dependsOn.Dependencies;
+
+        if (dependencies == null || dependencies.Length == 0)
+            return false;
+
+        // Check if all dependent collections have passed
+        foreach (var dependency in dependencies)
+        {
+            var collectionName = dependency.GetCollectionDefinitionName();
+
+            var collectionResults = TestContext.Current.KeyValueStorage.Keys
+                .Where(k => k.StartsWith($"{collectionName}.", StringComparison.Ordinal))
+                .Select(k => TestContext.Current.KeyValueStorage[k])
+                .OfType<string>()
+                .Select(r => Enum.TryParse<TestResult>(r, out var tr) ? tr : (TestResult?)null)
+                .Where(r => r.HasValue)
+                .ToList();
+            
+            if (collectionResults.Count == 0 || collectionResults.Any(r => r != TestResult.Passed))
+            {
+                // One of the dependencies either didn't run or failed - skip current test.
+                // Overriding skip reason won't take effect as it's been already cached by the framework
+
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private static bool ShouldSkipBasedOnMethodDependencies(IXunitTestCase currentTestCase)
+    {
+        // Get dependencyOn attribute
+        var dependsOn = currentTestCase.TestMethod.Method.GetCustomAttribute<FactDependsOnAttribute>(false);
 
         if (dependsOn == null)
             return false; // send diagnostic later, we shouldn't end up here
@@ -233,7 +279,7 @@ internal class SkipValidator
         // Check if all dependent methods have passed
         foreach (var dependency in dependencies)
         {
-            if (!TestContext.Current.KeyValueStorage.TryGetValue($"{currentTestCase.TestCollection.TestCollectionDisplayName}.{currentTestMethod.TestClass.TestClassName}.{dependency}", out var result)
+            if (!TestContext.Current.KeyValueStorage.TryGetValue($"{currentTestCase.TestCollection.TestCollectionDisplayName}.{currentTestCase.TestClass.TestClassName}.{dependency}", out var result)
                 || !Enum.TryParse<TestResult>((string?)result, out var testResult)
                 || testResult != TestResult.Passed)
             {

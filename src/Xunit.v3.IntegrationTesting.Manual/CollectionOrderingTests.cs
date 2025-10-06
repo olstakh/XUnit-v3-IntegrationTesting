@@ -8,7 +8,7 @@ public class ClassA
 {
     public static int counter = 0;
 
-    [Fact]
+    [FactDependsOn]
     public void TestMethod()
     {
         Interlocked.Increment(ref counter);
@@ -22,7 +22,7 @@ public class ClassB
 {
     public static int counter = 0;
 
-    [Fact]
+    [FactDependsOn]
     public void TestMethod()
     {
         Interlocked.Increment(ref counter);
@@ -36,7 +36,7 @@ public class ClassC
 {
     public static int counter = 0;
 
-    [Fact]
+    [FactDependsOn]
     public void TestMethod()
     {
         Interlocked.Increment(ref counter);

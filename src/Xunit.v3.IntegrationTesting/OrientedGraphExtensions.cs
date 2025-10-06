@@ -3,6 +3,7 @@ using System.Globalization;
 using System.Reflection;
 using Xunit.Sdk;
 using Xunit.v3;
+using Xunit.v3.IntegrationTesting.Extensions;
 
 namespace Xunit.v3.IntegrationTesting;
 
@@ -79,29 +80,9 @@ public static class OrientedGraphExtensions
                 continue; // No dependencies
             }
 
-            var GetDependencyName = (Type dependency) =>
-            {
-                var collectionDefinitionAttr = dependency.GetCustomAttribute<CollectionDefinitionAttribute>(false);
-                if (collectionDefinitionAttr != null)
-                {
-                    return collectionDefinitionAttr.Name ?? CollectionAttribute.GetCollectionNameForType(dependency);
-                }
-
-                var collectionAttr = dependency.GetCustomAttribute<CollectionAttribute>(false);
-                if (collectionAttr != null)
-                {
-                    return collectionAttr.Name;
-                }
-
-                // TODO: Handle when CollectionBehavior is set to CollectionBehavior.CollectionPerAssembly.
-                // In that case - the collection name will be "Test collection for " + TestAssembly.AssemblyName
-                // Below returns assumes CollectionPerClass.
-                return CollectionAttribute.GetCollectionNameForType(dependency);
-            };
-
             foreach (var dependency in dependsOnAttrs.Dependencies)
             {
-                var dependencyName = GetDependencyName(dependency);
+                var dependencyName = dependency.GetCollectionDefinitionName();
 
                 var dependentCollections = testCollections.Where(t => t is IXunitTestCollection tc && tc.TestCollectionDisplayName == dependencyName).ToList();
                 if (dependentCollections.Count > 1)
