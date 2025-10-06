@@ -17,7 +17,7 @@ namespace Xunit.v3.IntegrationTesting;
 public class FactDependsOnAttribute(
         [CallerFilePath] string? sourceFilePath = null,
         [CallerLineNumber] int sourceLineNumber = -1    
-    ) : Attribute, IFactAttribute, IBeforeAfterTestAttribute
+    ) : Attribute, IFactAttribute
 {
     /// <inheritdoc/>
     public string? DisplayName { get; set; }
@@ -99,20 +99,6 @@ public class FactDependsOnAttribute(
         {
             OriginalSkipType = value;
         }
-    }
-
-    public void After(MethodInfo methodUnderTest, IXunitTest test)
-    {
-        TestContext.Current.KeyValueStorage[ReadableTestId(test)] = TestContext.Current.TestState?.Result.ToString() ?? "Unknown result";
-
-        static string ReadableTestId(IXunitTest test)
-        {
-            return $"{test.TestCase.TestClassName}.{test.TestCase.TestMethodName}";
-        }
-    }
-
-    public void Before(MethodInfo methodUnderTest, IXunitTest test)
-    {
     }
 }
 
