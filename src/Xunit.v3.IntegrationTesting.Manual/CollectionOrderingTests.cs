@@ -1,11 +1,9 @@
 using Xunit;
 using Xunit.v3.IntegrationTesting;
 
-[assembly: TestCollectionOrderer(typeof(DependencyAwareTestCollectionOrderer))]
+namespace Xunit.v3.IntegrationTesting.Manual.CollectionOrderingTests;
 
-namespace Xunit.v3.IntegrationTesting.Manual;
-
-[DependsOnClasses(typeof(ClassB), typeof(ClassC))]
+[Collection<DefinitionA>]
 public class ClassA
 {
     public static int counter = 0;
@@ -19,6 +17,7 @@ public class ClassA
     }
 }
 
+[Collection<DefinitionB>]
 public class ClassB
 {
     public static int counter = 0;
@@ -32,8 +31,7 @@ public class ClassB
     }
 }
 
-[CollectionDefinition]
-[DependsOnClasses(typeof(ClassB))]
+[Collection<DefinitionC>]
 public class ClassC
 {
     public static int counter = 0;
@@ -46,3 +44,14 @@ public class ClassC
         Assert.Equal(1, ClassB.counter);
     }
 }
+
+[DependsOnCollections(typeof(DefinitionB), typeof(DefinitionC))]
+[CollectionDefinition(DisableParallelization = true)]
+public sealed class DefinitionA;
+
+[CollectionDefinition(DisableParallelization = true)]
+public sealed class DefinitionB;
+
+[CollectionDefinition(DisableParallelization = true)]
+[DependsOnCollections(typeof(DefinitionB))]
+public sealed class DefinitionC;

@@ -66,17 +66,44 @@ public static class OrientedGraphExtensions
             {
                 continue; // Skip non-Xunit test collections
             }
-            var collectionDefinition = testCollection.TryGetCollectionDefinition();
+            var collectionDefinition = testCollection.CollectionDefinition;
             if (collectionDefinition == null)
             {
-                continue; // Skip test collections without a collection definition
+                continue; // Dependencies can be declared only on collection definitions
             }
 
             bool hasAtLeastOneDependency = false;
-            var dependsOnAttrs = collectionDefinition.GetCustomAttribute<DependsOnClassesAttribute>(false) ?? new(); // send diagnostic if null?
+            var dependsOnAttrs = collectionDefinition.GetCustomAttribute<DependsOnCollectionsAttribute>(false);
+            if (dependsOnAttrs == null)
+            {
+                continue; // No dependencies
+            }
+
+            var GetDependencyName = (Type dependency) =>
+            {
+                var collectionDefinitionAttr = dependency.GetCustomAttribute<CollectionDefinitionAttribute>(false);
+                if (collectionDefinitionAttr != null)
+                {
+                    return collectionDefinitionAttr.Name ?? CollectionAttribute.GetCollectionNameForType(dependency);
+                }
+
+                var collectionAttr = dependency.GetCustomAttribute<CollectionAttribute>(false);
+                if (collectionAttr != null)
+                {
+                    return collectionAttr.Name;
+                }
+
+                // TODO: Handle when CollectionBehavior is set to CollectionBehavior.CollectionPerAssembly.
+                // In that case - the collection name will be "Test collection for " + TestAssembly.AssemblyName
+                // Below returns assumes CollectionPerClass.
+                return CollectionAttribute.GetCollectionNameForType(dependency);
+            };
+
             foreach (var dependency in dependsOnAttrs.Dependencies)
             {
-                var dependentCollections = testCollections.Where(t => t is IXunitTestCollection tc && tc.TryGetCollectionDefinition() == dependency).ToList();
+                var dependencyName = GetDependencyName(dependency);
+
+                var dependentCollections = testCollections.Where(t => t is IXunitTestCollection tc && tc.TestCollectionDisplayName == dependencyName).ToList();
                 if (dependentCollections.Count > 1)
                 {
                     throw new Exception(
