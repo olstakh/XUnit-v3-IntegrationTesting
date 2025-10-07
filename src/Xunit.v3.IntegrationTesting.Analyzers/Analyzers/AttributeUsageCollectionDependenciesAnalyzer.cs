@@ -21,10 +21,10 @@ public class AttributeUsageCollectionDependenciesAnalyzer : DiagnosticAnalyzer
     {
         context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.None);
         context.EnableConcurrentExecution();
-        context.RegisterSyntaxNodeAction(AnalyzeMethodDeclaration, SyntaxKind.Attribute);
+        context.RegisterSyntaxNodeAction(AnalyzeAttribute, SyntaxKind.Attribute);
     }
 
-    private void AnalyzeMethodDeclaration(SyntaxNodeAnalysisContext context)
+    private void AnalyzeAttribute(SyntaxNodeAnalysisContext context)
     {
         if (context.Node is not AttributeSyntax attributeSyntax)
             return;

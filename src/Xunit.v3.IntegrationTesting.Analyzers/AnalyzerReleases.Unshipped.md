@@ -14,3 +14,5 @@ XIT0007 | Usage | Warning | Use [assembly: TestFramework(typeof(DependencyAwareF
 XIT0008 | Usage | Info | Use FactDependsOn attribute
 XIT0009 | Usage | Warning | Apply DependsOnCollections attribute only to collection definitions
 XIT0010 | Usage | Warning | CollectionDefinition with DependsOnCollections must have DisableParallelization set to true
+XIT0011 | Usage | Warning | DependsOnCollections attribute requires assembly-level TestCollectionOrderer
+XIT0012 | Usage | Warning | DependsOnCollections attribute requires assembly-level TestCollectionOrderer to be DependencyAwareTestCollectionOrderer to respect test dependencies

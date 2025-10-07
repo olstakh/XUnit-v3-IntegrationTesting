@@ -86,4 +86,22 @@ internal static class AttributeUsageDescriptors
         DiagnosticSeverity.Warning,
         isEnabledByDefault: true,
         description: "Collection definitions with DependsOnCollections attribute must have DisableParallelization set to true to ensure sequential execution order according to declared dependencies.");
+
+    public static readonly DiagnosticDescriptor MissingTestCollectionOrderer = new DiagnosticDescriptor(
+        "XIT0011",
+        "DependsOnCollections attribute requires assembly-level TestCollectionOrderer",
+        "[DependsOnCollections] attribute requires assembly-level test collection orderer",
+        "Usage",
+        DiagnosticSeverity.Warning,
+        isEnabledByDefault: true,
+        description: "Usage of  [DependsOnCollections] requires DependencyAwareTestCollectionOrderer set as TestCollectionOrderer, in order for test collections to be ordered according to defined dependencies.");
+
+    public static readonly DiagnosticDescriptor NotSupportedTestCollectionOrderer = new DiagnosticDescriptor(
+        "XIT0012",
+        "DependsOnCollections attribute requires assembly-level TestCollectionOrderer to be DependencyAwareTestCollectionOrderer to respect test dependencies",
+        "[DependsOnCollections] attribute requires assembly-level test collection orderer to be DependencyAwareTestCollectionOrderer",
+        "Usage",
+        DiagnosticSeverity.Warning,
+        isEnabledByDefault: true,
+        description: "Usage of  [DependsOnCollections] requires DependencyAwareTestCollectionOrderer set as TestCollectionOrderer, in order for test collections to be ordered according to defined dependencies.");
 }
