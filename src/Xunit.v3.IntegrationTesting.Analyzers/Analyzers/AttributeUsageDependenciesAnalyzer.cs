@@ -118,7 +118,7 @@ public class AttributeUsageDependenciesAnalyzer : DiagnosticAnalyzer
         var classDecl = methodDecl.Parent as ClassDeclarationSyntax;
         if (classDecl == null)
             return;
-        var classSymbol = semanticModel.GetDeclaredSymbol(classDecl) as INamedTypeSymbol;
+        var classSymbol = semanticModel.GetDeclaredSymbol(classDecl);
         if (classSymbol == null)
             return;
 

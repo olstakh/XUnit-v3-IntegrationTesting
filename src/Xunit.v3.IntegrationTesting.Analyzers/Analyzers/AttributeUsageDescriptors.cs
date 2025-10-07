@@ -68,4 +68,22 @@ internal static class AttributeUsageDescriptors
         DiagnosticSeverity.Info,
         isEnabledByDefault: true,
         description: "All test methods should use [FactDependsOn] attribute when corresponding collection definition has dependencies.");
+
+    public static readonly DiagnosticDescriptor InvalidDependsOnCollectionsAttributeUsage = new DiagnosticDescriptor(
+        "XIT0009",
+        "Apply DependsOnCollections attribute to collection definitions",
+        "Class '{0}' is not a collection definition, it cannot use [DependsOnCollections] attribute",
+        "Usage",
+        DiagnosticSeverity.Warning,
+        isEnabledByDefault: true,
+        description: "DependsOnCollections attribute should apply only to collection definitions.");
+
+    public static readonly DiagnosticDescriptor CollectionDefinitionMissingDisableParallelization = new DiagnosticDescriptor(
+        "XIT0010",
+        "CollectionDefinition with DependsOnCollections must have DisableParallelization set to true",
+        "Collection definition '{0}' has DependsOnCollections attribute, but DisableParallelization is not set to true. This means that collections execution order won't be guaranteed.",
+        "Usage",
+        DiagnosticSeverity.Warning,
+        isEnabledByDefault: true,
+        description: "Collection definitions with DependsOnCollections attribute must have DisableParallelization set to true to ensure sequential execution order according to declared dependencies.");
 }
