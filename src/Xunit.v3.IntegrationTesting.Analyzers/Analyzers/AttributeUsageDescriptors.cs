@@ -63,9 +63,9 @@ internal static class AttributeUsageDescriptors
     public static readonly DiagnosticDescriptor UseFactDependsOnAttribute = new DiagnosticDescriptor(
         "XIT0008",
         "Use FactDependsOn attribute",
-        "Method '{0}' should use [FactDependsOn] attribute to declare its dependencies",
+        "Method '{0}' should use [FactDependsOn] attribute to react to test dependencies",
         "Usage",
         DiagnosticSeverity.Info,
         isEnabledByDefault: true,
-        description: "All test methods should use [FactDependsOn] attribute to be available for dependency tracking during execution.");
+        description: "All test methods should use [FactDependsOn] attribute when corresponding collection definition has dependencies.");
 }

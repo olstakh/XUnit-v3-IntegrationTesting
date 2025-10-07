@@ -13,7 +13,6 @@ public class AttributeUsageDependenciesAnalyzer : DiagnosticAnalyzer
     public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
         ImmutableArray.Create([
             AttributeUsageDescriptors.DependsOnMissingMethod,
-            AttributeUsageDescriptors.UseFactDependsOnAttribute
         ]);
 
     public override void Initialize(AnalysisContext context)
@@ -30,11 +29,10 @@ public class AttributeUsageDependenciesAnalyzer : DiagnosticAnalyzer
         var compilation = semanticModel.Compilation;
 
         var dependsOnAttributeSymbol = compilation.GetTypeByMetadataName("Xunit.v3.IntegrationTesting.FactDependsOnAttribute");
-            var factAttributeSymbol = compilation.GetTypeByMetadataName("Xunit.FactAttribute");
-        if (dependsOnAttributeSymbol == null)
+        var factAttributeSymbol = compilation.GetTypeByMetadataName("Xunit.FactAttribute");
+
+        if (dependsOnAttributeSymbol == null || factAttributeSymbol == null)
             return;
-            if (factAttributeSymbol == null)
-                return;
 
         var methodSymbol = semanticModel.GetDeclaredSymbol(methodDecl) as IMethodSymbol;
         if (methodSymbol == null)
@@ -61,16 +59,6 @@ public class AttributeUsageDependenciesAnalyzer : DiagnosticAnalyzer
             }
             if (dependsOnAttrSyntax != null)
                 break;
-        }
-
-        if (dependsOnAttrSyntax == null)
-        {
-            // If FactDependsOn is missing but Fact is present, report diagnostic
-            if (factAttributeSyntax != null)
-            {
-                context.ReportDiagnostic(Diagnostic.Create(AttributeUsageDescriptors.UseFactDependsOnAttribute, factAttributeSyntax.GetLocation(), methodDecl.Identifier.Text));
-            }
-            return;
         }
 
         // Get dependencies property from attribute syntax (support string literals and nameof)
