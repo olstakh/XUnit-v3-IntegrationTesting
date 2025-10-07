@@ -90,6 +90,27 @@ public class AttributeUsageTestCaseOrdererAnalyzerTests
     }
 
     [Fact]
+    public async Task Validate_DependsOn_AssemblyTestCollectionOrderer_NoDiagnosticAsync()
+    {
+        var source = /* lang=c#-test */ @"
+            using Xunit;
+            using Xunit.Sdk;
+            using Xunit.v3.IntegrationTesting;
+
+            [assembly: TestCollectionOrderer(typeof(DependencyAwareTestCollectionOrderer))]
+            public class MyTests
+            {
+                [FactDependsOn]
+                public void Test1() { }
+            }
+        ";
+
+        var analyzer = GetAnalyzer(source);
+
+        await analyzer.RunAsync(TestContext.Current.CancellationToken);
+    }
+
+    [Fact]
     public async Task Validate_DependsOn_AssemblyTestCaseOrderer_NoDiagnosticAsync()
     {
         var source = /* lang=c#-test */ @"

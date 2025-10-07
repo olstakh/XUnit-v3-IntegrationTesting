@@ -12,7 +12,7 @@ public class AttributeUsageTestCaseOrdererAnalyzer : DiagnosticAnalyzer
     public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => [
         AttributeUsageDescriptors.NotSupportedClassLevelTestCaseOrderer,
         AttributeUsageDescriptors.NotSupportedAssemblyLevelTestCaseOrderer,
-        AttributeUsageDescriptors.MissingTestCaseOrderer
+        AttributeUsageDescriptors.MissingTestCaseAndCollectionOrderer
     ];
 
     public override void Initialize(AnalysisContext context)
@@ -33,7 +33,10 @@ public class AttributeUsageTestCaseOrdererAnalyzer : DiagnosticAnalyzer
         var testCaseOrdererAttributeSymbol = compilation.GetTypeByMetadataName("Xunit.TestCaseOrdererAttribute");
         var dependencyAwareOrdererSymbol = compilation.GetTypeByMetadataName("Xunit.v3.IntegrationTesting.DependencyAwareTestCaseOrderer");
 
-        if (dependsOnAttributeSymbol == null || testCaseOrdererAttributeSymbol == null || dependencyAwareOrdererSymbol == null)
+        var collectionOrdererAttributeSymbol = compilation.GetTypeByMetadataName("Xunit.TestCollectionOrdererAttribute");
+        var dependencyAwareCollectionOrdererSymbol = compilation.GetTypeByMetadataName("Xunit.v3.IntegrationTesting.DependencyAwareTestCollectionOrderer");
+
+        if (dependsOnAttributeSymbol == null || testCaseOrdererAttributeSymbol == null || dependencyAwareOrdererSymbol == null || collectionOrdererAttributeSymbol == null || dependencyAwareCollectionOrdererSymbol == null)
         {
             return;
         }
@@ -132,7 +135,33 @@ public class AttributeUsageTestCaseOrdererAnalyzer : DiagnosticAnalyzer
             return;
         }
 
+        // Check for TestCollectionOrdererAttribute on a containing assembly
+        bool hasAssemblyCollectionOrderer = false;
+        foreach (var attr in compilation.Assembly.GetAttributes())
+        {
+            if (SymbolEqualityComparer.Default.Equals(attr.AttributeClass, collectionOrdererAttributeSymbol))
+            {
+                hasAssemblyCollectionOrderer = true;
+                if (attr.ConstructorArguments.Length == 1)
+                {
+                    var arg = attr.ConstructorArguments[0];
+                    if (arg.Kind == TypedConstantKind.Type && SymbolEqualityComparer.Default.Equals(arg.Value as INamedTypeSymbol, dependencyAwareCollectionOrdererSymbol))
+                    {
+                        break;
+                    }
+                }
+
+                // Diagnostic?
+                break;
+            }
+        }
+
+        if (hasAssemblyCollectionOrderer)
+        {
+            return;
+        }
+
         context.ReportDiagnostic(Diagnostic.Create(
-            AttributeUsageDescriptors.MissingTestCaseOrderer, methodDecl.Identifier.GetLocation(), methodName));
+            AttributeUsageDescriptors.MissingTestCaseAndCollectionOrderer, methodDecl.Identifier.GetLocation(), methodName));
     }
 }

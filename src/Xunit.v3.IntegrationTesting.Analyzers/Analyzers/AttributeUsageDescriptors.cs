@@ -22,10 +22,10 @@ internal static class AttributeUsageDescriptors
         isEnabledByDefault: true,
         description: "Any method with [FactDependsOn] must have DependencyAwareTestCaseOrderer set TestCaseOrderer, in order for test to be ordered according to defined dependencies.");
 
-    public static readonly DiagnosticDescriptor MissingTestCaseOrderer = new DiagnosticDescriptor(
+    public static readonly DiagnosticDescriptor MissingTestCaseAndCollectionOrderer = new DiagnosticDescriptor(
         "XIT0003",
-        "FactDependsOn attribute requires DependencyAwareTestCaseOrderer to respect test dependencies",
-        "Method '{0}' uses [FactDependsOn] attribute, but DependencyAwareTestCaseOrderer is not set as class-level or assembly-level test case orderer",
+        "FactDependsOn attribute requires DependencyAwareTestCaseOrderer or DependencyAwareTestCollectionOrderer to respect test dependencies",
+        "Method '{0}' uses [FactDependsOn] attribute, but neither DependencyAwareTestCaseOrderer nor DependencyAwareTestCollectionOrderer are set as class-level or assembly-level test case orderer",
         "Usage",
         DiagnosticSeverity.Warning,
         isEnabledByDefault: true,
