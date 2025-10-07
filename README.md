@@ -12,15 +12,8 @@ This package provides the ability to establish dependencies between tests. Meani
 
 1. Add a package reference to [XUnit.v3.IntegrationTesting](https://www.nuget.org/xunit.v3.integrationTesting) package in your xunit projects, or as a common package in the repo's [Directory.Packages.props](https://github.com/olstakh/XUnit-v3-IntegrationTesting/blob/main/Directory.Build.props)
 
-2. Update `[Fact]` attributes in your tests to `[FactDependsOn]`. This can be done by running string replacement from `[Fact(` to `[FactDependsOn(`, or by running the following command in the command line:
+2. Update `[Fact]` attributes in your tests to `[FactDependsOn]`, if you want those tests to be dependtent on other tests in this class. Dependencies can be declared as 
 
-```
-dotnet format analyzers --diagnostics XIT0008 --severity info --verbosity detailed
-```
-
-This assumes namespace `Xunit.v3.IntegrationTesting` is opened (which is by default added to global usings with `<AutoAddGlobalNamespace>true</AutoAddGlobalNamespace>`). This can be disabled and namespace can be opened by other available means (or even using full name for `Xunit.v3.IntegrationTesting.FactDependsOn` attribute)
-
-3. Update `FactDependsOn` attribute with dependencies for those tests that need it. For example
 ```csharp
 [FactDependsOn(Dependencies = [nameof(Test2), nameof(Test3)])]
 public void Test1() {}
@@ -33,11 +26,14 @@ public void Test3() {}
 ```
 Now `Test1` will be run after `Test2` and `Test3` and only if both have passed.
 
-
 If the test project doesn't have custom xunit framework extension (i.e. `[assembly: TestFramework(...)]` attribute), or assembly-level test case orderer (i.e. `[assembly: TestCaseOrderer(...)]`) - nothing else is needed.
 
+3. Decorate collection definitions with `DependsOnCollections` attribute, if you want to order collections in dependent order. Note - `DisableParallelization` should be set to `true`, otherwise collections will be run in parallel and order won't matter.
+
+If the test project doesn't have custom xunit framework extension (i.e. `[assembly: TestFramework(...)]` attribute), or assembly-level test collection orderer (i.e. `[assembly: TestCollectionOrderer(...)]`) - nothing else is needed.
+
 # How it works
-Package includes custom `TestCaseOrderer`, which guarantees tests are run in the order of their dependencies. Test is executed only if all dependent tests have executed and succeeded. Otherwise test is [skipped dynamically](https://xunit.net/docs/getting-started/v3/whats-new#dynamically-skippable-tests)
+Package includes custom `TestCaseOrderer`, which guarantees tests are run in the order of their dependencies. Test is executed only if all dependent tests have executed and succeeded. Otherwise test is [skipped dynamically](https://xunit.net/docs/getting-started/v3/whats-new#dynamically-skippable-tests). Same goes for `TestCollectionOrderer` that deals with collections
 
 # Configuration
 
@@ -48,11 +44,14 @@ Following properties are available to be changed in `<PropertyGroup>` section of
 | AutoAddGlobalNamespace | `true` | Adds `global using Xunit.v3.IntegrationTesting;` to the project |
 | UseDependencyAwareTestFramework | `true` | Adds `[assembly: Xunit.TestFramework(Xunit.v3.IntegrationTesting.DependencyAwareFramework)]`. This adds support for filtered test runs |
 | UseDependencyAwareTestCaseOrderer | `true` | Adds `[assembly: Xunit.TestCaseOrderer(typeof(Xunit.v3.IntegrationTesting.DependencyAwareTestCaseOrderer))]`. This ensures test ordering based on provided dependencies |
+| UseDependencyAwareTestCollectionOrderer | `true` | Adds `[assembly: Xunit.TestCollectionOrderer(typeof(Xunit.v3.IntegrationTesting.DependencyAwareTestCollectionOrderer))]` |
 
 ## Notes
 Custom test framework (i.e. `DependencyAwareFramework`) is used to support partial test runs (like selecting some tests in test explorer, or filtering tests in a command line). Because some of the selected/filtered tests might have dependencies that were not selected. This custom framework simply discovers all the tests, to make sure all dependencies are run, even if they were filtered out / not selected. This can be omitted, in which case such partial runs may be affected
 
 Custom test case orderer (i.e. `DependencyAwareTestCaseOrderer`) is needed to ensure test case are ordered based on specified dependencies. If your test project already has assembly-level case orderer defined - you can add this attribute on a class level, which will take precedence. Otherwise test order will not be guaranteed to be dependency-aware, which will result in many skipped tests
+
+Custom test collection orderer (i.e. `DependencyAwareTestCollectionOrderer`) is needed to ensure test collections are ordered based on specified dependencies. If your test project already has assembly-level collection orderer defined - collection order will not be guaranteed to be dependency-aware, which may result in skipped tests
 
 # Rules
 
@@ -64,10 +63,13 @@ Following rules are included as part of the package:
 | XIT0002 | Warning | Assembly-level `TestCaseOrderer(...)` should be `DependencyAwareTestCaseOrderer` |
 | XIT0003 | Warning | Project is missing class-level and assembly-level `TestCaseOrderer` attribute |
 | XIT0004 | Warning | `FactDependsOn` has a dependency on a test method that doesn't exist |
-| XIT0005 | Warning | `FactDependsOn` has a dependency on a test method, not decorated with `FactDependsOn` attribute |
 | XIT0006 | Warning | Assembly-level `TestFramework(...)` should be `DependencyAwareFramework` |
 | XIT0007 | Warning | Project is missing assembly-level `TestFramework` attribute |
 | XIT0008 | Info | `Fact` attribute should be replaced with `FactDependsOn` |
+| XIT0009 | Usage | Warning | Apply `DependsOnCollections` attribute only to collection definitions |
+| XIT0010 | Usage | Warning | `CollectionDefinition` with `DependsOnCollections` must have `DisableParallelization` set to `true` |
+| XIT0011 | Usage | Warning | `DependsOnCollections` attribute requires assembly-level `TestCollectionOrderer` |
+| XIT0012 | Usage | Warning | `DependsOnCollections` attribute requires assembly-level `TestCollectionOrderer` to be `DependencyAwareTestCollectionOrderer` to respect test dependencies |
 
 # Common questions
 
