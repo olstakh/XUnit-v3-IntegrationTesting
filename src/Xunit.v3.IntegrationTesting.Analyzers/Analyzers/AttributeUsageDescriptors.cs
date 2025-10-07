@@ -40,15 +40,6 @@ internal static class AttributeUsageDescriptors
         isEnabledByDefault: true,
         description: "[FactDependsOn] attribute requires all listed dependencies to be present in the class.");
 
-    public static readonly DiagnosticDescriptor DependsOnInvalidMethod = new DiagnosticDescriptor(
-        "XIT0005",
-        "Invalid test dependency",
-        "Method '{0}' depends on method '{1}', which should be decorated with [FactDependsOn] attribute",
-        "Usage",
-        DiagnosticSeverity.Warning,
-        isEnabledByDefault: true,
-        description: "All test dependencies should be decorated with [FactDependsOn] attribute.");
-
     public static readonly DiagnosticDescriptor MissingTestFrameworkAttribute = new DiagnosticDescriptor(
         "XIT0006",
         "Missing TestFramework assembly attribute",

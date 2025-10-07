@@ -13,7 +13,6 @@ public class AttributeUsageDependenciesAnalyzer : DiagnosticAnalyzer
     public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
         ImmutableArray.Create([
             AttributeUsageDescriptors.DependsOnMissingMethod,
-            AttributeUsageDescriptors.DependsOnInvalidMethod,
             AttributeUsageDescriptors.UseFactDependsOnAttribute
         ]);
 
@@ -143,15 +142,6 @@ public class AttributeUsageDependenciesAnalyzer : DiagnosticAnalyzer
             {
                 // No method with such name
                 context.ReportDiagnostic(Diagnostic.Create(AttributeUsageDescriptors.DependsOnMissingMethod, methodDecl.Identifier.GetLocation(), methodSymbol.Name, depName));
-            }
-            else
-            {
-                // Check if dependency method has [FactDependsOn]
-                var hasDependsOn = depMethod.GetAttributes().Any(a => SymbolEqualityComparer.Default.Equals(a.AttributeClass, dependsOnAttributeSymbol));
-                if (!hasDependsOn)
-                {
-                    context.ReportDiagnostic(Diagnostic.Create(AttributeUsageDescriptors.DependsOnInvalidMethod, methodDecl.Identifier.GetLocation(), methodSymbol.Name, depName));
-                }
             }
         }
     }

@@ -53,7 +53,7 @@ public class AttributeUsageDependenciesAnalyzerTests
                 const string InvalidMethodConst = nameof(InvalidMethod);
 
                 [FactDependsOn(Dependencies = PLACEHOLDER)]
-                public void {|XIT0005:Test1|}() { }
+                public void Test1() { }
 
                 [{|XIT0008:Fact|}]
                 public void InvalidMethod() { }
