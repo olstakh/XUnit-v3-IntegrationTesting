@@ -111,7 +111,7 @@ public class CollectionDefinitionGenerator : IIncrementalGenerator
         {
             CollectionName = collectionName,
             ClassName = classDeclaration.Identifier.Text,
-            Dependencies = string.Join(", ", dependenciesConstants.Select(dc => $"typeof({dc.Value.ToString()})"))
+            Dependencies = string.Join(", ", dependenciesConstants.Where(dc => dc.Value is not null).Select(dc => $"typeof({dc.Value!.ToString()})"))
         };
     }
 
