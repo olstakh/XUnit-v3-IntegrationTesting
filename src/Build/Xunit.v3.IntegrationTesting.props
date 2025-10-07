@@ -2,27 +2,32 @@
   <PropertyGroup>
     <UseDependencyAwareTestFramework Condition=" '$(UseDependencyAwareTestFramework)' == '' ">true</UseDependencyAwareTestFramework>
     <UseDependencyAwareTestCaseOrderer Condition=" '$(UseDependencyAwareTestCaseOrderer)' == '' ">true</UseDependencyAwareTestCaseOrderer>
+    <UseDependencyAwareTestCollectionOrderer Condition=" '$(UseDependencyAwareTestCollectionOrderer)' == '' ">true</UseDependencyAwareTestCollectionOrderer>
     <AutoAddGlobalNamespace Condition=" '$(AutoAddGlobalNamespace)' == '' ">true</AutoAddGlobalNamespace>
   </PropertyGroup>
 
   <ItemGroup>
     <!--https://learn.microsoft.com/zh-cn/visualstudio/msbuild/writecodefragment-task?view=vs-2022#generate-assembly-level-attributes-->
 
+    <!-- Add [assembly: TestFramework(typeof(DependencyAwareFramework))] if the flag is set -->
     <AssemblyAttribute Include="Xunit.TestFramework" Condition="'$(UseDependencyAwareTestFramework)' != 'false'">
       <_Parameter1>Xunit.v3.IntegrationTesting.DependencyAwareFramework</_Parameter1>
       <_Parameter1_TypeName>System.Type</_Parameter1_TypeName>            
     </AssemblyAttribute>
 
+    <!-- Add [assembly: TestCaseOrderer(typeof(DependencyAwareTestCaseOrderer))] if the flag is set -->
     <AssemblyAttribute Include="Xunit.TestCaseOrderer" Condition="'$(UseDependencyAwareTestCaseOrderer)' != 'false'">
       <_Parameter1>Xunit.v3.IntegrationTesting.DependencyAwareTestCaseOrderer</_Parameter1>
       <_Parameter1_TypeName>System.Type</_Parameter1_TypeName>            
     </AssemblyAttribute>
 
+    <!-- Add [assembly: TestCollectionOrderer(typeof(DependencyAwareTestCollectionOrderer))] if the flag is set -->
     <AssemblyAttribute Include="Xunit.TestCollectionOrderer" Condition="'$(UseDependencyAwareTestCollectionOrderer)' != 'false'">
       <_Parameter1>Xunit.v3.IntegrationTesting.DependencyAwareTestCollectionOrderer</_Parameter1>
       <_Parameter1_TypeName>System.Type</_Parameter1_TypeName>            
     </AssemblyAttribute>
 
+    <!-- Always added to keep track of test results -->
     <AssemblyAttribute Include="Xunit.v3.IntegrationTesting.DependencyAwareBeforeAfterTest" />
 
     <Using Include="Xunit.v3.IntegrationTesting" Condition="'$(AutoAddGlobalNamespace)' != 'false'" />
