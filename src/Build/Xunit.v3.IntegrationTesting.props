@@ -18,8 +18,12 @@
       <_Parameter1_TypeName>System.Type</_Parameter1_TypeName>            
     </AssemblyAttribute>
 
-    <AssemblyAttribute Include="Xunit.v3.IntegrationTesting.DependencyAwareBeforeAfterTest" Condition="'$(UseDependencyAwareBeforeAfterTest)' != 'false'">
+    <AssemblyAttribute Include="Xunit.TestCollectionOrderer" Condition="'$(UseDependencyAwareTestCollectionOrderer)' != 'false'">
+      <_Parameter1>Xunit.v3.IntegrationTesting.DependencyAwareTestCollectionOrderer</_Parameter1>
+      <_Parameter1_TypeName>System.Type</_Parameter1_TypeName>            
     </AssemblyAttribute>
+
+    <AssemblyAttribute Include="Xunit.v3.IntegrationTesting.DependencyAwareBeforeAfterTest" />
 
     <Using Include="Xunit.v3.IntegrationTesting" Condition="'$(AutoAddGlobalNamespace)' != 'false'" />
   </ItemGroup>
