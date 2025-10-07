@@ -21,13 +21,13 @@ public class FactDependsOnAttribute(
     ) : Attribute, IFactAttribute
 {
     /// <inheritdoc/>
-    public string? DisplayName { get; set; }
+    public string? DisplayName { get; init; }
 
     /// <inheritdoc/>
-    public bool Explicit { get; set; }
+    public bool Explicit { get; init; }
 
     /// <inheritdoc/>
-    public Type[]? SkipExceptions { get; set; }
+    public Type[]? SkipExceptions { get; init; }
 
     /// <inheritdoc/>
     public string? SourceFilePath { get; } = sourceFilePath;
@@ -36,12 +36,12 @@ public class FactDependsOnAttribute(
     public int? SourceLineNumber { get; } = sourceLineNumber < 1 ? null : sourceLineNumber;
 
     /// <inheritdoc/>
-    public int Timeout { get; set; }
+    public int Timeout { get; init; }
 
     /// <summary>
     /// Gets or sets the list of dependencies for the test.
     /// </summary>
-    public string[] Dependencies { get; set; } = Array.Empty<string>();
+    public string[] Dependencies { get; init; } = Array.Empty<string>();
 
     internal string? OriginalSkip;
     internal string? OriginalSkipWhen;
@@ -57,7 +57,7 @@ public class FactDependsOnAttribute(
         {
             return OriginalSkip == null ? _customSkip : $"{OriginalSkip} or {_customSkip}";
         }
-        set
+        init
         {
             OriginalSkip = value;
         }
@@ -70,7 +70,7 @@ public class FactDependsOnAttribute(
         {
             return nameof(SkipValidator.ShouldSkip);
         }
-        set
+        init
         {
             OriginalSkipWhen = value;
         }
@@ -83,7 +83,7 @@ public class FactDependsOnAttribute(
         {
             return null;
         }
-        set
+        init
         {
             OriginalSkipUnless = value;
         }
@@ -96,7 +96,7 @@ public class FactDependsOnAttribute(
         {
             return typeof(SkipValidator);
         }
-        set
+        init
         {
             OriginalSkipType = value;
         }
@@ -226,7 +226,7 @@ internal class SkipValidator
         var dependsOn = currentTestCase.TestCollection.CollectionDefinition?.GetCustomAttribute<DependsOnCollectionsAttribute>(false);
 
         if (dependsOn == null)
-            return false; // send diagnostic later, we shouldn't end up here
+            return false;
 
          // Get dependencies
         var dependencies = dependsOn.Dependencies;

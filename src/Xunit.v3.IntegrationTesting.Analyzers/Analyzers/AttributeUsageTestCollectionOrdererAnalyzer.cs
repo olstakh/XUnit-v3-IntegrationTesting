@@ -6,6 +6,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace Xunit.v3.IntegrationTesting.Analyzers;
 
+[DiagnosticAnalyzer(LanguageNames.CSharp)]
 public class AttributeUsageTestCollectionOrdererAnalyzer : DiagnosticAnalyzer
 {
     public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => [
@@ -73,5 +74,5 @@ public class AttributeUsageTestCollectionOrdererAnalyzer : DiagnosticAnalyzer
 
         context.ReportDiagnostic(Diagnostic.Create(
             AttributeUsageDescriptors.MissingTestCollectionOrderer, attributeSyntax.GetLocation()));
-    }    
+    }
 }
