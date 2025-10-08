@@ -3,7 +3,7 @@ using Xunit.v3.IntegrationTesting;
 
 namespace Xunit.v3.IntegrationTesting.Manual.CollectionOrderingTests;
 
-[Collection<DefinitionA>]
+[DependsOnClasses(Dependencies = [typeof(ClassB), typeof(ClassC)], Name = "DefinitionA")]
 public class ClassA
 {
     public static int counter = 0;
@@ -12,17 +12,17 @@ public class ClassA
     public void TestMethod()
     {
         Interlocked.Increment(ref counter);
-        Assert.Equal(1, ClassB.counter);
+        Assert.Equal(1 + 1, ClassB.counter);
         Assert.Equal(1, ClassC.counter);
     }
 }
 
-[Collection<DefinitionB>]
+[DependsOnClasses(Name = "DefinitionB")]
 public class ClassB
 {
     public static int counter = 0;
 
-    [FactDependsOn]
+    [Fact]
     public void TestMethod()
     {
         Interlocked.Increment(ref counter);
@@ -31,7 +31,9 @@ public class ClassB
     }
 }
 
-[Collection<DefinitionC>]
+public class ClassD : ClassB { }
+
+[DependsOnClasses(Dependencies = [typeof(ClassD)], Name = "DefinitionC")]
 public class ClassC
 {
     public static int counter = 0;
@@ -41,17 +43,6 @@ public class ClassC
     {
         Interlocked.Increment(ref counter);
         Assert.Equal(0, ClassA.counter);
-        Assert.Equal(1, ClassB.counter);
+        Assert.Equal(1 + 1, ClassB.counter);
     }
 }
-
-[DependsOnCollections(typeof(DefinitionB), typeof(DefinitionC))]
-[CollectionDefinition(DisableParallelization = true)]
-public sealed class DefinitionA;
-
-[CollectionDefinition(DisableParallelization = true)]
-public sealed class DefinitionB;
-
-[CollectionDefinition(DisableParallelization = true)]
-[DependsOnCollections(typeof(DefinitionB))]
-public sealed class DefinitionC;

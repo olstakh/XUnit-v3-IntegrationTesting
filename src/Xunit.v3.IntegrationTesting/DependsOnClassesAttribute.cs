@@ -9,7 +9,7 @@ public class DependsOnClassesAttribute : Attribute, ICollectionAttribute
     /// <summary>
     /// Gets the list of dependent classes for the test.
     /// </summary>
-    public required Type[] Dependencies { get; init; }
+    public Type[] Dependencies { get; init; } = Array.Empty<Type>();
 
     /// <inheritdoc />
     public required string Name { get; init; }
