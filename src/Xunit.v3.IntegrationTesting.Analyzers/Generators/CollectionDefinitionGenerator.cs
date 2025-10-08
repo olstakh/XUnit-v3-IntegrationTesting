@@ -4,6 +4,9 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Text;
 using System.Collections.Immutable;
 using System.Text;
+using Xunit.v3.IntegrationTesting.Analyzers.Helpers;
+
+namespace Xunit.v3.IntegrationTesting.Analyzers.Generators;
 
 [Generator(LanguageNames.CSharp)]
 public class CollectionDefinitionGenerator : IIncrementalGenerator
@@ -30,10 +33,10 @@ public class CollectionDefinitionGenerator : IIncrementalGenerator
             .Where(static x => x is not null)
 
             // Combine all of the generated text outputs into a single batch.
-            .Collect();
+            .Collect()
 
-        // Apply sequence equality comparison on the result array for incremental caching.
-        // .WithComparer(new ObjectImmutableArraySequenceEqualityComparer());
+            // Apply sequence equality comparison on the result array for incremental caching.
+            .WithComparer(new ObjectImmutableArraySequenceEqualityComparer());
 
         context.RegisterSourceOutput(data, static (context, data) =>
         {
