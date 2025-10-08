@@ -16,7 +16,7 @@ public class CollectionDefinitionGeneratorTests
 
             namespace MyNamespace;
 
-            [DependsOnClasses(Dependencies = [typeof(MyTestClass2), typeof(MyTestClass3)], CollectionName = ""MyTestClass1_Collection"")]
+            [DependsOnClasses(Dependencies = [typeof(MyTestClass2), typeof(MyTestClass3)], Name = ""MyTestClass1_Collection"")]
             public class MyTestClass1;
 
             public class MyTestClass2;

@@ -93,7 +93,7 @@ public class CollectionDefinitionGenerator : IIncrementalGenerator
         }
 
         // Get CollectionName argument
-        var collectionNameArg = attribute.NamedArguments.FirstOrDefault(kvp => kvp.Key == "CollectionName").Value;
+        var collectionNameArg = attribute.NamedArguments.FirstOrDefault(kvp => kvp.Key == "Name").Value;
         if (collectionNameArg.Value is not string collectionName || string.IsNullOrWhiteSpace(collectionName))
         {
             // Report diagnostic: CollectionName is required and should be not empty
