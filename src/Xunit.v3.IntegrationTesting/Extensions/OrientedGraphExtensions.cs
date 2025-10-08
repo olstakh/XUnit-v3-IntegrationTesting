@@ -3,11 +3,11 @@ using System.Globalization;
 using System.Reflection;
 using Xunit.Sdk;
 using Xunit.v3;
-using Xunit.v3.IntegrationTesting.Extensions;
+using Xunit.v3.IntegrationTesting.Comparers;
 
-namespace Xunit.v3.IntegrationTesting;
+namespace Xunit.v3.IntegrationTesting.Extensions;
 
-public static class OrientedGraphExtensions
+internal static class OrientedGraphExtensions
 {
     public static OrientedGraph<TTestCase> ToOrientedGraph<TTestCase>(this IEnumerable<TTestCase> testCases, out List<string> issues)
         where TTestCase : notnull, ITestCase
@@ -126,25 +126,4 @@ public static class OrientedGraphExtensions
 
         return graph;
     }
-}
-
-/// <summary>
-/// Can't use built in <see cref="TestCollectionComparer{TTestCollection}"/> because it requires TTestCollection to be a class,
-/// and <see cref="ITestCollectionOrderer.OrderTestCollections{TTestCollection}(IReadOnlyCollection{TTestCollection})"/> does not have such a restriction.
-/// This is a local version that does not have that restriction.
-/// </summary>
-public class TestCollectionComparerLocal<TTestCollection> : IEqualityComparer<TTestCollection>
-    where TTestCollection : ITestCollection
-{
-    public static readonly TestCollectionComparerLocal<TTestCollection> Instance = new();
-
-    /// <inheritdoc/>
-    public bool Equals(
-        TTestCollection? x,
-        TTestCollection? y) =>
-            (x is null && y is null) || (x is not null && y is not null && x.UniqueID == y.UniqueID);
-
-    /// <inheritdoc/>
-    public int GetHashCode(TTestCollection obj) =>
-        obj.UniqueID.GetHashCode();
 }

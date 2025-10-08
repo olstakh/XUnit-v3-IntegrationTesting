@@ -3,10 +3,12 @@ using System.Security.Cryptography;
 using Xunit.Internal;
 using Xunit.Sdk;
 using Xunit.v3;
+using Xunit.v3.IntegrationTesting.Extensions;
+using Xunit.v3.IntegrationTesting.Comparers;
 
 namespace Xunit.v3.IntegrationTesting;
 
-public class DependencyAwareFrameworkExecutor(IXunitTestAssembly testAssembly) : XunitTestFrameworkExecutor(testAssembly)
+internal class DependencyAwareFrameworkExecutor(IXunitTestAssembly testAssembly) : XunitTestFrameworkExecutor(testAssembly)
 {
     public override async ValueTask RunTestCases(IReadOnlyCollection<IXunitTestCase> testCases, IMessageSink executionMessageSink, ITestFrameworkExecutionOptions executionOptions, CancellationToken cancellationToken)
     {

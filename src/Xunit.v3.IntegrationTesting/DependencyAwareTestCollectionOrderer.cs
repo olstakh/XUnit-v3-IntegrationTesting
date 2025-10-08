@@ -1,5 +1,7 @@
 using System.Globalization;
 using Xunit.Sdk;
+using Xunit.v3.IntegrationTesting.Extensions;
+using Xunit.v3.IntegrationTesting.Exceptions;
 
 namespace Xunit.v3.IntegrationTesting;
 

@@ -56,6 +56,11 @@ internal struct HashCode
         Add(value?.GetHashCode() ?? 0);
     }
 
+    public void Add<T>(T value, IEqualityComparer<T>? comparer)
+    {
+        Add(value is null ? 0 : (comparer?.GetHashCode(value) ?? value.GetHashCode()));
+    }      
+
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static void Initialize(out uint v1, out uint v2, out uint v3, out uint v4)
     {

@@ -1,4 +1,4 @@
-namespace Xunit.v3.IntegrationTesting;
+namespace Xunit.v3.IntegrationTesting.Exceptions;
 
 internal class CircularDependencyException<T> : Exception
 {
