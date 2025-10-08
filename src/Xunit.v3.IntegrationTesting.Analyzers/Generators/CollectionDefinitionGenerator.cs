@@ -93,7 +93,7 @@ public class CollectionDefinitionGenerator : IIncrementalGenerator
         }
 
         // Get CollectionName argument
-        var collectionNameArg = attribute.NamedArguments.FirstOrDefault(kvp => kvp.Key == "CollectionName").Value;
+        var collectionNameArg = attribute.NamedArguments.FirstOrDefault(kvp => kvp.Key == "Name").Value;
         if (collectionNameArg.Value is not string collectionName || string.IsNullOrWhiteSpace(collectionName))
         {
             // Report diagnostic: CollectionName is required and should be not empty
@@ -102,12 +102,7 @@ public class CollectionDefinitionGenerator : IIncrementalGenerator
 
         // Get Dependencies argument
         var dependenciesArg = attribute.NamedArguments.FirstOrDefault(kvp => kvp.Key == "Dependencies").Value;
-        var dependenciesConstants = dependenciesArg.Values;
-        if (dependenciesConstants == null || !dependenciesConstants.Any())
-        {
-            // Report diagnostic: Dependencies is required and should be not empty
-            return null;
-        }
+        var dependenciesConstants = dependenciesArg.IsNull ? [] : dependenciesArg.Values;
 
         // If we reached this point, we have valid CollectionName and Dependencies
         return new CollectionDefinitionInfo

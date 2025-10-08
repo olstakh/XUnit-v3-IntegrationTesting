@@ -12,7 +12,7 @@ internal static class TypeExtensions
             return collectionDefinitionAttr.Name ?? CollectionAttribute.GetCollectionNameForType(type);
         }
 
-        var collectionAttr = type.GetCustomAttribute<CollectionAttribute>(false);
+        var collectionAttr = type.GetCustomAttributes(true).OfType<ICollectionAttribute>().FirstOrDefault();
         if (collectionAttr != null)
         {
             return collectionAttr.Name;

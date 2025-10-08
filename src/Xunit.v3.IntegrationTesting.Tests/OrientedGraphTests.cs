@@ -1,4 +1,6 @@
-﻿namespace Xunit.v3.IntegrationTesting.Tests;
+﻿using Xunit.v3.IntegrationTesting.Exceptions;
+
+namespace Xunit.v3.IntegrationTesting.Tests;
 
 public class OrientedGraphTests
 {
@@ -76,7 +78,7 @@ public class OrientedGraphTests
 
         Assert.Equal(new[] { "A", "B", "C", "A" }, ex.DependencyCycle);
     }
-    
+
     private void AssertInOrder(List<string> sorted, string first, string second)
     {
         var firstIndex = sorted.IndexOf(first);

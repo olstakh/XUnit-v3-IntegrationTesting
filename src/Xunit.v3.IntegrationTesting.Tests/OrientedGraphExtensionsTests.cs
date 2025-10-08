@@ -1,6 +1,7 @@
 using System.Reflection;
 using Moq;
 using Xunit.Sdk;
+using Xunit.v3.IntegrationTesting.Extensions;
 
 namespace Xunit.v3.IntegrationTesting.Tests;
 

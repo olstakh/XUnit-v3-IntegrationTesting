@@ -1,6 +1,8 @@
+using Xunit.v3.IntegrationTesting.Exceptions;
+
 namespace Xunit.v3.IntegrationTesting;
 
-public class OrientedGraph<TNode>
+internal class OrientedGraph<TNode>
     where TNode : notnull
 {
     private readonly IEqualityComparer<TNode> _comparer;

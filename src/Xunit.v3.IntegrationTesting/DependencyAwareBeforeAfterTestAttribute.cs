@@ -2,6 +2,8 @@ using System.Reflection;
 using Xunit;
 using Xunit.v3;
 
+namespace Xunit.v3.IntegrationTesting;
+
 public class DependencyAwareBeforeAfterTestAttribute : BeforeAfterTestAttribute
 {
     public override void After(MethodInfo methodUnderTest, IXunitTest test)
