@@ -5,7 +5,7 @@ using Microsoft.CodeAnalysis.Testing;
 using Xunit;
 using Xunit.v3.IntegrationTesting.Analyzers.Fixers;
 
-namespace Xunit.v3.IntegrationTesting.Analyzers.Tests.Fixers;
+namespace Xunit.v3.IntegrationTesting.Analyzers.Fixers.Tests;
 
 public class FactDependsOnAttributeFixerTests
 {

@@ -2,7 +2,7 @@ using System.Collections.Immutable;
 using Microsoft.CodeAnalysis.CSharp.Testing;
 using Microsoft.CodeAnalysis.Testing;
 
-namespace Xunit.v3.IntegrationTesting.Generators.Tests;
+namespace Xunit.v3.IntegrationTesting.Analyzers.Generators.Tests;
 
 public class CollectionDefinitionGeneratorTests
 {
