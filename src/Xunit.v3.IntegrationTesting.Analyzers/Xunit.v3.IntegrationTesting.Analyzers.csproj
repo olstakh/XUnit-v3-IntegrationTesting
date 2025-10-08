@@ -23,4 +23,8 @@
     <InternalsVisibleTo Include="Xunit.v3.IntegrationTesting.Analyzers.Tests" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Compile Include="..\Shared\*.cs" />
+  </ItemGroup>
+
 </Project>

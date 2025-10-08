@@ -33,8 +33,13 @@ public class DependencyAwareFrameworkExecutor(IXunitTestAssembly testAssembly) :
             cancellationToken: cancellationToken);
 
         var graph = allTestCases.ToOrientedGraph(out var issues);
-
         foreach (var issue in issues)
+        {
+            executionMessageSink.OnMessage(new DiagnosticMessage($"[TEST CASE EXECUTOR WARNING] {issue}"));
+        }
+
+        var collectionGraph = allTestCases.Select(x => x.TestCollection).Distinct().CollectionsToOrientedGraph(out var collectionIssues);
+        foreach (var issue in collectionIssues)
         {
             executionMessageSink.OnMessage(new DiagnosticMessage($"[TEST CASE EXECUTOR WARNING] {issue}"));
         }
@@ -42,6 +47,16 @@ public class DependencyAwareFrameworkExecutor(IXunitTestAssembly testAssembly) :
         HashSet<IXunitTestCase> necessaryTests = new(TestCaseComparer<IXunitTestCase>.Instance);
         foreach (var testCase in testCases)
         {
+            if (collectionGraph.ContainsNode(testCase.TestCollection))
+            {
+                var collectionsToAdd = collectionGraph.GetSubTree(testCase.TestCollection);
+                necessaryTests.AddRange(allTestCases.Where(tc => collectionsToAdd.Contains(tc.TestCollection)));
+            }
+            else
+            {
+                executionMessageSink.OnMessage(new DiagnosticMessage($"[TEST CASE EXECUTOR WARNING] Test collection {testCase.TestCollection.TestCollectionDisplayName} was not discovered"));
+            }
+
             if (graph.ContainsNode(testCase))
             {
                 necessaryTests.AddRange(graph.GetSubTree(testCase));

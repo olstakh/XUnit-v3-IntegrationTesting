@@ -4,6 +4,7 @@ using System.Reflection;
 using System.Runtime.CompilerServices;
 using Xunit.Sdk;
 using Xunit.v3;
+using Xunit.v3.IntegrationTesting.Extensions;
 
 namespace Xunit.v3.IntegrationTesting;
 
@@ -17,16 +18,16 @@ namespace Xunit.v3.IntegrationTesting;
 public class FactDependsOnAttribute(
         [CallerFilePath] string? sourceFilePath = null,
         [CallerLineNumber] int sourceLineNumber = -1    
-    ) : Attribute, IFactAttribute, IBeforeAfterTestAttribute
+    ) : Attribute, IFactAttribute
 {
     /// <inheritdoc/>
-    public string? DisplayName { get; set; }
+    public string? DisplayName { get; init; }
 
     /// <inheritdoc/>
-    public bool Explicit { get; set; }
+    public bool Explicit { get; init; }
 
     /// <inheritdoc/>
-    public Type[]? SkipExceptions { get; set; }
+    public Type[]? SkipExceptions { get; init; }
 
     /// <inheritdoc/>
     public string? SourceFilePath { get; } = sourceFilePath;
@@ -35,12 +36,12 @@ public class FactDependsOnAttribute(
     public int? SourceLineNumber { get; } = sourceLineNumber < 1 ? null : sourceLineNumber;
 
     /// <inheritdoc/>
-    public int Timeout { get; set; }
+    public int Timeout { get; init; }
 
     /// <summary>
     /// Gets or sets the list of dependencies for the test.
     /// </summary>
-    public string[] Dependencies { get; set; } = Array.Empty<string>();
+    public string[] Dependencies { get; init; } = Array.Empty<string>();
 
     internal string? OriginalSkip;
     internal string? OriginalSkipWhen;
@@ -56,7 +57,7 @@ public class FactDependsOnAttribute(
         {
             return OriginalSkip == null ? _customSkip : $"{OriginalSkip} or {_customSkip}";
         }
-        set
+        init
         {
             OriginalSkip = value;
         }
@@ -69,7 +70,7 @@ public class FactDependsOnAttribute(
         {
             return nameof(SkipValidator.ShouldSkip);
         }
-        set
+        init
         {
             OriginalSkipWhen = value;
         }
@@ -82,7 +83,7 @@ public class FactDependsOnAttribute(
         {
             return null;
         }
-        set
+        init
         {
             OriginalSkipUnless = value;
         }
@@ -95,24 +96,10 @@ public class FactDependsOnAttribute(
         {
             return typeof(SkipValidator);
         }
-        set
+        init
         {
             OriginalSkipType = value;
         }
-    }
-
-    public void After(MethodInfo methodUnderTest, IXunitTest test)
-    {
-        TestContext.Current.KeyValueStorage[ReadableTestId(test)] = TestContext.Current.TestState?.Result.ToString() ?? "Unknown result";
-
-        static string ReadableTestId(IXunitTest test)
-        {
-            return $"{test.TestCase.TestClassName}.{test.TestCase.TestMethodName}";
-        }
-    }
-
-    public void Before(MethodInfo methodUnderTest, IXunitTest test)
-    {
     }
 }
 
@@ -213,24 +200,69 @@ internal class SkipValidator
         };
 
         return shouldSkip;
-        
+
         #endregion
     }
 
     private static bool ShouldSkipTest()
     {
-        var currentTestMethod = TestContext.Current.TestMethod as IXunitTestMethod;
-
-        if (currentTestMethod == null)
-            return false; // send diagnostic later
-
         var currentTestCase = TestContext.Current.TestCase as IXunitTestCase;
 
         if (currentTestCase == null)
             return false; // send diagnostic later
 
+        if (ShouldSkipBasedOnCollectionDependencies(currentTestCase))
+            return true;
+
+        if (ShouldSkipBasedOnMethodDependencies(currentTestCase))
+            return true;
+
+        return false;
+    }
+
+    private static bool ShouldSkipBasedOnCollectionDependencies(IXunitTestCase currentTestCase)
+    {
         // Get dependencyOn attribute
-        var dependsOn = currentTestMethod.Method.GetCustomAttribute<FactDependsOnAttribute>(false);
+        var dependsOn = currentTestCase.TestCollection.CollectionDefinition?.GetCustomAttribute<DependsOnCollectionsAttribute>(false);
+
+        if (dependsOn == null)
+            return false;
+
+         // Get dependencies
+        var dependencies = dependsOn.Dependencies;
+
+        if (dependencies == null || dependencies.Length == 0)
+            return false;
+
+        // Check if all dependent collections have passed
+        foreach (var dependency in dependencies)
+        {
+            var collectionName = dependency.GetCollectionDefinitionName();
+
+            var collectionResults = TestContext.Current.KeyValueStorage.Keys
+                .Where(k => k.StartsWith($"{collectionName}.", StringComparison.Ordinal))
+                .Select(k => TestContext.Current.KeyValueStorage[k])
+                .OfType<string>()
+                .Select(r => Enum.TryParse<TestResult>(r, out var tr) ? tr : (TestResult?)null)
+                .Where(r => r.HasValue)
+                .ToList();
+            
+            if (collectionResults.Count == 0 || collectionResults.Any(r => r != TestResult.Passed))
+            {
+                // One of the dependencies either didn't run or failed - skip current test.
+                // Overriding skip reason won't take effect as it's been already cached by the framework
+
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private static bool ShouldSkipBasedOnMethodDependencies(IXunitTestCase currentTestCase)
+    {
+        // Get dependencyOn attribute
+        var dependsOn = currentTestCase.TestMethod.Method.GetCustomAttribute<FactDependsOnAttribute>(false);
 
         if (dependsOn == null)
             return false; // send diagnostic later, we shouldn't end up here
@@ -247,7 +279,7 @@ internal class SkipValidator
         // Check if all dependent methods have passed
         foreach (var dependency in dependencies)
         {
-            if (!TestContext.Current.KeyValueStorage.TryGetValue($"{currentTestMethod.TestClass.TestClassName}.{dependency}", out var result)
+            if (!TestContext.Current.KeyValueStorage.TryGetValue($"{currentTestCase.TestCollection.TestCollectionDisplayName}.{currentTestCase.TestClass.TestClassName}.{dependency}", out var result)
                 || !Enum.TryParse<TestResult>((string?)result, out var testResult)
                 || testResult != TestResult.Passed)
             {

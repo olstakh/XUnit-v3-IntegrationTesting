@@ -13,8 +13,6 @@ public class AttributeUsageDependenciesAnalyzer : DiagnosticAnalyzer
     public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
         ImmutableArray.Create([
             AttributeUsageDescriptors.DependsOnMissingMethod,
-            AttributeUsageDescriptors.DependsOnInvalidMethod,
-            AttributeUsageDescriptors.UseFactDependsOnAttribute
         ]);
 
     public override void Initialize(AnalysisContext context)
@@ -31,11 +29,10 @@ public class AttributeUsageDependenciesAnalyzer : DiagnosticAnalyzer
         var compilation = semanticModel.Compilation;
 
         var dependsOnAttributeSymbol = compilation.GetTypeByMetadataName("Xunit.v3.IntegrationTesting.FactDependsOnAttribute");
-            var factAttributeSymbol = compilation.GetTypeByMetadataName("Xunit.FactAttribute");
-        if (dependsOnAttributeSymbol == null)
+        var factAttributeSymbol = compilation.GetTypeByMetadataName("Xunit.FactAttribute");
+
+        if (dependsOnAttributeSymbol == null || factAttributeSymbol == null)
             return;
-            if (factAttributeSymbol == null)
-                return;
 
         var methodSymbol = semanticModel.GetDeclaredSymbol(methodDecl) as IMethodSymbol;
         if (methodSymbol == null)
@@ -62,16 +59,6 @@ public class AttributeUsageDependenciesAnalyzer : DiagnosticAnalyzer
             }
             if (dependsOnAttrSyntax != null)
                 break;
-        }
-
-        if (dependsOnAttrSyntax == null)
-        {
-            // If FactDependsOn is missing but Fact is present, report diagnostic
-            if (factAttributeSyntax != null)
-            {
-                context.ReportDiagnostic(Diagnostic.Create(AttributeUsageDescriptors.UseFactDependsOnAttribute, factAttributeSyntax.GetLocation(), methodDecl.Identifier.Text));
-            }
-            return;
         }
 
         // Get dependencies property from attribute syntax (support string literals and nameof)
@@ -131,7 +118,7 @@ public class AttributeUsageDependenciesAnalyzer : DiagnosticAnalyzer
         var classDecl = methodDecl.Parent as ClassDeclarationSyntax;
         if (classDecl == null)
             return;
-        var classSymbol = semanticModel.GetDeclaredSymbol(classDecl) as INamedTypeSymbol;
+        var classSymbol = semanticModel.GetDeclaredSymbol(classDecl);
         if (classSymbol == null)
             return;
 
@@ -143,15 +130,6 @@ public class AttributeUsageDependenciesAnalyzer : DiagnosticAnalyzer
             {
                 // No method with such name
                 context.ReportDiagnostic(Diagnostic.Create(AttributeUsageDescriptors.DependsOnMissingMethod, methodDecl.Identifier.GetLocation(), methodSymbol.Name, depName));
-            }
-            else
-            {
-                // Check if dependency method has [FactDependsOn]
-                var hasDependsOn = depMethod.GetAttributes().Any(a => SymbolEqualityComparer.Default.Equals(a.AttributeClass, dependsOnAttributeSymbol));
-                if (!hasDependsOn)
-                {
-                    context.ReportDiagnostic(Diagnostic.Create(AttributeUsageDescriptors.DependsOnInvalidMethod, methodDecl.Identifier.GetLocation(), methodSymbol.Name, depName));
-                }
             }
         }
     }
