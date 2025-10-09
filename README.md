@@ -66,10 +66,10 @@ Following rules are included as part of the package:
 | XIT0006 | Warning | Assembly-level `TestFramework(...)` should be `DependencyAwareFramework` |
 | XIT0007 | Warning | Project is missing assembly-level `TestFramework` attribute |
 | XIT0008 | Info | `Fact` attribute should be replaced with `FactDependsOn` |
-| XIT0009 | Usage | Warning | Apply `DependsOnCollections` attribute only to collection definitions |
-| XIT0010 | Usage | Warning | `CollectionDefinition` with `DependsOnCollections` must have `DisableParallelization` set to `true` |
-| XIT0011 | Usage | Warning | `DependsOnCollections` attribute requires assembly-level `TestCollectionOrderer` |
-| XIT0012 | Usage | Warning | `DependsOnCollections` attribute requires assembly-level `TestCollectionOrderer` to be `DependencyAwareTestCollectionOrderer` to respect test dependencies |
+| XIT0009 | Warning | Apply `DependsOnCollections` attribute only to collection definitions |
+| XIT0010 | Warning | `CollectionDefinition` with `DependsOnCollections` must have `DisableParallelization` set to `true` |
+| XIT0011 | Warning | `DependsOnCollections` attribute requires assembly-level `TestCollectionOrderer` |
+| XIT0012 | Warning | `DependsOnCollections` attribute requires assembly-level `TestCollectionOrderer` to be `DependencyAwareTestCollectionOrderer` to respect test dependencies |
 
 # Common questions
 
