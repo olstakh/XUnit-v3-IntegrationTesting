@@ -58,12 +58,69 @@ public class OrientedGraphTests
         graph.AddEdge("Z", "Y");
         graph.AddEdge("Z", "X");
 
-        var sorted = graph.TopologicalSort().Reverse().ToList();
+        var sorted = graph.TopologicalSort().ToList();
 
-        AssertInOrder(sorted, "Z", "Y");
-        AssertInOrder(sorted, "Y", "D");
-        AssertInOrder(sorted, "D", "E");
-        AssertInOrder(sorted, "X", "D");
+        // Dependencies should come before dependents (execution order)
+        AssertInOrder(sorted, "E", "D");
+        AssertInOrder(sorted, "D", "Y");
+        AssertInOrder(sorted, "D", "X");
+        AssertInOrder(sorted, "Y", "Z");
+        AssertInOrder(sorted, "X", "Z");
+    }
+
+    [Fact]
+    public void Validate_TopologicalSort_AllNodesPresent()
+    {
+        var graph = new OrientedGraph<string>(StringComparer.OrdinalIgnoreCase);
+        graph.AddEdge("D", "E");
+        graph.AddEdge("Y", "D");
+        graph.AddEdge("X", "D");
+        graph.AddEdge("Z", "Y");
+        graph.AddEdge("Z", "X");
+
+        var sorted = graph.TopologicalSort().ToList();
+
+        Assert.Equal(5, sorted.Count);
+        Assert.Contains("E", sorted);
+        Assert.Contains("D", sorted);
+        Assert.Contains("Y", sorted);
+        Assert.Contains("X", sorted);
+        Assert.Contains("Z", sorted);
+    }
+
+    [Fact]
+    public void Validate_TopologicalSort_DeepChain()
+    {
+        // A -> B -> C -> D -> E (A depends on B, B depends on C, etc.)
+        var graph = new OrientedGraph<string>(StringComparer.OrdinalIgnoreCase);
+        graph.AddEdge("A", "B");
+        graph.AddEdge("B", "C");
+        graph.AddEdge("C", "D");
+        graph.AddEdge("D", "E");
+
+        var sorted = graph.TopologicalSort().ToList();
+
+        // Execution order: E first (no deps), then D, C, B, A
+        AssertInOrder(sorted, "E", "D");
+        AssertInOrder(sorted, "D", "C");
+        AssertInOrder(sorted, "C", "B");
+        AssertInOrder(sorted, "B", "A");
+    }
+
+    [Fact]
+    public void Validate_TopologicalSort_IndependentNodes()
+    {
+        var graph = new OrientedGraph<string>(StringComparer.OrdinalIgnoreCase);
+        graph.AddNode("A");
+        graph.AddNode("B");
+        graph.AddNode("C");
+
+        var sorted = graph.TopologicalSort().ToList();
+
+        Assert.Equal(3, sorted.Count);
+        Assert.Contains("A", sorted);
+        Assert.Contains("B", sorted);
+        Assert.Contains("C", sorted);
     }
 
     [Fact]

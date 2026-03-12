@@ -51,13 +51,14 @@ internal class OrientedGraph<TNode>
     public IEnumerable<TNode> TopologicalSort()
     {
         var visited = new HashSet<TNode>(_comparer);
+        var sorted = new List<TNode>();
         var stack = new List<TNode>();
 
         foreach (var node in GetAllNodes())
         {
             if (!visited.Contains(node))
             {
-                var cycle = Visit(node, visited, stack);
+                var cycle = Visit(node, visited, sorted, stack);
                 if (cycle.Count > 0)
                 {
                     throw new CircularDependencyException<TNode>("Graph contains a cycle; topological sort is not possible.")
@@ -68,23 +69,22 @@ internal class OrientedGraph<TNode>
             }
         }
 
-        visited.Reverse();
-
-        return visited;
+        return sorted;
     }
 
     public IEnumerable<TNode> GetSubTree(TNode node)
     {
         var visited = new HashSet<TNode>(_comparer);
+        var sorted = new List<TNode>();
         var stack = new List<TNode>();
 
-        _ = Visit(node, visited, stack);
+        _ = Visit(node, visited, sorted, stack);
 
         return visited;
     }
 
     // returns first found cycle if any
-    private IReadOnlyList<TNode> Visit(TNode node, HashSet<TNode> visited, List<TNode> stack)
+    private IReadOnlyList<TNode> Visit(TNode node, HashSet<TNode> visited, List<TNode> sorted, List<TNode> stack)
     {
         // TODO: make more efficient instead of traversing the stack
         var idx = stack.FindIndex(n => _comparer.Equals(n, node));
@@ -104,7 +104,7 @@ internal class OrientedGraph<TNode>
 
         foreach (var neighbor in GetNeighbors(node))
         {
-            var cycle = Visit(neighbor, visited, stack);
+            var cycle = Visit(neighbor, visited, sorted, stack);
             if (cycle.Count > 0 && anyCycle.Count == 0)
             {
                 anyCycle = cycle.ToList();
@@ -112,6 +112,7 @@ internal class OrientedGraph<TNode>
         }
 
         visited.Add(node);
+        sorted.Add(node);
         stack.RemoveAt(stack.Count - 1);
 
         return anyCycle;
