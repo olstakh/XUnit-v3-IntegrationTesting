@@ -7,7 +7,7 @@ namespace Xunit.v3.IntegrationTesting.Analyzers.Tests;
 public class AttributeUsageCollectionDependenciesAnalyzerTests
 {
     [Fact]
-    public async Task Validate_DependsOnCollections_ValidUsage_NoDiagnosticAsync()
+    public async Task Validate_DependsOnCollections_MissingCollectionDefinition_DiagnosticAsync()
     {
         var source = /* lang=c#-test */ @"
             using Xunit;
