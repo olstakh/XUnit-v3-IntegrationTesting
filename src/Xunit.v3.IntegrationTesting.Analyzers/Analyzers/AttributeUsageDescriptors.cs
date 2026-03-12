@@ -94,7 +94,7 @@ internal static class AttributeUsageDescriptors
         "Usage",
         DiagnosticSeverity.Warning,
         isEnabledByDefault: true,
-        description: "Usage of  [DependsOnCollections] requires DependencyAwareTestCollectionOrderer set as TestCollectionOrderer, in order for test collections to be ordered according to defined dependencies.");
+        description: "Usage of [DependsOnCollections] requires DependencyAwareTestCollectionOrderer set as TestCollectionOrderer, in order for test collections to be ordered according to defined dependencies.");
 
     public static readonly DiagnosticDescriptor NotSupportedTestCollectionOrderer = new DiagnosticDescriptor(
         "XIT0012",
@@ -103,5 +103,5 @@ internal static class AttributeUsageDescriptors
         "Usage",
         DiagnosticSeverity.Warning,
         isEnabledByDefault: true,
-        description: "Usage of  [DependsOnCollections] requires DependencyAwareTestCollectionOrderer set as TestCollectionOrderer, in order for test collections to be ordered according to defined dependencies.");
+        description: "Usage of [DependsOnCollections] requires DependencyAwareTestCollectionOrderer set as TestCollectionOrderer, in order for test collections to be ordered according to defined dependencies.");
 }

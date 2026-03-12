@@ -124,13 +124,6 @@ public class CollectionDefinitionGenerator : IIncrementalGenerator
         public Diagnostic ToDiagnostic() => Diagnostic.Create(descriptor, location, arg is null ? [] : [arg]);
     }
 
-    private static Location GetComparableLocation(SyntaxTree syntaxTree, TextSpan span)
-    {
-        return Location.Create(
-            syntaxTree,
-            span);
-    }
-
     private sealed record CollectionDefinitionInfo
     {
         public required string CollectionName { get; init; }
