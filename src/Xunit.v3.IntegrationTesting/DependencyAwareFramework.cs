@@ -8,7 +8,7 @@ public class DependencyAwareFramework : XunitTestFramework
     private readonly string? _configFile;
 
     public DependencyAwareFramework()
-        : base()
+        : this(null)
     {
     }
 

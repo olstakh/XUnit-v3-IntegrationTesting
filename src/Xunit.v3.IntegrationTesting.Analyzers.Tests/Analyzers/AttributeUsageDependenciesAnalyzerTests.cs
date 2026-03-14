@@ -86,6 +86,27 @@ public class AttributeUsageDependenciesAnalyzerTests
         await analyzer.RunAsync(TestContext.Current.CancellationToken);
     }
 
+    [Fact]
+    public async Task Validate_DependsOn_ValidMethod_Nameof_NoDiagnosticAsync()
+    {
+        var source = /* lang=c#-test */ @"
+            using Xunit.v3.IntegrationTesting;
+
+            public class MyTests
+            {
+                [FactDependsOn(Dependencies = [nameof(Test2)])]
+                public void Test1() { }
+
+                [FactDependsOn]
+                public void Test2() { }
+            }
+        ";
+
+        var analyzer = GetAnalyzer(source);
+
+        await analyzer.RunAsync(TestContext.Current.CancellationToken);
+    }
+
     private static AnalyzerTest<DefaultVerifier> GetAnalyzer(string source) => new CSharpAnalyzerTest<AttributeUsageDependenciesAnalyzer, DefaultVerifier>
     {
         TestCode = source,

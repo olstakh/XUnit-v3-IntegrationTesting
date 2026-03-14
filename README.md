@@ -10,9 +10,9 @@ This package provides the ability to establish dependencies between tests. Meani
 
 # How to use
 
-1. Add a package reference to [XUnit.v3.IntegrationTesting](https://www.nuget.org/xunit.v3.integrationTesting) package in your xunit projects, or as a common package in the repo's [Directory.Packages.props](https://github.com/olstakh/XUnit-v3-IntegrationTesting/blob/main/Directory.Build.props)
+1. Add a package reference to [XUnit.v3.IntegrationTesting](https://www.nuget.org/packages/xunit.v3.integrationTesting) package in your xunit projects, or as a common package in the repo's [Directory.Packages.props](https://github.com/olstakh/XUnit-v3-IntegrationTesting/blob/main/Directory.Packages.props)
 
-2. Update `[Fact]` attributes in your tests to `[FactDependsOn]`, if you want those tests to be dependtent on other tests in this class. Dependencies can be declared as 
+2. Update `[Fact]` attributes in your tests to `[FactDependsOn]`, if you want those tests to be dependent on other tests in this class. Dependencies can be declared as 
 
 ```csharp
 [FactDependsOn(Dependencies = [nameof(Test2), nameof(Test3)])]
@@ -65,7 +65,7 @@ Following rules are included as part of the package:
 | XIT0004 | Warning | `FactDependsOn` has a dependency on a test method that doesn't exist |
 | XIT0006 | Warning | Assembly-level `TestFramework(...)` should be `DependencyAwareFramework` |
 | XIT0007 | Warning | Project is missing assembly-level `TestFramework` attribute |
-| XIT0008 | Info | `Fact` attribute should be replaced with `FactDependsOn` |
+| XIT0008 | Info | `Fact` attribute should be replaced with `FactDependsOn` in classes using dependencies |
 | XIT0009 | Warning | Apply `DependsOnCollections` attribute only to collection definitions |
 | XIT0010 | Warning | `CollectionDefinition` with `DependsOnCollections` must have `DisableParallelization` set to `true` |
 | XIT0011 | Warning | `DependsOnCollections` attribute requires assembly-level `TestCollectionOrderer` |

@@ -1,4 +1,3 @@
-using System.ComponentModel.Design.Serialization;
 using System.Globalization;
 using System.Reflection;
 using Xunit.Sdk;

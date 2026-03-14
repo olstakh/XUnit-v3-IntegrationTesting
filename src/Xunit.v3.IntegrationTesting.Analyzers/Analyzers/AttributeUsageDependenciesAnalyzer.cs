@@ -10,10 +10,9 @@ namespace Xunit.v3.IntegrationTesting.Analyzers;
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
 public class AttributeUsageDependenciesAnalyzer : DiagnosticAnalyzer
 {
-    public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
-        ImmutableArray.Create([
-            AttributeUsageDescriptors.DependsOnMissingMethod,
-        ]);
+    public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => [
+        AttributeUsageDescriptors.DependsOnMissingMethod,
+    ];
 
     public override void Initialize(AnalysisContext context)
     {
@@ -29,9 +28,8 @@ public class AttributeUsageDependenciesAnalyzer : DiagnosticAnalyzer
         var compilation = semanticModel.Compilation;
 
         var dependsOnAttributeSymbol = compilation.GetTypeByMetadataName("Xunit.v3.IntegrationTesting.FactDependsOnAttribute");
-        var factAttributeSymbol = compilation.GetTypeByMetadataName("Xunit.FactAttribute");
 
-        if (dependsOnAttributeSymbol == null || factAttributeSymbol == null)
+        if (dependsOnAttributeSymbol == null)
             return;
 
         var methodSymbol = semanticModel.GetDeclaredSymbol(methodDecl) as IMethodSymbol;
@@ -40,7 +38,6 @@ public class AttributeUsageDependenciesAnalyzer : DiagnosticAnalyzer
 
         // Check if method has [FactDependsOn]
         AttributeSyntax? dependsOnAttrSyntax = null;
-        AttributeSyntax? factAttributeSyntax = null;
         foreach (var attrList in methodDecl.AttributeLists)
         {
             foreach (var attr in attrList.Attributes)
@@ -49,11 +46,6 @@ public class AttributeUsageDependenciesAnalyzer : DiagnosticAnalyzer
                 if (SymbolEqualityComparer.Default.Equals(attrType, dependsOnAttributeSymbol))
                 {
                     dependsOnAttrSyntax = attr;
-                    break;
-                }
-                if (SymbolEqualityComparer.Default.Equals(attrType, factAttributeSymbol))
-                {
-                    factAttributeSyntax = attr;
                     break;
                 }
             }
@@ -132,25 +124,5 @@ public class AttributeUsageDependenciesAnalyzer : DiagnosticAnalyzer
                 context.ReportDiagnostic(Diagnostic.Create(AttributeUsageDescriptors.DependsOnMissingMethod, methodDecl.Identifier.GetLocation(), methodSymbol.Name, depName));
             }
         }
-    }
-
-    private static string? TryGetStringFromExpression(ExpressionSyntax expr)
-    {
-        if (expr is LiteralExpressionSyntax literal && literal.IsKind(SyntaxKind.StringLiteralExpression))
-        {
-            return literal.Token.ValueText;
-        }
-        else if (expr is InvocationExpressionSyntax invocation && invocation.Expression is IdentifierNameSyntax idName && idName.Identifier.Text == "nameof")
-        {
-            if (invocation.ArgumentList.Arguments.Count == 1)
-            {
-                var nameofArg = invocation.ArgumentList.Arguments[0].Expression;
-                if (nameofArg is IdentifierNameSyntax nameofId)
-                {
-                    return nameofId.Identifier.Text;
-                }
-            }
-        }
-        return null;
     }
 }

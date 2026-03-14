@@ -14,10 +14,11 @@ public class AttributeUsageTestFrameworkAnalyzerTests
     {
         var source = /* lang=c#-test */ @"
             using Xunit;
+            using Xunit.v3.IntegrationTesting;
 
             public class MyTests
             {
-                [Fact]
+                [FactDependsOn]
                 public void Test1() { }
             }
         ";
@@ -34,12 +35,13 @@ public class AttributeUsageTestFrameworkAnalyzerTests
         var source = /* lang=c#-test */ @"
             using Xunit;
             using Xunit.v3;
+            using Xunit.v3.IntegrationTesting;
 
             [assembly: TestFramework(typeof(CustomTestFramework))]
 
             public class MyTests
             {
-                [Fact]
+                [FactDependsOn]
                 public void Test1() { }
             }
 
@@ -62,6 +64,24 @@ public class AttributeUsageTestFrameworkAnalyzerTests
             using Xunit.v3.IntegrationTesting;
 
             [assembly: TestFramework(typeof(DependencyAwareFramework))]
+
+            public class MyTests
+            {
+                [FactDependsOn]
+                public void Test1() { }
+            }
+        ";
+
+        var analyzer = GetAnalyzer(source);
+
+        await analyzer.RunAsync(TestContext.Current.CancellationToken);
+    }
+
+    [Fact]
+    public async Task Validate_NoFactDependsOnUsage_NoDiagnosticAsync()
+    {
+        var source = /* lang=c#-test */ @"
+            using Xunit;
 
             public class MyTests
             {

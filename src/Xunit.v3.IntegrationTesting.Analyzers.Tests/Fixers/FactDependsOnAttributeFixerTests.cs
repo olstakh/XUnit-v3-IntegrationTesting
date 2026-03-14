@@ -9,7 +9,7 @@ namespace Xunit.v3.IntegrationTesting.Analyzers.Fixers.Tests;
 
 public class FactDependsOnAttributeFixerTests
 {
-    [Fact(Skip = "XIT0008 is currently not being produced by the analyzer")]
+    [Fact]
     public async Task Replaces_Fact_With_FactDependsOnAsync()
     {
         var source = /* lang=c#-test */ @"
@@ -23,6 +23,9 @@ public class FactDependsOnAttributeFixerTests
 
                 [{|XIT0008:FactAttribute(Skip = ""reason"")|}]
                 public void Test2() { }
+
+                [FactDependsOn]
+                public void Test3() { }
             }
         ";
 
@@ -37,6 +40,9 @@ public class FactDependsOnAttributeFixerTests
 
                 [FactDependsOn(Skip = ""reason"")]
                 public void Test2() { }
+
+                [FactDependsOn]
+                public void Test3() { }
             }
         ";
 
@@ -44,7 +50,7 @@ public class FactDependsOnAttributeFixerTests
         await analyzer.RunAsync(TestContext.Current.CancellationToken);
     }
 
-    private static CodeFixTest<DefaultVerifier> GetAnalyzer(string source, string fixedCode) => new CSharpCodeFixTest<AttributeUsageDependenciesAnalyzer, FactDependsOnAttributeFixer, DefaultVerifier>
+    private static CodeFixTest<DefaultVerifier> GetAnalyzer(string source, string fixedCode) => new CSharpCodeFixTest<AttributeUsageFactDependsOnAnalyzer, FactDependsOnAttributeFixer, DefaultVerifier>
     {
         TestCode = source,
         FixedCode = fixedCode,
