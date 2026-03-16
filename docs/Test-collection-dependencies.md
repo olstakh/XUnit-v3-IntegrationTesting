@@ -48,3 +48,5 @@ It is added by default via `<UseDependencyAwareTestCollectionOrderer>` msbuild p
 
 Note: since by default collections are executed in parallel - ordering them only makes sense when parallelization is disabled.
 This can be done on collection definition level (passing `DisableParallelization = true` to `CollectionDefinition` attribute) or assembly level (passing `DisableTestParallelization = true` to `CollectionBehavior` assembly-level attribute)
+
+**Important:** Test methods in classes belonging to collections with `[DependsOnCollections]` dependencies should use `[FactDependsOn]` instead of `[Fact]`. The collection-level skip logic (which skips tests when upstream collection dependencies fail) only runs through the `FactDependsOnAttribute`'s skip mechanism. A plain `[Fact]` test will execute even when its collection's dependencies have failed.

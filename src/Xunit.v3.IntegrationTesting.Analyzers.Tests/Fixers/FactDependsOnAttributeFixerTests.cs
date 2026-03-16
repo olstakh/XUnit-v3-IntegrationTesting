@@ -16,6 +16,7 @@ public class FactDependsOnAttributeFixerTests
             using Xunit;
             using Xunit.v3.IntegrationTesting;
 
+            [DependsOnClasses(Dependencies = [typeof(OtherClass)], Name = ""MyCollection"")]
             public class MyTests
             {
                 [{|XIT0008:Fact|}]
@@ -27,12 +28,15 @@ public class FactDependsOnAttributeFixerTests
                 [FactDependsOn]
                 public void Test3() { }
             }
+
+            public class OtherClass;
         ";
 
         var fixedSource = /* lang=c#-test */ @"
             using Xunit;
             using Xunit.v3.IntegrationTesting;
 
+            [DependsOnClasses(Dependencies = [typeof(OtherClass)], Name = ""MyCollection"")]
             public class MyTests
             {
                 [FactDependsOn]
@@ -44,6 +48,8 @@ public class FactDependsOnAttributeFixerTests
                 [FactDependsOn]
                 public void Test3() { }
             }
+
+            public class OtherClass;
         ";
 
         var analyzer = GetAnalyzer(source, fixedSource);
