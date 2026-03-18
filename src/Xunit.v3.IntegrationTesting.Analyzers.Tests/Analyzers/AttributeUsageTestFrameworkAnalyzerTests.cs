@@ -95,6 +95,31 @@ public class AttributeUsageTestFrameworkAnalyzerTests
         await analyzer.RunAsync(TestContext.Current.CancellationToken);
     }
 
+    [Fact]
+    public async Task Validate_DerivedTestFramework_NoDiagnosticAsync()
+    {
+        var source = /* lang=c#-test */ @"
+            using Xunit;
+            using Xunit.Sdk;
+            using Xunit.v3;
+            using Xunit.v3.IntegrationTesting;
+
+            [assembly: TestFramework(typeof(MyCustomFramework))]
+
+            public class MyTests
+            {
+                [FactDependsOn]
+                public void Test1() { }
+            }
+
+            public class MyCustomFramework : DependencyAwareFramework {}
+        ";
+
+        var analyzer = GetAnalyzer(source);
+
+        await analyzer.RunAsync(TestContext.Current.CancellationToken);
+    }
+
     private static AnalyzerTest<DefaultVerifier> GetAnalyzer(string source) => new CSharpAnalyzerTest<AttributeUsageTestFrameworkAnalyzer, DefaultVerifier>
     {
         TestCode = source,
