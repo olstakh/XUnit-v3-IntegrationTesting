@@ -1,4 +1,4 @@
-namespace Xunit.v3.IntegrationTesting;
+namespace Xunit.v3.IntegrationTesting.Manual;
 
 /// <summary>
 /// Marks a test that is expected to be skipped (e.g. because a dependency failed).

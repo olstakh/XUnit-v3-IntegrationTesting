@@ -8,7 +8,7 @@ using Xunit.v3.IntegrationTesting.Comparers;
 
 namespace Xunit.v3.IntegrationTesting;
 
-internal class DependencyAwareFrameworkExecutor(IXunitTestAssembly testAssembly) : XunitTestFrameworkExecutor(testAssembly)
+public class DependencyAwareFrameworkExecutor(IXunitTestAssembly testAssembly) : XunitTestFrameworkExecutor(testAssembly)
 {
     public override async ValueTask RunTestCases(IReadOnlyCollection<IXunitTestCase> testCases, IMessageSink executionMessageSink, ITestFrameworkExecutionOptions executionOptions, CancellationToken cancellationToken)
     {
@@ -75,8 +75,17 @@ internal class DependencyAwareFrameworkExecutor(IXunitTestAssembly testAssembly)
             executionMessageSink.OnMessage(new DiagnosticMessage($"[TEST CASE EXECUTOR INFO] {testCases.Count} tests were requested - {necessaryTests.Count} will be executed due to dependencies between tests"));
         }
 
-        var wrappedSink = new ExpectedOutcomeMessageSinkWrapper(executionMessageSink, necessaryTests);
-        await base.RunTestCases(necessaryTests, wrappedSink, executionOptions, cancellationToken);
+        var sink = WrapMessageSink(executionMessageSink, necessaryTests);
+        await base.RunTestCases(necessaryTests, sink, executionOptions, cancellationToken);
+    }
+
+    /// <summary>
+    /// Override to wrap or replace the message sink before test execution.
+    /// The default implementation returns the sink unchanged.
+    /// </summary>
+    protected virtual IMessageSink WrapMessageSink(IMessageSink messageSink, IReadOnlyCollection<IXunitTestCase> testCases)
+    {
+        return messageSink;
     }
 }
 
