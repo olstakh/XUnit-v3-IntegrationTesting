@@ -38,6 +38,7 @@ public class DependencyAwareTestCaseOrderer : ITestCaseOrderer
             // Return tests in original order instead of throwing, which causes
             // a catastrophic failure in xUnit. The diagnostic message above is
             // sufficient to surface the problem.
+            // This will result in test cases to be skipped anyway, since their dependency hasn't completed.
             return testCases.ToArray();
         }
         catch (Exception ex)
