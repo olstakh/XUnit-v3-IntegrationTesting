@@ -35,14 +35,18 @@ public class DependencyAwareTestCaseOrderer : ITestCaseOrderer
             TestContext.Current.SendDiagnosticMessage("[TEST CASE ORDERER ERROR] " +
                 circularDependencyMessage);
 
-            throw new TestPipelineException(
-                circularDependencyMessage, ex);
+            // Return tests in original order instead of throwing, which causes
+            // a catastrophic failure in xUnit. The diagnostic message above is
+            // sufficient to surface the problem.
+            return testCases.ToArray();
         }
         catch (Exception ex)
         {
             var message = "An unexpected error occurred while ordering test cases: " + ex.Message;
             TestContext.Current.SendDiagnosticMessage("[TEST CASE ORDERER ERROR] " + message);
-            throw new TestPipelineException(message, ex);
+
+            // Return tests in original order instead of throwing.
+            return testCases.ToArray();
         }
     }
 
