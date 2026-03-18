@@ -5,8 +5,6 @@
     <TargetFramework>net9.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-    <!-- Exclude from 'dotnet test' by default; opt-in with: dotnet test -p:RunManualTests=true -->
-    <IsTestProject Condition="'$(RunManualTests)' != 'true'">false</IsTestProject>
   </PropertyGroup>
 
   <ItemGroup>
