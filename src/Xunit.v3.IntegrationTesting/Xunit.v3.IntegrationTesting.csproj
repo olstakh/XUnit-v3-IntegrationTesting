@@ -13,7 +13,6 @@
 
   <ItemGroup>
     <InternalsVisibleTo Include="Xunit.v3.IntegrationTesting.Tests" />
-    <InternalsVisibleTo Include="Xunit.v3.IntegrationTesting.Manual" />
   </ItemGroup>
 
   <ItemGroup>

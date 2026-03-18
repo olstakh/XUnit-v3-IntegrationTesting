@@ -1,7 +1,7 @@
 using Xunit;
 using Xunit.v3;
 using Xunit.v3.IntegrationTesting;
-using Xunit.v3.IntegrationTesting.Manual;
+using Xunit.v3.IntegrationTesting.Tests;
 
 [assembly: TestFramework(typeof(ExpectedOutcomeFramework))]
 [assembly: TestCollectionOrderer(typeof(DependencyAwareTestCollectionOrderer))]

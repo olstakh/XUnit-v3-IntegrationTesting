@@ -3,7 +3,7 @@ using System.Reflection;
 using Xunit.Sdk;
 using Xunit.v3;
 
-namespace Xunit.v3.IntegrationTesting.Manual;
+namespace Xunit.v3.IntegrationTesting.Tests;
 
 /// <summary>
 /// Wraps an <see cref="IMessageSink"/> and converts test results for methods
@@ -49,7 +49,7 @@ internal sealed class ExpectedOutcomeMessageSinkWrapper : IMessageSink
                     AssemblyUniqueID = passed.AssemblyUniqueID,
                     Cause = FailureCause.Assertion,
                     ExceptionParentIndices = [-1],
-                    ExceptionTypes = ["Xunit.v3.IntegrationTesting.Manual.UnexpectedTestPassException"],
+                    ExceptionTypes = ["Xunit.v3.IntegrationTesting.Tests.UnexpectedTestPassException"],
                     ExecutionTime = passed.ExecutionTime,
                     FinishTime = passed.FinishTime,
                     Messages = ["Test was expected to fail but passed. Remove [ExpectedToFail] or fix the test."],

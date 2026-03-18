@@ -2,10 +2,9 @@ using Xunit;
 using Xunit.v3;
 using Xunit.v3.IntegrationTesting;
 
-namespace Xunit.v3.IntegrationTesting.Manual;
+namespace Xunit.v3.IntegrationTesting.Tests;
 
 [TestCaseOrderer(typeof(DependencyAwareTestCaseOrderer))]
-[Trait("Category", "LocalOnly")] // Some of these tests are expected to fail locally, don't run in CI pipeline
 public class IntegrationTestsCircularDependency
 {
     [FactDependsOn(Dependencies = [nameof(Test_B)])]

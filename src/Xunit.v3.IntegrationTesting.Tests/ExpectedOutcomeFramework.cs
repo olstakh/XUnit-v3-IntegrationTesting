@@ -3,7 +3,7 @@ using Xunit.Sdk;
 using Xunit.v3;
 using Xunit.v3.IntegrationTesting;
 
-namespace Xunit.v3.IntegrationTesting.Manual;
+namespace Xunit.v3.IntegrationTesting.Tests;
 
 /// <summary>
 /// Test-only framework that extends <see cref="DependencyAwareFramework"/>

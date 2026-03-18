@@ -1,12 +1,11 @@
-﻿using Xunit;
+using Xunit;
 using Xunit.v3;
 using Xunit.v3.IntegrationTesting;
 using Fact = Xunit.v3.IntegrationTesting.FactDependsOnAttribute;
 
-namespace Xunit.v3.IntegrationTesting.Manual;
+namespace Xunit.v3.IntegrationTesting.Tests;
 
 [TestCaseOrderer(typeof(DependencyAwareTestCaseOrderer))]
-[Trait("Category", "LocalOnly")] // Some of these tests are expected to fail locally, don't run in CI pipeline
 public class IntegrationTests
 {
     [@Fact]
