@@ -74,7 +74,7 @@ public class AttributeUsageTestFrameworkAnalyzer : DiagnosticAnalyzer
                 if (attr.ConstructorArguments.Length == 1)
                 {
                     var arg = attr.ConstructorArguments[0];
-                    if (arg.Kind == TypedConstantKind.Type && SymbolEqualityComparer.Default.Equals(arg.Value as INamedTypeSymbol, dependencyAwareFrameworkSymbol))
+                    if (arg.Kind == TypedConstantKind.Type && IsDerivedFromOrEqual(arg.Value as INamedTypeSymbol, dependencyAwareFrameworkSymbol))
                     {
                         break;
                     }
@@ -89,5 +89,16 @@ public class AttributeUsageTestFrameworkAnalyzer : DiagnosticAnalyzer
         }
 
         context.ReportDiagnostic(Diagnostic.Create(AttributeUsageDescriptors.MissingTestFrameworkAttribute, Location.None));
+    }
+
+    private static bool IsDerivedFromOrEqual(INamedTypeSymbol? type, INamedTypeSymbol baseType)
+    {
+        while (type != null)
+        {
+            if (SymbolEqualityComparer.Default.Equals(type, baseType))
+                return true;
+            type = type.BaseType;
+        }
+        return false;
     }
 }

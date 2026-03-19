@@ -4,14 +4,14 @@ using Xunit.v3;
 public class IntegrationTests
 {
     [FactDependsOn]
-    public void Test_DatabaseSetup()
+    public void Test_DatabaseSetup_ExpectedToFail()
     {
         // Setup database
         Assert.False(true);
     }
 
-    [FactDependsOn(Dependencies = [nameof(Test_DatabaseSetup)])]
-    public void Test_CreateUser()
+    [FactDependsOn(Dependencies = [nameof(Test_DatabaseSetup_ExpectedToFail)])]
+    public void Test_CreateUser_ExpectedToSkip()
     {
         // Create user - depends on database setup
         Assert.True(true);
@@ -24,7 +24,7 @@ public class IntegrationTests
         Assert.True(true);
     }
 
-    [FactDependsOn(Dependencies = [nameof(Test_UserLogin), nameof(Test_CreateUser)])]
+    [FactDependsOn(Dependencies = [nameof(Test_UserLogin), nameof(Test_CreateUser_ExpectedToSkip)])]
     public void Test_UserProfile()
     {
         // Test user profile - depends on both user creation and login

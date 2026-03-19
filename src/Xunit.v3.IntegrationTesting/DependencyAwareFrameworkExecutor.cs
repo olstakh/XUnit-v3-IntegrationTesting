@@ -75,7 +75,17 @@ internal class DependencyAwareFrameworkExecutor(IXunitTestAssembly testAssembly)
             executionMessageSink.OnMessage(new DiagnosticMessage($"[TEST CASE EXECUTOR INFO] {testCases.Count} tests were requested - {necessaryTests.Count} will be executed due to dependencies between tests"));
         }
 
-        await base.RunTestCases(necessaryTests, executionMessageSink, executionOptions, cancellationToken);
+        var sink = WrapMessageSink(executionMessageSink, necessaryTests);
+        await base.RunTestCases(necessaryTests, sink, executionOptions, cancellationToken);
+    }
+
+    /// <summary>
+    /// Override to wrap or replace the message sink before test execution.
+    /// The default implementation returns the sink unchanged.
+    /// </summary>
+    protected virtual IMessageSink WrapMessageSink(IMessageSink messageSink, IReadOnlyCollection<IXunitTestCase> testCases)
+    {
+        return messageSink;
     }
 }
 
