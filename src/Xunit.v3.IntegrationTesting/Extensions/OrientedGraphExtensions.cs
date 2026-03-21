@@ -22,23 +22,20 @@ internal static class OrientedGraphExtensions
                 continue; // Skip non-Xunit test cases
             }
 
-            var dependsOnAttrs = testCase.TestMethod.Method.GetCustomAttribute<FactDependsOnAttribute>(false) ?? new(); // send diagnostic if null?
+            var dependsOnAttrs = testCase.TestMethod.Method.GetCustomAttribute<DependsOnAttributeBase>(true);
+
+            if (dependsOnAttrs == null)
+                continue;
+
             foreach (var dependency in dependsOnAttrs.Dependencies)
             {
-                var dependentTest = testCases.Where(tc => TestClassComparer.Instance.Equals(tc.TestMethod?.TestClass, testCase.TestClass) && tc.TestMethodName == dependency).ToList();
-                if (dependentTest.Count > 1)
+                var dependentTests = testCases.Where(tc => TestClassComparer.Instance.Equals(tc.TestMethod?.TestClass, testCase.TestClass) && tc.TestMethodName == dependency).ToList();
+                if (dependentTests.Count > 0)
                 {
-                    throw new Exception(
-                        string.Format(
-                            CultureInfo.CurrentCulture,
-                            "Multiple tests found with the same name '{0}' in class '{1}'. Total test cases: '{2}'. This is not allowed.",
-                            dependency,
-                            testCase.TestClassName,
-                            dependentTest.Count()));
-                }
-                if (dependentTest.Count > 0)
-                {
-                    graph.AddEdge(tc, dependentTest.Single());
+                    // Add edge to the first test case of the dependency.
+                    // For theories with multiple data rows, all cases share the same method name;
+                    // linking to any one of them is sufficient for topological ordering.
+                    graph.AddEdge(tc, dependentTests.First());
                 }
                 else
                 {

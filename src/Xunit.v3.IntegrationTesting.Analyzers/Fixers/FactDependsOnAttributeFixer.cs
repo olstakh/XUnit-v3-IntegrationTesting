@@ -24,6 +24,10 @@ public class FactDependsOnAttributeFixer : CodeFixProvider
         if (root == null)
             return;
 
+        var semanticModel = await context.Document.GetSemanticModelAsync(context.CancellationToken);
+        if (semanticModel == null)
+            return;
+
         foreach (var diagnostic in context.Diagnostics)
         {
             if (diagnostic.Id != AttributeUsageDescriptors.UseFactDependsOnAttribute.Id)
@@ -33,27 +37,34 @@ public class FactDependsOnAttributeFixer : CodeFixProvider
             var diagnosticSpan = diagnostic.Location.SourceSpan;
 
             var node = root.FindNode(diagnosticSpan);
-            if (node is not AttributeSyntax factAttribute)
+            if (node is not AttributeSyntax attribute)
                 return;
+
+            var attrType = semanticModel.GetTypeInfo(attribute).Type;
+            var theorySymbol = semanticModel.Compilation.GetTypeByMetadataName("Xunit.TheoryAttribute");
+            var isTheory = theorySymbol != null && SymbolEqualityComparer.Default.Equals(attrType, theorySymbol);
+
+            var replacementName = isTheory ? "TheoryDependsOn" : "FactDependsOn";
+            var title = isTheory ? "Replace [Theory] with [TheoryDependsOn]" : "Replace [Fact] with [FactDependsOn]";
 
             context.RegisterCodeFix(
                 CodeAction.Create(
-                    "Replace [Fact] with [FactDependsOn]",
-                    ct => ReplaceFactWithFactDependsOnAsync(context.Document, factAttribute, ct),
+                    title,
+                    ct => ReplaceAttributeAsync(context.Document, attribute, replacementName, ct),
                     nameof(FactDependsOnAttributeFixer)),
                 diagnostic);
         }
     }
 
-    private async Task<Document> ReplaceFactWithFactDependsOnAsync(Document document, AttributeSyntax factAttribute, CancellationToken cancellationToken)
+    private async Task<Document> ReplaceAttributeAsync(Document document, AttributeSyntax attribute, string replacementName, CancellationToken cancellationToken)
     {
         var root = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
         if (root == null)
             return document;
 
-        var factDependsOn = factAttribute.WithName(SyntaxFactory.IdentifierName("FactDependsOn"));
+        var replacement = attribute.WithName(SyntaxFactory.IdentifierName(replacementName));
 
-        SyntaxNode newRoot = root.ReplaceNode(factAttribute, factDependsOn);
+        SyntaxNode newRoot = root.ReplaceNode(attribute, replacement);
 
         return document.WithSyntaxRoot(newRoot);
     }

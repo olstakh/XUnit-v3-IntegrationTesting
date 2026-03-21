@@ -1,58 +1,22 @@
-using System.Collections.Generic;
-using System.Globalization;
-using System.Reflection;
 using Xunit.Sdk;
-using Xunit.v3;
-using Xunit.v3.IntegrationTesting.Extensions;
-using Xunit.v3.IntegrationTesting.Exceptions;
 
 namespace Xunit.v3.IntegrationTesting;
 
+/// <summary>
+/// Delegates to <see cref="DependsOnAttributeBase.Orderer"/>.
+/// Kept for backward compatibility and assembly-level attribute registration.
+/// </summary>
 public class DependencyAwareTestCaseOrderer : ITestCaseOrderer
 {
+    private readonly DependsOnAttributeBase.Orderer _inner = new();
+
+    /// <inheritdoc />
     public IEnumerable<TTestCase> OrderTestCases<TTestCase>(IEnumerable<TTestCase> testCases)
         where TTestCase : notnull, ITestCase
-    {
-        try
-        {
-            var graph = testCases.ToOrientedGraph(out var issues);
-            var orderedCases = graph.TopologicalSort();
+        => _inner.OrderTestCases(testCases);
 
-            foreach (var issue in issues)
-            {
-                TestContext.Current.SendDiagnosticMessage("[TEST CASE ORDERER WARNING] " + issue);
-            }
-
-            return orderedCases.Cast<TTestCase>();
-        }
-        catch (CircularDependencyException<IXunitTestCase> ex)
-        {
-            var circularDependencyMessage = string.Format(
-                CultureInfo.CurrentCulture,
-                "There's a circular dependency involving the following tests: {0}",
-                string.Join(" -> ", ex.DependencyCycle.Select(tc => $"{tc.TestClassName}.{tc.TestMethodName}")));
-
-            TestContext.Current.SendDiagnosticMessage("[TEST CASE ORDERER ERROR] " +
-                circularDependencyMessage);
-
-            // Return tests in original order instead of throwing, which causes
-            // a catastrophic failure in xUnit. The diagnostic message above is
-            // sufficient to surface the problem.
-            // This will result in test cases to be skipped anyway, since their dependency hasn't completed.
-            return testCases.ToArray();
-        }
-        catch (Exception ex)
-        {
-            var message = "An unexpected error occurred while ordering test cases: " + ex.Message;
-            TestContext.Current.SendDiagnosticMessage("[TEST CASE ORDERER ERROR] " + message);
-
-            // Return tests in original order instead of throwing.
-            return testCases.ToArray();
-        }
-    }
-
-    public IReadOnlyCollection<TTestCase> OrderTestCases<TTestCase>(IReadOnlyCollection<TTestCase> testCases) where TTestCase : notnull, ITestCase
-    {
-        return OrderTestCases(testCases.AsEnumerable()).ToList();
-    }
+    /// <inheritdoc />
+    public IReadOnlyCollection<TTestCase> OrderTestCases<TTestCase>(IReadOnlyCollection<TTestCase> testCases)
+        where TTestCase : notnull, ITestCase
+        => _inner.OrderTestCases(testCases);
 }

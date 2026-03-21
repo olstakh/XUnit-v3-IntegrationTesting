@@ -33,7 +33,8 @@ public class AttributeUsageFactDependsOnAnalyzer : DiagnosticAnalyzer
         var compilation = semanticModel.Compilation;
 
         var factAttributeSymbol = compilation.GetTypeByMetadataName("Xunit.FactAttribute");
-        if (factAttributeSymbol == null)
+        var theoryAttributeSymbol = compilation.GetTypeByMetadataName("Xunit.TheoryAttribute");
+        if (factAttributeSymbol == null && theoryAttributeSymbol == null)
             return;
 
         var classSymbol = semanticModel.GetDeclaredSymbol(classDecl);
@@ -43,18 +44,19 @@ public class AttributeUsageFactDependsOnAnalyzer : DiagnosticAnalyzer
         if (!ClassBelongsToCollectionWithDependencies(classSymbol, compilation))
             return;
 
-        // Report diagnostic on methods with [Fact]
+        // Report diagnostic on methods with [Fact] or [Theory]
         foreach (var member in classDecl.Members)
         {
             if (member is not MethodDeclarationSyntax method)
                 continue;
 
-            var factAttr = FindAttribute(method, factAttributeSymbol, semanticModel);
-            if (factAttr != null)
+            var matchedAttr = (factAttributeSymbol != null ? FindAttribute(method, factAttributeSymbol, semanticModel) : null)
+                ?? (theoryAttributeSymbol != null ? FindAttribute(method, theoryAttributeSymbol, semanticModel) : null);
+            if (matchedAttr != null)
             {
                 context.ReportDiagnostic(Diagnostic.Create(
                     AttributeUsageDescriptors.UseFactDependsOnAttribute,
-                    factAttr.GetLocation(),
+                    matchedAttr.GetLocation(),
                     method.Identifier.Text));
             }
         }
