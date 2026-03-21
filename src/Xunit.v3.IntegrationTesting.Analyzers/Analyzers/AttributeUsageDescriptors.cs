@@ -62,12 +62,12 @@ internal static class AttributeUsageDescriptors
 
     public static readonly DiagnosticDescriptor UseFactDependsOnAttribute = new DiagnosticDescriptor(
         "XIT0008",
-        "Use FactDependsOn attribute for tests in collections with dependencies",
-        "Method '{0}' uses [Fact] in a class belonging to a collection with dependencies; use [FactDependsOn] to enable dependency-aware skipping",
+        "Use FactDependsOn/TheoryDependsOn attribute for tests in collections with dependencies",
+        "Method '{0}' uses [Fact] or [Theory] in a class belonging to a collection with dependencies; use [FactDependsOn] or [TheoryDependsOn] to enable dependency-aware skipping",
         "Usage",
         DiagnosticSeverity.Warning,
         isEnabledByDefault: true,
-        description: "Test methods in classes belonging to collections with [DependsOnCollections] dependencies should use [FactDependsOn] instead of [Fact]. Without [FactDependsOn], the skip logic for upstream collection failures will not run and the test will execute even when its collection dependencies have failed.");
+        description: "Test methods in classes belonging to collections with [DependsOnCollections] dependencies should use [FactDependsOn] or [TheoryDependsOn] instead of [Fact] or [Theory]. Without dependency-aware attributes, the skip logic for upstream collection failures will not run and the test will execute even when its collection dependencies have failed.");
 
     public static readonly DiagnosticDescriptor InvalidDependsOnCollectionsAttributeUsage = new DiagnosticDescriptor(
         "XIT0009",

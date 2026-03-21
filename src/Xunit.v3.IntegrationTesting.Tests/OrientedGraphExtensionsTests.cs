@@ -29,7 +29,7 @@ public class OrientedGraphExtensionsTests
     }
 
     [Fact]
-    public void Validate_ThrowsIfMoreThanOneMethodWithSameName()
+    public void Validate_HandlesMultipleTestCasesWithSameMethodName()
     {
         var testClass = CreateTestClass("TestClassName");
         var testCaseA = CreateTestCase(testClass, "A");
@@ -37,8 +37,11 @@ public class OrientedGraphExtensionsTests
         var testCaseB = CreateTestCase(testClass, "B", dependencies: ["A"]);
 
         var lst = new List<IXunitTestCase>() { testCaseA, testCaseA_duplicate, testCaseB };
-        var ex = Assert.Throws<Exception>(() => lst.ToOrientedGraph<IXunitTestCase>(out var issues));
-        Assert.Equal("Multiple tests found with the same name 'A' in class 'TestClassName'. Total test cases: '2'. This is not allowed.", ex.Message);
+        var graph = lst.ToOrientedGraph<IXunitTestCase>(out var issues);
+        Assert.Empty(issues);
+
+        // B should depend on the first "A" test case found
+        Assert.Equal(new[] { testCaseA }, graph.GetNeighbors(testCaseB).ToList());
     }
 
     [Fact]
@@ -92,7 +95,7 @@ public class OrientedGraphExtensionsTests
         var methodInfoMock = new Mock<MethodInfo>(MockBehavior.Strict);
 
         methodInfoMock.SetupGet(m => m.MemberType).Returns(MemberTypes.Method);
-        methodInfoMock.Setup(m => m.GetCustomAttributes(typeof(FactDependsOnAttribute), false)).Returns(new[]
+        methodInfoMock.Setup(m => m.GetCustomAttributes(typeof(DependsOnAttributeBase), true)).Returns(new[]
         {
             new FactDependsOnAttribute()
             {
