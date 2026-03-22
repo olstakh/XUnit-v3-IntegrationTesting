@@ -1,4 +1,3 @@
-using System.Reflection;
 using Xunit.Sdk;
 using Xunit.v3;
 using Xunit.v3.IntegrationTesting;
@@ -15,10 +14,9 @@ internal class ExpectedOutcomeFramework : DependencyAwareFramework
     public ExpectedOutcomeFramework() : base() { }
     public ExpectedOutcomeFramework(string? configFile) : base(configFile) { }
 
-    protected override ITestFrameworkExecutor CreateExecutor(Assembly assembly)
+    protected override DependencyAwareFrameworkExecutor CreateExecutor(IXunitTestAssembly testAssembly)
     {
-        return new ExpectedOutcomeFrameworkExecutor(
-            new XunitTestAssembly(assembly, null, assembly.GetName().Version));
+        return new ExpectedOutcomeFrameworkExecutor(testAssembly);
     }
 }
 

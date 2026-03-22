@@ -5,8 +5,6 @@ namespace Xunit.v3.IntegrationTesting;
 
 public class DependencyAwareFramework : XunitTestFramework
 {
-    private readonly string? _configFile;
-
     public DependencyAwareFramework()
         : this(null)
     {
@@ -15,11 +13,25 @@ public class DependencyAwareFramework : XunitTestFramework
     public DependencyAwareFramework(string? configFile)
         : base(configFile)
     {
-        _configFile = configFile;
+        ConfigFile = configFile;
     }
 
-    protected override ITestFrameworkExecutor CreateExecutor(Assembly assembly)
+    /// <summary>
+    /// The configuration file path passed to the framework constructor.
+    /// </summary>
+    protected string? ConfigFile { get; }
+
+    protected sealed override ITestFrameworkExecutor CreateExecutor(Assembly assembly)
     {
-        return new DependencyAwareFrameworkExecutor(new XunitTestAssembly(assembly, _configFile, assembly.GetName().Version));
+        return CreateExecutor(new XunitTestAssembly(assembly, ConfigFile, assembly.GetName().Version));
+    }
+
+    /// <summary>
+    /// Creates the <see cref="DependencyAwareFrameworkExecutor"/> for the given test assembly.
+    /// Override this to return a custom executor subclass while reusing the default <see cref="IXunitTestAssembly"/> construction.
+    /// </summary>
+    protected virtual DependencyAwareFrameworkExecutor CreateExecutor(IXunitTestAssembly testAssembly)
+    {
+        return new DependencyAwareFrameworkExecutor(testAssembly);
     }
 }
