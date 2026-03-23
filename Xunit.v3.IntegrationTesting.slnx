@@ -1,0 +1,16 @@
+<Solution>
+  <Configurations>
+    <Platform Name="Any CPU" />
+    <Platform Name="x64" />
+    <Platform Name="x86" />
+  </Configurations>
+  <Folder Name="/src/">
+    <Project Path="src/Xunit.v3.IntegrationTesting.Analyzers.Tests/Xunit.v3.IntegrationTesting.Analyzers.Tests.csproj" />
+    <Project Path="src/Xunit.v3.IntegrationTesting.Analyzers/Xunit.v3.IntegrationTesting.Analyzers.csproj" />
+    <Project Path="src/Xunit.v3.IntegrationTesting.Tests/Xunit.v3.IntegrationTesting.Tests.csproj" />
+    <Project Path="src/Xunit.v3.IntegrationTesting/Xunit.v3.IntegrationTesting.csproj" />
+  </Folder>
+  <Folder Name="/src/Package/">
+    <Project Path="src/Package/Xunit.v3.IntegrationTesting.Package.csproj" />
+  </Folder>
+</Solution>
