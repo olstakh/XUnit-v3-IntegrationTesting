@@ -4,7 +4,7 @@ using Microsoft.CodeAnalysis.Testing;
 
 namespace Xunit.v3.IntegrationTesting.Analyzers.Tests;
 
-public class AttributeUsageFactDependsOnAnalyzerTests
+public class AttributeUsageDependsOnAttributeAnalyzerTests
 {
     [Fact]
     public async Task Validate_FactInClassWithDependsOnClasses_DiagnosticAsync()
@@ -192,8 +192,8 @@ public class AttributeUsageFactDependsOnAnalyzerTests
         await analyzer.RunAsync(TestContext.Current.CancellationToken);
     }
 
-    private static CSharpAnalyzerTest<AttributeUsageFactDependsOnAnalyzer, DefaultVerifier> GetAnalyzer(string source) =>
-        new CSharpAnalyzerTest<AttributeUsageFactDependsOnAnalyzer, DefaultVerifier>
+    private static CSharpAnalyzerTest<AttributeUsageDependsOnAttributeAnalyzer, DefaultVerifier> GetAnalyzer(string source) =>
+        new CSharpAnalyzerTest<AttributeUsageDependsOnAttributeAnalyzer, DefaultVerifier>
         {
             TestCode = source,
             TestState =

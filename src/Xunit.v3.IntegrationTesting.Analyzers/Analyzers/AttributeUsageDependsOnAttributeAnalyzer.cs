@@ -18,7 +18,7 @@ namespace Xunit.v3.IntegrationTesting.Analyzers;
 /// </para>
 /// </summary>
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
-public class AttributeUsageFactDependsOnAnalyzer : DiagnosticAnalyzer
+public class AttributeUsageDependsOnAttributeAnalyzer : DiagnosticAnalyzer
 {
     public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => [
         AttributeUsageDescriptors.UseFactDependsOnAttribute
