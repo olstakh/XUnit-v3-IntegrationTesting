@@ -53,12 +53,12 @@ internal static class AttributeUsageDescriptors
     public static readonly DiagnosticDescriptor NotSupportedTestFrameworkAttribute = new DiagnosticDescriptor(
         "XIT0007",
         "Not supported TestFramework assembly attribute",
-        "Assembly has existing [assembly: TestFramework(typeof(...))] attribute. Consider using DependencyAwareFramework instead. Otherwise filtered test runs might be affected.",
+        "Assembly has existing [assembly: TestFramework(typeof(...))] attribute. Consider extending DependencyAwareFramework instead of XunitTestFramework. Otherwise filtered test runs might be affected.",
         "Usage",
         DiagnosticSeverity.Warning,
         isEnabledByDefault: true,
         customTags: WellKnownDiagnosticTags.CompilationEnd,
-        description: "Assemblies using FactDependsOn attribute on tests should declare [assembly: TestFramework(typeof(DependencyAwareFramework))] to support full test discovery during filtered test execution.");
+        description: "Assemblies using FactDependsOn attribute on tests should declare [assembly: TestFramework(typeof(DependencyAwareFramework))] (or a type derived from it) to support full test discovery during filtered test execution.");
 
     public static readonly DiagnosticDescriptor UseFactDependsOnAttribute = new DiagnosticDescriptor(
         "XIT0008",

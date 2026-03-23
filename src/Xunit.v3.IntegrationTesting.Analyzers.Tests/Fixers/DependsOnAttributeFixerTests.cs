@@ -7,7 +7,7 @@ using Xunit.v3.IntegrationTesting.Analyzers.Fixers;
 
 namespace Xunit.v3.IntegrationTesting.Analyzers.Fixers.Tests;
 
-public class FactDependsOnAttributeFixerTests
+public class DependsOnAttributeFixerTests
 {
     [Fact]
     public async Task Replaces_Fact_With_FactDependsOnAsync()
@@ -56,7 +56,7 @@ public class FactDependsOnAttributeFixerTests
         await analyzer.RunAsync(TestContext.Current.CancellationToken);
     }
 
-    private static CodeFixTest<DefaultVerifier> GetAnalyzer(string source, string fixedCode) => new CSharpCodeFixTest<AttributeUsageFactDependsOnAnalyzer, FactDependsOnAttributeFixer, DefaultVerifier>
+    private static CodeFixTest<DefaultVerifier> GetAnalyzer(string source, string fixedCode) => new CSharpCodeFixTest<AttributeUsageDependsOnAttributeAnalyzer, DependsOnAttributeFixer, DefaultVerifier>
     {
         TestCode = source,
         FixedCode = fixedCode,

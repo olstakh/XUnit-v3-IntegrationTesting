@@ -10,8 +10,8 @@ using Microsoft.CodeAnalysis.CodeActions;
 
 namespace Xunit.v3.IntegrationTesting.Analyzers.Fixers;
 
-[ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(FactDependsOnAttributeFixer)), Shared]
-public class FactDependsOnAttributeFixer : CodeFixProvider
+[ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(DependsOnAttributeFixer)), Shared]
+public class DependsOnAttributeFixer : CodeFixProvider
 {
     public override ImmutableArray<string> FixableDiagnosticIds =>
         ImmutableArray.Create(AttributeUsageDescriptors.UseFactDependsOnAttribute.Id);
@@ -51,7 +51,7 @@ public class FactDependsOnAttributeFixer : CodeFixProvider
                 CodeAction.Create(
                     title,
                     ct => ReplaceAttributeAsync(context.Document, attribute, replacementName, ct),
-                    nameof(FactDependsOnAttributeFixer)),
+                    nameof(DependsOnAttributeFixer)),
                 diagnostic);
         }
     }
