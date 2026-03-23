@@ -76,7 +76,17 @@ public class DependencyAwareFrameworkExecutor(IXunitTestAssembly testAssembly) :
         }
 
         var sink = WrapMessageSink(executionMessageSink, necessaryTests);
-        await base.RunTestCases(necessaryTests, sink, executionOptions, cancellationToken);
+        await RunAssembly(necessaryTests, sink, executionOptions, cancellationToken);
+    }
+
+    /// <summary>
+    /// Executes the resolved set of test cases after dependency discovery and expansion.
+    /// Override this to substitute a custom assembly runner.
+    /// By default, delegates to <see cref="XunitTestFrameworkExecutor.RunTestCases"/>.
+    /// </summary>
+    protected virtual ValueTask RunAssembly(IReadOnlyCollection<IXunitTestCase> testCases, IMessageSink executionMessageSink, ITestFrameworkExecutionOptions executionOptions, CancellationToken cancellationToken)
+    {
+        return base.RunTestCases(testCases, executionMessageSink, executionOptions, cancellationToken);
     }
 
     /// <summary>

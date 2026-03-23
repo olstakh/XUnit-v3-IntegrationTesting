@@ -11,6 +11,11 @@ namespace Xunit.v3.IntegrationTesting.Analyzers;
 /// Analyzer that flags [Fact] methods in classes belonging to a collection with
 /// [DependsOnCollections] dependencies. Without [FactDependsOn], the skip logic
 /// for upstream collection failures will not run.
+/// <para>
+/// This diagnostic is suppressed when the assembly uses <c>DependencySkippingFramework</c>
+/// (or a type derived from it) as its test framework, since that framework handles
+/// collection-level skipping automatically at the runner level.
+/// </para>
 /// </summary>
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
 public class AttributeUsageFactDependsOnAnalyzer : DiagnosticAnalyzer
@@ -23,7 +28,51 @@ public class AttributeUsageFactDependsOnAnalyzer : DiagnosticAnalyzer
     {
         context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.None);
         context.EnableConcurrentExecution();
+        context.RegisterCompilationStartAction(OnCompilationStart);
+    }
+
+    private static void OnCompilationStart(CompilationStartAnalysisContext context)
+    {
+        var compilation = context.Compilation;
+
+        // If the assembly uses DependencySkippingFramework (or derived), suppress XIT0008
+        if (UsesDependencySkippingFramework(compilation))
+            return;
+
         context.RegisterSyntaxNodeAction(AnalyzeClassDeclaration, SyntaxKind.ClassDeclaration);
+    }
+
+    private static bool UsesDependencySkippingFramework(Compilation compilation)
+    {
+        var testFrameworkAttributeSymbol = compilation.GetTypeByMetadataName("Xunit.TestFrameworkAttribute");
+        var dependencySkippingFrameworkSymbol = compilation.GetTypeByMetadataName("Xunit.v3.IntegrationTesting.DependencySkippingFramework");
+
+        if (testFrameworkAttributeSymbol == null || dependencySkippingFrameworkSymbol == null)
+            return false;
+
+        foreach (var attr in compilation.Assembly.GetAttributes())
+        {
+            if (SymbolEqualityComparer.Default.Equals(attr.AttributeClass, testFrameworkAttributeSymbol)
+                && attr.ConstructorArguments.Length == 1)
+            {
+                var arg = attr.ConstructorArguments[0];
+                if (arg.Kind == TypedConstantKind.Type && IsDerivedFromOrEqual(arg.Value as INamedTypeSymbol, dependencySkippingFrameworkSymbol))
+                    return true;
+            }
+        }
+
+        return false;
+    }
+
+    private static bool IsDerivedFromOrEqual(INamedTypeSymbol? type, INamedTypeSymbol baseType)
+    {
+        while (type != null)
+        {
+            if (SymbolEqualityComparer.Default.Equals(type, baseType))
+                return true;
+            type = type.BaseType;
+        }
+        return false;
     }
 
     private static void AnalyzeClassDeclaration(SyntaxNodeAnalysisContext context)
