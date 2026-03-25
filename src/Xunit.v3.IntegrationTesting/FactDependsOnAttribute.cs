@@ -11,9 +11,13 @@ namespace Xunit.v3.IntegrationTesting;
 /// </summary>
 [XunitTestCaseDiscoverer(typeof(FactDiscoverer))]
 [AttributeUsage(AttributeTargets.Method, AllowMultiple = false)]
+[IgnoreXunitAnalyzersRule1013]
 public class FactDependsOnAttribute(
         [CallerFilePath] string? sourceFilePath = null,
         [CallerLineNumber] int sourceLineNumber = -1
     ) : DependsOnAttributeBase(sourceFilePath, sourceLineNumber)
 {
 }
+
+// see https://github.com/xunit/xunit/issues/3387#issuecomment-3750889641
+internal sealed class IgnoreXunitAnalyzersRule1013Attribute : Attribute { }
