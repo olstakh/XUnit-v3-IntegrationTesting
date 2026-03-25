@@ -107,6 +107,58 @@ public class AttributeUsageDependenciesAnalyzerTests
         await analyzer.RunAsync(TestContext.Current.CancellationToken);
     }
 
+    [Fact]
+    public async Task Validate_DependsOn_InheritedMethod_NoDiagnosticAsync()
+    {
+        var source = /* lang=c#-test */ @"
+            using Xunit.v3.IntegrationTesting;
+
+            public class BaseTests
+            {
+                [FactDependsOn]
+                public void BaseTest() { }
+            }
+
+            public class DerivedTests : BaseTests
+            {
+                [FactDependsOn(Dependencies = [nameof(BaseTest)])]
+                public void Test1() { }
+            }
+        ";
+
+        var analyzer = GetAnalyzer(source);
+
+        await analyzer.RunAsync(TestContext.Current.CancellationToken);
+    }
+
+    [Fact]
+    public async Task Validate_DependsOn_DeepInheritedMethod_NoDiagnosticAsync()
+    {
+        var source = /* lang=c#-test */ @"
+            using Xunit.v3.IntegrationTesting;
+
+            public class GrandparentTests
+            {
+                [FactDependsOn]
+                public void GrandparentTest() { }
+            }
+
+            public class ParentTests : GrandparentTests
+            {
+            }
+
+            public class ChildTests : ParentTests
+            {
+                [FactDependsOn(Dependencies = [nameof(GrandparentTest)])]
+                public void Test1() { }
+            }
+        ";
+
+        var analyzer = GetAnalyzer(source);
+
+        await analyzer.RunAsync(TestContext.Current.CancellationToken);
+    }
+
     private static AnalyzerTest<DefaultVerifier> GetAnalyzer(string source) => new CSharpAnalyzerTest<AttributeUsageDependenciesAnalyzer, DefaultVerifier>
     {
         TestCode = source,
