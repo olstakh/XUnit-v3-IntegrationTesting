@@ -114,15 +114,24 @@ public class AttributeUsageDependenciesAnalyzer : DiagnosticAnalyzer
         if (classSymbol == null)
             return;
 
-        var methodsByName = classSymbol.GetMembers().OfType<IMethodSymbol>().ToDictionary(m => m.Name);
-
         foreach (var depName in dependencies)
         {
-            if (!methodsByName.TryGetValue(depName, out var depMethod))
+            if (!HasMember(classSymbol, depName))
             {
-                // No method with such name
+                // No method with such name in the class or any of its base types
                 context.ReportDiagnostic(Diagnostic.Create(AttributeUsageDescriptors.DependsOnMissingMethod, methodDecl.Identifier.GetLocation(), methodSymbol.Name, depName));
             }
         }
+    }
+
+    private static bool HasMember(INamedTypeSymbol? type, string memberName)
+    {
+        while (type != null)
+        {
+            if (type.GetMembers(memberName).OfType<IMethodSymbol>().Any())
+                return true;
+            type = type.BaseType;
+        }
+        return false;
     }
 }
