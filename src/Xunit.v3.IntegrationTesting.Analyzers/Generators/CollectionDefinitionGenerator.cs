@@ -64,6 +64,9 @@ public class CollectionDefinitionGenerator : IIncrementalGenerator
     private static string GenerateCollectionDefinitionCode(CollectionDefinitionInfo info)
     {
         return $"""
+            /// <summary>
+            /// Auto-generated collection definition for <see cref="{info.ClassName}"/>.
+            /// </summary>
             [Xunit.CollectionDefinition("{info.CollectionName}", DisableParallelization = true)]
             [Xunit.v3.IntegrationTesting.DependsOnCollections({info.Dependencies})]
             public sealed class Generated_CollectionDefinition_{info.ClassName};
