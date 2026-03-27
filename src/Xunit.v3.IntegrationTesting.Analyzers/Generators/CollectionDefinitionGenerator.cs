@@ -65,7 +65,7 @@ public class CollectionDefinitionGenerator : IIncrementalGenerator
     {
         return $"""
             /// <summary>
-            /// Auto-generated collection definition for <see cref="{info.ClassName}"/>.
+            /// Auto-generated collection definition for <see cref="{info.FullyQualifiedClassName}"/>.
             /// </summary>
             [Xunit.CollectionDefinition("{info.CollectionName}", DisableParallelization = true)]
             [Xunit.v3.IntegrationTesting.DependsOnCollections({info.Dependencies})]
@@ -112,6 +112,7 @@ public class CollectionDefinitionGenerator : IIncrementalGenerator
         {
             CollectionName = collectionName,
             ClassName = classDeclaration.Identifier.Text,
+            FullyQualifiedClassName = classSymbol.ToDisplayString(s_format),
             Dependencies = string.Join(", ", dependenciesConstants.Where(dc => dc.Value is not null).Select(dc => $"typeof({dc.Value!.ToString()})"))
         };
     }
@@ -131,6 +132,7 @@ public class CollectionDefinitionGenerator : IIncrementalGenerator
     {
         public required string CollectionName { get; init; }
         public required string ClassName { get; init; }
+        public required string FullyQualifiedClassName { get; init; }
         public required string Dependencies { get; init; }
     }
 }
