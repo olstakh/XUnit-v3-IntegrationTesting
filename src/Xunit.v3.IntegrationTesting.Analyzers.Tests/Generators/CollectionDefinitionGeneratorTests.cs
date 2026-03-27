@@ -28,7 +28,7 @@ public class CollectionDefinitionGeneratorTests
 using System;
 
 /// <summary>
-/// Auto-generated collection definition for <see cref="MyTestClass1"/>.
+/// Auto-generated collection definition for <see cref="MyNamespace.MyTestClass1"/>.
 /// </summary>
 [Xunit.CollectionDefinition("MyTestClass1_Collection", DisableParallelization = true)]
 [Xunit.v3.IntegrationTesting.DependsOnCollections(typeof(MyNamespace.MyTestClass2), typeof(MyNamespace.MyTestClass3))]
@@ -62,7 +62,7 @@ public sealed class Generated_CollectionDefinition_MyTestClass1;
 using System;
 
 /// <summary>
-/// Auto-generated collection definition for <see cref="MyTestClass1"/>.
+/// Auto-generated collection definition for <see cref="MyNamespace.MyTestClass1"/>.
 /// </summary>
 [Xunit.CollectionDefinition("MyTestClass1_Collection", DisableParallelization = true)]
 [Xunit.v3.IntegrationTesting.DependsOnCollections()]
@@ -98,13 +98,13 @@ public sealed class Generated_CollectionDefinition_MyTestClass1;
 using System;
 
 /// <summary>
-/// Auto-generated collection definition for <see cref="MyTestClass1"/>.
+/// Auto-generated collection definition for <see cref="MyNamespace.MyTestClass1"/>.
 /// </summary>
 [Xunit.CollectionDefinition("Collection_A", DisableParallelization = true)]
 [Xunit.v3.IntegrationTesting.DependsOnCollections(typeof(MyNamespace.MyTestClass2))]
 public sealed class Generated_CollectionDefinition_MyTestClass1;
 /// <summary>
-/// Auto-generated collection definition for <see cref="MyTestClass2"/>.
+/// Auto-generated collection definition for <see cref="MyNamespace.MyTestClass2"/>.
 /// </summary>
 [Xunit.CollectionDefinition("Collection_B", DisableParallelization = true)]
 [Xunit.v3.IntegrationTesting.DependsOnCollections(typeof(MyNamespace.MyTestClass3))]
@@ -139,7 +139,7 @@ public sealed class Generated_CollectionDefinition_MyTestClass2;
                 Sources = { source },
                 AdditionalReferences = { typeof(FactDependsOnAttribute).Assembly }
             },
-            ReferenceAssemblies = ReferenceAssemblies.Net.Net90.AddPackages(new PackageIdentity[]
+            ReferenceAssemblies = ReferenceAssemblies.Net.Net100.AddPackages(new PackageIdentity[]
             {
                 new PackageIdentity("xunit.v3", "3.0.0")
             }.ToImmutableArray()),
@@ -160,7 +160,7 @@ public sealed class Generated_CollectionDefinition_MyTestClass2;
             },
             AdditionalReferences = { typeof(FactDependsOnAttribute).Assembly }
         },
-        ReferenceAssemblies = ReferenceAssemblies.Net.Net90.AddPackages(new PackageIdentity[]
+        ReferenceAssemblies = ReferenceAssemblies.Net.Net100.AddPackages(new PackageIdentity[]
         {
             new PackageIdentity("xunit.v3", "3.0.0")
         }.ToImmutableArray()),

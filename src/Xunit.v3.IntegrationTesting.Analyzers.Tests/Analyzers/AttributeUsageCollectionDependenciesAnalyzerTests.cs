@@ -81,7 +81,7 @@ public class AttributeUsageCollectionDependenciesAnalyzerTests
             {
                 AdditionalReferences = { typeof(FactDependsOnAttribute).Assembly }
             },
-            ReferenceAssemblies = ReferenceAssemblies.Net.Net90.AddPackages(new PackageIdentity[]
+            ReferenceAssemblies = ReferenceAssemblies.Net.Net100.AddPackages(new PackageIdentity[]
             {
                 new PackageIdentity("xunit.v3", "3.0.0")
             }.ToImmutableArray()),
