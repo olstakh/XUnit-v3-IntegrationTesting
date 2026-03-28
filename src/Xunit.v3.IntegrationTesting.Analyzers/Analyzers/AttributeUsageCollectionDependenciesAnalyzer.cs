@@ -7,15 +7,21 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace Xunit.v3.IntegrationTesting.Analyzers;
 
+/// <summary>
+/// Reports when [DependsOnCollections] is applied to a class that is not a collection
+/// definition, or when the collection definition is missing <c>DisableParallelization = true</c>.
+/// </summary>
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
 public class AttributeUsageCollectionDependenciesAnalyzer : DiagnosticAnalyzer
 {
+    /// <inheritdoc />
     public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
     [
         AttributeUsageDescriptors.InvalidDependsOnCollectionsAttributeUsage,
         AttributeUsageDescriptors.CollectionDefinitionMissingDisableParallelization,
     ];
 
+    /// <inheritdoc />
     public override void Initialize(AnalysisContext context)
     {
         context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.None);

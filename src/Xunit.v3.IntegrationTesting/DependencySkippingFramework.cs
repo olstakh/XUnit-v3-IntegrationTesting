@@ -18,8 +18,15 @@ namespace Xunit.v3.IntegrationTesting;
 /// </summary>
 public class DependencySkippingFramework : DependencyAwareFramework
 {
+    /// <summary>
+    /// Initializes a new instance with no configuration file.
+    /// </summary>
     public DependencySkippingFramework() : base() { }
 
+    /// <summary>
+    /// Initializes a new instance with the specified xUnit runner configuration file.
+    /// </summary>
+    /// <param name="configFile">Path to <c>xunit.runner.json</c>, or <c>null</c> for defaults.</param>
     public DependencySkippingFramework(string? configFile) : base(configFile) { }
 
     /// <inheritdoc />

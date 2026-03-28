@@ -10,14 +10,21 @@ using Microsoft.CodeAnalysis.CodeActions;
 
 namespace Xunit.v3.IntegrationTesting.Analyzers.Fixers;
 
+/// <summary>
+/// Code fix that replaces [Fact] with [FactDependsOn] and [Theory] with [TheoryDependsOn]
+/// when a test method is inside a class belonging to a collection with [DependsOnCollections] dependencies.
+/// </summary>
 [ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(DependsOnAttributeFixer)), Shared]
 public class DependsOnAttributeFixer : CodeFixProvider
 {
+    /// <inheritdoc />
     public override ImmutableArray<string> FixableDiagnosticIds =>
         ImmutableArray.Create(AttributeUsageDescriptors.UseFactDependsOnAttribute.Id);
 
+    /// <inheritdoc />
     public override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
 
+    /// <inheritdoc />
     public override async Task RegisterCodeFixesAsync(CodeFixContext context)
     {
         var root = await context.Document.GetSyntaxRootAsync(context.CancellationToken);

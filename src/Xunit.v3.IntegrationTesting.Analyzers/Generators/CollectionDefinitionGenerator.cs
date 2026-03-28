@@ -8,9 +8,15 @@ using Xunit.v3.IntegrationTesting.Analyzers.Helpers;
 
 namespace Xunit.v3.IntegrationTesting.Analyzers.Generators;
 
+/// <summary>
+/// Incremental source generator that auto-generates xUnit collection definitions and
+/// [Collection] attributes from [DependsOnClasses] declarations, so users can express
+/// class-level dependencies without manually wiring up collection infrastructure.
+/// </summary>
 [Generator(LanguageNames.CSharp)]
 public class CollectionDefinitionGenerator : IIncrementalGenerator
 {
+    /// <inheritdoc />
     public void Initialize(IncrementalGeneratorInitializationContext context)
     {
         IncrementalValueProvider<ImmutableArray<object?>> data =

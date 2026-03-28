@@ -7,13 +7,19 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace Xunit.v3.IntegrationTesting.Analyzers;
 
+/// <summary>
+/// Reports when a [FactDependsOn] or [TheoryDependsOn] dependency string names a method
+/// that does not exist in the same test class.
+/// </summary>
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
 public class AttributeUsageDependenciesAnalyzer : DiagnosticAnalyzer
 {
+    /// <inheritdoc />
     public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => [
         AttributeUsageDescriptors.DependsOnMissingMethod,
     ];
 
+    /// <inheritdoc />
     public override void Initialize(AnalysisContext context)
     {
         context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.None);
