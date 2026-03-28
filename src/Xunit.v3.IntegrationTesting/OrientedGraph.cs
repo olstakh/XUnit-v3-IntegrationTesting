@@ -72,6 +72,70 @@ internal class OrientedGraph<TNode>
         return sorted;
     }
 
+    /// <summary>
+    /// Performs a topological sort using Kahn's algorithm with a tiebreaker comparison
+    /// for nodes at the same dependency level. This allows secondary ordering
+    /// (e.g., by priority) among nodes that have no dependency relationship.
+    /// </summary>
+    public IEnumerable<TNode> TopologicalSort(Comparison<TNode> tieBreaker)
+    {
+        // Build reverse adjacency (who depends on me?) and compute in-degrees
+        var inDegree = new Dictionary<TNode, int>(_comparer);
+        var dependents = new Dictionary<TNode, List<TNode>>(_comparer);
+
+        foreach (var node in GetAllNodes())
+        {
+            if (!inDegree.ContainsKey(node))
+                inDegree[node] = 0;
+            if (!dependents.ContainsKey(node))
+                dependents[node] = new List<TNode>();
+        }
+
+        foreach (var node in GetAllNodes())
+        {
+            foreach (var dep in GetNeighbors(node))
+            {
+                inDegree[node]++;
+                dependents[dep].Add(node);
+            }
+        }
+
+        // Ready queue: nodes with no dependencies, sorted by tiebreaker
+        var ready = new List<TNode>();
+        foreach (var kvp in inDegree)
+        {
+            if (kvp.Value == 0)
+                ready.Add(kvp.Key);
+        }
+        ready.Sort(tieBreaker);
+
+        var sorted = new List<TNode>();
+        while (ready.Count > 0)
+        {
+            var current = ready[0];
+            ready.RemoveAt(0);
+            sorted.Add(current);
+
+            foreach (var dependent in dependents[current])
+            {
+                inDegree[dependent]--;
+                if (inDegree[dependent] == 0)
+                {
+                    ready.Add(dependent);
+                    ready.Sort(tieBreaker);
+                }
+            }
+        }
+
+        if (sorted.Count != inDegree.Count)
+        {
+            // Cycle detected - delegate to DFS-based sort for proper cycle reporting
+            TopologicalSort();
+        }
+
+        return sorted;
+    }
+
     public IEnumerable<TNode> GetSubTree(TNode node)
     {
         var visited = new HashSet<TNode>(_comparer);
