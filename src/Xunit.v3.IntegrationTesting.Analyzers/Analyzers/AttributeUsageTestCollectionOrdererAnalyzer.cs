@@ -7,14 +7,20 @@ using Xunit.v3.IntegrationTesting.Analyzers.Helpers;
 
 namespace Xunit.v3.IntegrationTesting.Analyzers;
 
+/// <summary>
+/// Reports when [DependsOnCollections] is used but no compatible test collection orderer
+/// (DependencyAwareTestCollectionOrderer or a subclass) is registered at the assembly level.
+/// </summary>
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
 public class AttributeUsageTestCollectionOrdererAnalyzer : DiagnosticAnalyzer
 {
+    /// <inheritdoc />
     public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => [
         AttributeUsageDescriptors.MissingTestCollectionOrderer,
         AttributeUsageDescriptors.NotSupportedTestCollectionOrderer,
     ];
 
+    /// <inheritdoc />
     public override void Initialize(AnalysisContext context)
     {
         context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.None);

@@ -8,8 +8,16 @@ using Xunit.v3.IntegrationTesting.Comparers;
 
 namespace Xunit.v3.IntegrationTesting;
 
+/// <summary>
+/// Executor that expands a filtered set of test cases to include all transitive
+/// dependencies (both method-level and collection-level) before handing them to the
+/// assembly runner. This ensures upstream tests run first so that dependent tests can
+/// be skipped if their prerequisites fail.
+/// </summary>
+/// <param name="testAssembly">The test assembly being executed.</param>
 public class DependencyAwareFrameworkExecutor(IXunitTestAssembly testAssembly) : XunitTestFrameworkExecutor(testAssembly)
 {
+    /// <inheritdoc />
     public override async ValueTask RunTestCases(IReadOnlyCollection<IXunitTestCase> testCases, IMessageSink executionMessageSink, ITestFrameworkExecutionOptions executionOptions, CancellationToken cancellationToken)
     {
         executionMessageSink.OnMessage(new DiagnosticMessage("Running test cases using custom dependency-aware executor..."));

@@ -10,6 +10,7 @@ namespace Xunit.v3.IntegrationTesting.Comparers;
 public class TestCollectionComparerLocal<TTestCollection> : IEqualityComparer<TTestCollection>
     where TTestCollection : ITestCollection
 {
+    /// <summary>Shared singleton instance.</summary>
     public static readonly TestCollectionComparerLocal<TTestCollection> Instance = new();
 
     /// <inheritdoc/>

@@ -7,15 +7,21 @@ using Xunit.v3.IntegrationTesting.Analyzers.Helpers;
 
 namespace Xunit.v3.IntegrationTesting.Analyzers;
 
+/// <summary>
+/// Reports when [FactDependsOn] is used but no compatible test case orderer
+/// (DependencyAwareTestCaseOrderer or a subclass) is registered at the class or assembly level.
+/// </summary>
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
 public class AttributeUsageTestCaseOrdererAnalyzer : DiagnosticAnalyzer
 {
+    /// <inheritdoc />
     public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => [
         AttributeUsageDescriptors.NotSupportedClassLevelTestCaseOrderer,
         AttributeUsageDescriptors.NotSupportedAssemblyLevelTestCaseOrderer,
         AttributeUsageDescriptors.MissingTestCaseAndCollectionOrderer
     ];
 
+    /// <inheritdoc />
     public override void Initialize(AnalysisContext context)
     {
         context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.None);

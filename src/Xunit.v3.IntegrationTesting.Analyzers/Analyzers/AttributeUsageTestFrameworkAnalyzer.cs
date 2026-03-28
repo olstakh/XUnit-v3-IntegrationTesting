@@ -12,11 +12,13 @@ namespace Xunit.v3.IntegrationTesting.Analyzers;
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
 public class AttributeUsageTestFrameworkAnalyzer : DiagnosticAnalyzer
 {
+    /// <inheritdoc />
     public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => [
         AttributeUsageDescriptors.MissingTestFrameworkAttribute,
         AttributeUsageDescriptors.NotSupportedTestFrameworkAttribute
     ];
 
+    /// <inheritdoc />
     public override void Initialize(AnalysisContext context)
     {
         context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.None);

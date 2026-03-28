@@ -20,10 +20,12 @@ namespace Xunit.v3.IntegrationTesting.Analyzers;
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
 public class AttributeUsageDependsOnAttributeAnalyzer : DiagnosticAnalyzer
 {
+    /// <inheritdoc />
     public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => [
         AttributeUsageDescriptors.UseFactDependsOnAttribute
     ];
 
+    /// <inheritdoc />
     public override void Initialize(AnalysisContext context)
     {
         context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.None);
