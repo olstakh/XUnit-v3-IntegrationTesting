@@ -3,6 +3,7 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Xunit.v3.IntegrationTesting.Analyzers.Helpers;
 
 namespace Xunit.v3.IntegrationTesting.Analyzers;
 
@@ -55,7 +56,7 @@ public class AttributeUsageTestCollectionOrdererAnalyzer : DiagnosticAnalyzer
                 if (attr.ConstructorArguments.Length == 1)
                 {
                     var arg = attr.ConstructorArguments[0];
-                    if (arg.Kind == TypedConstantKind.Type && SymbolEqualityComparer.Default.Equals(arg.Value as INamedTypeSymbol, dependencyAwareCollectionOrdererSymbol))
+                    if (arg.Kind == TypedConstantKind.Type && TypeHierarchyHelper.IsOrDerivesFrom(arg.Value as INamedTypeSymbol, dependencyAwareCollectionOrdererSymbol))
                     {
                         break;
                     }

@@ -153,6 +153,59 @@ public class AttributeUsageTestCaseOrdererAnalyzerTests
     }
 
     [Fact]
+    public async Task Validate_DependsOn_ClassSubtypeTestCaseOrderer_NoDiagnosticAsync()
+    {
+        var source = /* lang=c#-test */ @"
+            using Xunit;
+            using Xunit.Sdk;
+            using Xunit.v3.IntegrationTesting;
+
+            public class MyCustomOrderer : DependencyAwareTestCaseOrderer
+            {
+                protected override int CompareTestCases(ITestCase x, ITestCase y) => 0;
+            }
+
+            [TestCaseOrderer(typeof(MyCustomOrderer))]
+            public class MyTests
+            {
+                [FactDependsOn]
+                public void Test1() { }
+            }
+        ";
+
+        var analyzer = GetAnalyzer(source);
+
+        await analyzer.RunAsync(TestContext.Current.CancellationToken);
+    }
+
+    [Fact]
+    public async Task Validate_DependsOn_AssemblySubtypeTestCaseOrderer_NoDiagnosticAsync()
+    {
+        var source = /* lang=c#-test */ @"
+            using Xunit;
+            using Xunit.Sdk;
+            using Xunit.v3.IntegrationTesting;
+
+            [assembly: TestCaseOrderer(typeof(MyCustomOrderer))]
+
+            public class MyCustomOrderer : DependencyAwareTestCaseOrderer
+            {
+                protected override int CompareTestCases(ITestCase x, ITestCase y) => 0;
+            }
+
+            public class MyTests
+            {
+                [FactDependsOn]
+                public void Test1() { }
+            }
+        ";
+
+        var analyzer = GetAnalyzer(source);
+
+        await analyzer.RunAsync(TestContext.Current.CancellationToken);
+    }
+
+    [Fact]
     public async Task Validate_NoDependsOn_NoDiagnosticAsync()
     {
         var source = /* lang=c#-test */ @"

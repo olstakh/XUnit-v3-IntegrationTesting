@@ -3,6 +3,7 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Xunit.v3.IntegrationTesting.Analyzers.Helpers;
 
 namespace Xunit.v3.IntegrationTesting.Analyzers;
 
@@ -83,7 +84,7 @@ public class AttributeUsageTestCaseOrdererAnalyzer : DiagnosticAnalyzer
                             attr.ArgumentList.Arguments[0].Expression is TypeOfExpressionSyntax typeOfExpr)
                         {
                             var typeSymbol = semanticModel.GetTypeInfo(typeOfExpr.Type).Type;
-                            if (SymbolEqualityComparer.Default.Equals(typeSymbol, dependencyAwareOrdererSymbol))
+                            if (TypeHierarchyHelper.IsOrDerivesFrom(typeSymbol, dependencyAwareOrdererSymbol))
                             {
                                 break;
                             }
@@ -118,7 +119,7 @@ public class AttributeUsageTestCaseOrdererAnalyzer : DiagnosticAnalyzer
                 if (attr.ConstructorArguments.Length == 1)
                 {
                     var arg = attr.ConstructorArguments[0];
-                    if (arg.Kind == TypedConstantKind.Type && SymbolEqualityComparer.Default.Equals(arg.Value as INamedTypeSymbol, dependencyAwareOrdererSymbol))
+                    if (arg.Kind == TypedConstantKind.Type && TypeHierarchyHelper.IsOrDerivesFrom(arg.Value as INamedTypeSymbol, dependencyAwareOrdererSymbol))
                     {
                         break;
                     }
@@ -145,7 +146,7 @@ public class AttributeUsageTestCaseOrdererAnalyzer : DiagnosticAnalyzer
                 if (attr.ConstructorArguments.Length == 1)
                 {
                     var arg = attr.ConstructorArguments[0];
-                    if (arg.Kind == TypedConstantKind.Type && SymbolEqualityComparer.Default.Equals(arg.Value as INamedTypeSymbol, dependencyAwareCollectionOrdererSymbol))
+                    if (arg.Kind == TypedConstantKind.Type && TypeHierarchyHelper.IsOrDerivesFrom(arg.Value as INamedTypeSymbol, dependencyAwareCollectionOrdererSymbol))
                     {
                         break;
                     }

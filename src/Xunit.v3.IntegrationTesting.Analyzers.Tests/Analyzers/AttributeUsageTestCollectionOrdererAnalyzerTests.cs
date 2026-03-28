@@ -70,6 +70,30 @@ public class AttributeUsageTestCollectionOrdererAnalyzerTests
         await analyzer.RunAsync(TestContext.Current.CancellationToken);
     }
 
+    [Fact]
+    public async Task Validate_DependsOn_SubtypeCollectionOrderer_NoDiagnosticAsync()
+    {
+        var source = /* lang=c#-test */ @"
+            using Xunit;
+            using Xunit.Sdk;
+            using Xunit.v3.IntegrationTesting;
+
+            [assembly: TestCollectionOrderer(typeof(MyCustomCollectionOrderer))]
+
+            public class MyCustomCollectionOrderer : DependencyAwareTestCollectionOrderer
+            {
+                protected override int CompareTestCollections(ITestCollection x, ITestCollection y) => 0;
+            }
+
+            [DependsOnCollections]
+            public sealed class MyCollection;
+        ";
+
+        var analyzer = GetAnalyzer(source);
+
+        await analyzer.RunAsync(TestContext.Current.CancellationToken);
+    }
+
     private static AnalyzerTest<DefaultVerifier> GetAnalyzer(string source) => new CSharpAnalyzerTest<AttributeUsageTestCollectionOrdererAnalyzer, DefaultVerifier>
     {
         TestCode = source,
