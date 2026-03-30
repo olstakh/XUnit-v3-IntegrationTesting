@@ -80,7 +80,7 @@ Package includes custom `TestCaseOrderer`, which guarantees tests are run in the
 
 | Attribute | Target | Description |
 |-----------|--------|-------------|
-| `[FactDependsOn]` | Method | Replaces `[Fact]`. Supports `Dependencies` property to declare test-level dependencies. Records test results and participates in dependency-aware skipping. |
+| `[FactDependsOn]` | Method | Replaces `[Fact]`. Supports `Dependencies` property to declare test-level dependencies. Contains skip logic that checks whether upstream dependencies passed before running the test. |
 | `[TheoryDependsOn]` | Method | Replaces `[Theory]`. Same as `[FactDependsOn]` but for parameterized tests. |
 | `[DependsOnCollections]` | Class (collection definition) | Declares that a collection depends on one or more other collections. Requires `DisableParallelization = true` on the `[CollectionDefinition]`. |
 | `[DependsOnClasses]` | Class | Simplified syntax for class-level dependencies. A source generator creates the corresponding `[CollectionDefinition]` and `[DependsOnCollections]` automatically. |
@@ -151,8 +151,8 @@ Following rules are included as part of the package:
 
 # Common questions
 
-Q. Why do i need to change `Fact` to `FactDependsOn` for all the tests, and not just for those that have dependencies?
-A. `FactDependsOn` implements `IBeforeAfterTestAttribute` interface, making note of a current test result, in case someone depends on it. Otherwise if a test with `FactDependsOn` attribute depends on a test with `Fact` attribute - it will always be skipped. If you'd rather not change your attributes, use `DependencySkippingFramework` which handles collection-level skipping at the runner level for all test attributes.
+Q. Why do i need to use `FactDependsOn` instead of `Fact`?
+A. `FactDependsOn` contains built-in skip logic that checks whether upstream dependencies (both test-level and collection-level) have passed before running the test. A regular `[Fact]` has no such logic, so it will run even when its dependencies have failed. You need `FactDependsOn` when declaring test-level dependencies via the `Dependencies` property, or when tests belong to collections with `[DependsOnCollections]` / `[DependsOnClasses]` attributes. If you'd rather not change your attributes, use `DependencySkippingFramework` which handles collection-level skipping at the runner level for all test attributes — though method-level dependencies still require `[FactDependsOn]`.
 
 Q. I have a custom `SkipWhen` / `SkipUnless` / `SkipType` properties defined in `Fact` attribute - will they be respected when it's `FactDependsOn` attribute?
 A. Yes. When decision is computed whether or not to skip the test - first the original `SkipWhen` / `SkipUnless` is executed, and if the result is that we should proceed - then dependency logic will be run. The original `Skip` message (defined by user) is appended with `or One or more dependencies were skipped or had failed.`
