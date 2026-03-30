@@ -1,7 +1,6 @@
 using System.Collections.Concurrent;
 using System.Reflection;
 using Xunit.Sdk;
-using Xunit.v3;
 
 namespace Xunit.v3.IntegrationTesting.Tests;
 

@@ -1,6 +1,4 @@
-﻿using System;
-using System.Runtime.CompilerServices;
-using Xunit.v3;
+﻿using System.Runtime.CompilerServices;
 
 namespace Xunit.v3.IntegrationTesting;
 

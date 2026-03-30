@@ -1,5 +1,4 @@
 using Xunit.Sdk;
-using Xunit.v3;
 
 namespace Xunit.v3.IntegrationTesting.Comparers;
 

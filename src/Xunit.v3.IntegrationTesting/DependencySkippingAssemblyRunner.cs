@@ -1,8 +1,3 @@
-using System.Reflection;
-using Xunit.Sdk;
-using Xunit.v3;
-using Xunit.v3.IntegrationTesting.Extensions;
-
 namespace Xunit.v3.IntegrationTesting;
 
 /// <summary>

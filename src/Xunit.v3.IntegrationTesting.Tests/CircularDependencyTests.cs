@@ -1,7 +1,3 @@
-using Xunit;
-using Xunit.v3;
-using Xunit.v3.IntegrationTesting;
-
 namespace Xunit.v3.IntegrationTesting.Tests;
 
 [TestCaseOrderer(typeof(DependencyAwareTestCaseOrderer))]

@@ -1,7 +1,6 @@
 using System.Globalization;
 using System.Reflection;
 using Xunit.Sdk;
-using Xunit.v3;
 using Xunit.v3.IntegrationTesting.Comparers;
 
 namespace Xunit.v3.IntegrationTesting.Extensions;
