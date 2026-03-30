@@ -28,7 +28,7 @@ internal static class OrientedGraphExtensions
 
             foreach (var dependency in dependsOnAttrs.Dependencies)
             {
-                var dependentTests = testCases.Where(tc => TestClassComparer.Instance.Equals(tc.TestMethod?.TestClass, testCase.TestClass) && tc.TestMethodName == dependency).ToList();
+                var dependentTests = testCases.Where(dtc => TestClassComparer.Instance.Equals(dtc.TestMethod?.TestClass, testCase.TestClass) && dtc.TestMethodName == dependency).ToList();
                 if (dependentTests.Count > 0)
                 {
                     // Add edge to the first test case of the dependency.

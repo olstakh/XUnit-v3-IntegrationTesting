@@ -62,8 +62,7 @@ public class DependencyAwareTestCollectionOrderer : ITestCollectionOrderer
             TestContext.Current.SendDiagnosticMessage("[TEST COLLECTION ORDERER ERROR] " +
                 circularDependencyMessage);
 
-            throw new TestPipelineException(
-                circularDependencyMessage, ex);
+            return testCollections; // Return original order to allow tests to run, even if dependencies can't be honored
         }
         catch (Exception ex)
         {
