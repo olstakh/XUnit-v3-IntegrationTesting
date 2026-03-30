@@ -18,9 +18,9 @@ internal static class TypeExtensions
             return collectionAttr.Name;
         }
 
-        // Fallback: the type has neither [CollectionDefinition] nor ICollectionAttribute.
-        // This shouldn't happen with valid usage (XIT0009 enforces it), but return a
-        // deterministic name rather than throwing.
+        // TODO: Handle when CollectionBehavior is set to CollectionBehavior.CollectionPerAssembly.
+        // In that case - the collection name will be "Test collection for " + TestAssembly.AssemblyName
+        // Below returns assumes CollectionPerClass.
         return CollectionAttribute.GetCollectionNameForType(type);
     }
 }
