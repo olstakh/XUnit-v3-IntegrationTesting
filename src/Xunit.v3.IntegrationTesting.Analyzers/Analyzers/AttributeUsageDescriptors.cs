@@ -104,4 +104,22 @@ internal static class AttributeUsageDescriptors
         DiagnosticSeverity.Warning,
         isEnabledByDefault: true,
         description: "Usage of [DependsOnCollections] requires DependencyAwareTestCollectionOrderer set as TestCollectionOrderer, in order for test collections to be ordered according to defined dependencies.");
+
+    public static readonly DiagnosticDescriptor DependsOnClassesDependencyAlreadyInCollection = new DiagnosticDescriptor(
+        "XIT0013",
+        "DependsOnClasses dependency type already belongs to a collection",
+        "Dependency type '{0}' already belongs to a collection; use [DependsOnCollections] directly to declare collection-level dependencies",
+        "Usage",
+        DiagnosticSeverity.Warning,
+        isEnabledByDefault: true,
+        description: "[DependsOnClasses] should only reference classes that are not already part of a collection. If the dependency class has [Collection] or [CollectionDefinition], use [DependsOnCollections] on the collection definition instead.");
+
+    public static readonly DiagnosticDescriptor DependsOnClassesDependencyNotInCollection = new DiagnosticDescriptor(
+        "XIT0014",
+        "DependsOnClasses dependency type is not part of a named collection",
+        "Dependency type '{0}' is not part of a named collection; add [DependsOnClasses(Name = \"...\")] to it so a collection definition is generated",
+        "Usage",
+        DiagnosticSeverity.Warning,
+        isEnabledByDefault: true,
+        description: "Each dependency in [DependsOnClasses] must belong to a named collection so that collection ordering works reliably. Add [DependsOnClasses(Name = \"...\")] to the dependency class to ensure a collection definition is auto-generated for it.");
 }

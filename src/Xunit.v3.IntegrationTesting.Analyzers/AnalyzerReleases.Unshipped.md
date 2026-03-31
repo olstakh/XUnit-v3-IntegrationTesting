@@ -17,3 +17,5 @@ XIT0009 | Usage | Warning | Apply DependsOnCollections attribute only to collect
 XIT0010 | Usage | Warning | CollectionDefinition with DependsOnCollections must have DisableParallelization set to true
 XIT0011 | Usage | Warning | DependsOnCollections attribute requires assembly-level TestCollectionOrderer
 XIT0012 | Usage | Warning | DependsOnCollections attribute requires assembly-level TestCollectionOrderer to be DependencyAwareTestCollectionOrderer to respect test dependencies
+XIT0013 | Usage | Warning | DependsOnClasses dependency type already belongs to a collection
+XIT0014 | Usage | Warning | DependsOnClasses dependency type is not part of a named collection
