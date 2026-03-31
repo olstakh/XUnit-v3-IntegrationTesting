@@ -1,5 +1,3 @@
-using Xunit.v3;
-
 namespace Xunit.v3.IntegrationTesting;
 
 /// <summary>

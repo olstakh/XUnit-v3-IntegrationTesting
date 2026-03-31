@@ -1,8 +1,6 @@
-using System;
 using System.Globalization;
 using System.Reflection;
 using Xunit.Sdk;
-using Xunit.v3;
 using Xunit.v3.IntegrationTesting.Extensions;
 
 namespace Xunit.v3.IntegrationTesting;
@@ -216,7 +214,7 @@ internal class SkipValidator
         if (currentTestCase == null)
             return false; // send diagnostic later
 
-        if (ShouldSkipBasedOnCollectionDependencies(currentTestCase))
+        if (ShouldSkipBasedOnCollectionDependencies(currentTestCase.TestCollection))
             return true;
 
         if (ShouldSkipBasedOnMethodDependencies(currentTestCase))
@@ -225,10 +223,10 @@ internal class SkipValidator
         return false;
     }
 
-    private static bool ShouldSkipBasedOnCollectionDependencies(IXunitTestCase currentTestCase)
+    internal static bool ShouldSkipBasedOnCollectionDependencies(IXunitTestCollection currentTestCaseCollection)
     {
         // Get dependencyOn attribute
-        var dependsOn = currentTestCase.TestCollection.CollectionDefinition?.GetCustomAttribute<DependsOnCollectionsAttribute>(false);
+        var dependsOn = currentTestCaseCollection.CollectionDefinition?.GetCustomAttribute<DependsOnCollectionsAttribute>(false);
 
         if (dependsOn == null)
             return false;

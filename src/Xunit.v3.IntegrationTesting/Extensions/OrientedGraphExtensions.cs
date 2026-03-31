@@ -1,7 +1,6 @@
 using System.Globalization;
 using System.Reflection;
 using Xunit.Sdk;
-using Xunit.v3;
 using Xunit.v3.IntegrationTesting.Comparers;
 
 namespace Xunit.v3.IntegrationTesting.Extensions;
@@ -29,7 +28,7 @@ internal static class OrientedGraphExtensions
 
             foreach (var dependency in dependsOnAttrs.Dependencies)
             {
-                var dependentTests = testCases.Where(tc => TestClassComparer.Instance.Equals(tc.TestMethod?.TestClass, testCase.TestClass) && tc.TestMethodName == dependency).ToList();
+                var dependentTests = testCases.Where(dtc => TestClassComparer.Instance.Equals(dtc.TestMethod?.TestClass, testCase.TestClass) && dtc.TestMethodName == dependency).ToList();
                 if (dependentTests.Count > 0)
                 {
                     // Add edge to the first test case of the dependency.

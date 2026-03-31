@@ -130,6 +130,7 @@ public class OrientedGraphExtensionsTests
     private IXunitTestCase CreateTestCase(IXunitTestClass testClass, IXunitTestMethod testMethod)
     {
         var testCaseMock = new Mock<IXunitTestCase>(MockBehavior.Strict);
+        var uniqueID = Guid.NewGuid().ToString();
 
         testCaseMock.SetupGet(tc => tc.TestMethod).Returns(testMethod);
         testCaseMock.As<ITestCase>().SetupGet(tc => tc.TestMethod).Returns(testMethod);
@@ -139,6 +140,8 @@ public class OrientedGraphExtensionsTests
         testCaseMock.As<ITestCase>().SetupGet(tc => tc.TestMethodName).Returns(testMethod.MethodName);
         testCaseMock.SetupGet(tc => tc.TestClassName).Returns(testClass.TestClassName);
         testCaseMock.As<ITestCase>().SetupGet(tc => tc.TestClassName).Returns(testClass.TestClassName);
+        testCaseMock.SetupGet(tc => tc.UniqueID).Returns(uniqueID);
+        testCaseMock.As<ITestCaseMetadata>().SetupGet(tc => tc.UniqueID).Returns(uniqueID);
 
         return testCaseMock.Object;
     }

@@ -17,7 +17,7 @@ public class DependsOnCollectionsAttribute(params Type[] dependencies) : Attribu
     /// <summary>
     /// The collection definition types that this collection depends on.
     /// </summary>
-    public Type[] Dependencies { get; } = dependencies;
+    public Type[] Dependencies { get; } = dependencies ?? [];
 
     /// <summary>
     /// Test collection orderer that orders collections based on dependencies declared via <see cref="DependsOnCollectionsAttribute"/>.

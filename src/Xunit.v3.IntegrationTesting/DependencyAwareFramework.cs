@@ -1,4 +1,3 @@
-using Xunit.v3;
 using System.Reflection;
 
 namespace Xunit.v3.IntegrationTesting;

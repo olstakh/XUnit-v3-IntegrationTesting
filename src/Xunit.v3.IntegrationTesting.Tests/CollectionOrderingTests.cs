@@ -1,6 +1,3 @@
-using Xunit;
-using Xunit.v3.IntegrationTesting;
-
 namespace Xunit.v3.IntegrationTesting.Tests.CollectionOrderingTests;
 
 [DependsOnClasses(Dependencies = [typeof(ClassB), typeof(ClassC)], Name = "DefinitionA")]

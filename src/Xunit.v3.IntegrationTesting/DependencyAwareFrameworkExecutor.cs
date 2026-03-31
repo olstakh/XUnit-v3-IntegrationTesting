@@ -1,8 +1,5 @@
-using System.Globalization;
-using System.Security.Cryptography;
 using Xunit.Internal;
 using Xunit.Sdk;
-using Xunit.v3;
 using Xunit.v3.IntegrationTesting.Extensions;
 using Xunit.v3.IntegrationTesting.Comparers;
 

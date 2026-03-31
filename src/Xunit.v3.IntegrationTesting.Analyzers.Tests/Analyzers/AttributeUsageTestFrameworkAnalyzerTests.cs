@@ -1,9 +1,6 @@
 using System.Collections.Immutable;
 using Microsoft.CodeAnalysis.CSharp.Testing;
 using Microsoft.CodeAnalysis.Testing;
-using Xunit;
-using Xunit.v3.IntegrationTesting;
-using Xunit.v3.IntegrationTesting.Analyzers;
 
 namespace Xunit.v3.IntegrationTesting.Analyzers.Tests;
 
