@@ -104,4 +104,13 @@ internal static class AttributeUsageDescriptors
         DiagnosticSeverity.Warning,
         isEnabledByDefault: true,
         description: "Usage of [DependsOnCollections] requires DependencyAwareTestCollectionOrderer set as TestCollectionOrderer, in order for test collections to be ordered according to defined dependencies.");
+
+    public static readonly DiagnosticDescriptor MultipleDependsOnAttributes = new DiagnosticDescriptor(
+        "XIT0013",
+        "Method has multiple DependsOn attributes",
+        "Method '{0}' has multiple attributes derived from DependsOnAttributeBase; only one is allowed per method",
+        "Usage",
+        DiagnosticSeverity.Warning,
+        isEnabledByDefault: true,
+        description: "A test method should have at most one attribute derived from DependsOnAttributeBase (e.g. [FactDependsOn] or [TheoryDependsOn]). Having multiple dependency attributes on the same method is not supported.");
 }
