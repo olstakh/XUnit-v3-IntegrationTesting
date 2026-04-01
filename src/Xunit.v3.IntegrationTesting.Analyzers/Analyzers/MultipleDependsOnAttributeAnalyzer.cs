@@ -9,7 +9,8 @@ namespace Xunit.v3.IntegrationTesting.Analyzers;
 
 /// <summary>
 /// Reports when a method has multiple attributes derived from <c>DependsOnAttributeBase</c>
-/// (e.g. both [FactDependsOn] and [TheoryDependsOn]).
+/// (e.g. both [FactDependsOn] and [TheoryDependsOn]), or when a method has a
+/// <c>DependsOnAttributeBase</c> combined with another <c>IFactAttribute</c> (e.g. [Fact]).
 /// </summary>
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
 public class MultipleDependsOnAttributeAnalyzer : DiagnosticAnalyzer
@@ -17,6 +18,7 @@ public class MultipleDependsOnAttributeAnalyzer : DiagnosticAnalyzer
     /// <inheritdoc />
     public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => [
         AttributeUsageDescriptors.MultipleDependsOnAttributes,
+        AttributeUsageDescriptors.DependsOnWithOtherFactAttributes,
     ];
 
     /// <inheritdoc />
@@ -37,7 +39,10 @@ public class MultipleDependsOnAttributeAnalyzer : DiagnosticAnalyzer
         if (dependsOnBaseSymbol == null)
             return;
 
+        var iFactAttributeSymbol = compilation.GetTypeByMetadataName("Xunit.Sdk.IFactAttribute");
+
         int dependsOnCount = 0;
+        int factAttributeCount = 0;
         foreach (var attrList in methodDecl.AttributeLists)
         {
             foreach (var attr in attrList.Attributes)
@@ -45,6 +50,8 @@ public class MultipleDependsOnAttributeAnalyzer : DiagnosticAnalyzer
                 var attrType = semanticModel.GetTypeInfo(attr).Type;
                 if (TypeHierarchyHelper.IsOrDerivesFrom(attrType, dependsOnBaseSymbol))
                     dependsOnCount++;
+                if (iFactAttributeSymbol != null && attrType != null && attrType.AllInterfaces.Contains(iFactAttributeSymbol, SymbolEqualityComparer.Default))
+                    factAttributeCount++;
             }
         }
 
@@ -55,6 +62,17 @@ public class MultipleDependsOnAttributeAnalyzer : DiagnosticAnalyzer
             {
                 context.ReportDiagnostic(Diagnostic.Create(
                     AttributeUsageDescriptors.MultipleDependsOnAttributes,
+                    methodDecl.Identifier.GetLocation(),
+                    methodSymbol.Name));
+            }
+        }
+        else if (dependsOnCount >= 1 && factAttributeCount >= 2)
+        {
+            var methodSymbol = semanticModel.GetDeclaredSymbol(methodDecl);
+            if (methodSymbol != null)
+            {
+                context.ReportDiagnostic(Diagnostic.Create(
+                    AttributeUsageDescriptors.DependsOnWithOtherFactAttributes,
                     methodDecl.Identifier.GetLocation(),
                     methodSymbol.Name));
             }

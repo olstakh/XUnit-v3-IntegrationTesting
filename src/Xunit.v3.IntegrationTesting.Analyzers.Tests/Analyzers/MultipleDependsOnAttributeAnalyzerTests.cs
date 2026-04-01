@@ -103,6 +103,68 @@ public class MultipleDependsOnAttributeAnalyzerTests
         await analyzer.RunAsync(TestContext.Current.CancellationToken);
     }
 
+    [Fact]
+    public async Task Validate_FactDependsOnWithFact_DiagnosticAsync()
+    {
+        var source = /* lang=c#-test */ @"
+            using Xunit;
+            using Xunit.v3.IntegrationTesting;
+
+            public class MyTests
+            {
+                [Fact]
+                [FactDependsOn]
+                public void {|XIT0014:Test1|}() { }
+            }
+        ";
+
+        var analyzer = GetAnalyzer(source);
+
+        await analyzer.RunAsync(TestContext.Current.CancellationToken);
+    }
+
+    [Fact]
+    public async Task Validate_TheoryDependsOnWithTheory_DiagnosticAsync()
+    {
+        var source = /* lang=c#-test */ @"
+            using Xunit;
+            using Xunit.v3.IntegrationTesting;
+
+            public class MyTests
+            {
+                [Theory]
+                [TheoryDependsOn]
+                [InlineData(1)]
+                public void {|XIT0014:Test1|}(int x) { }
+            }
+        ";
+
+        var analyzer = GetAnalyzer(source);
+
+        await analyzer.RunAsync(TestContext.Current.CancellationToken);
+    }
+
+    [Fact]
+    public async Task Validate_FactDependsOnWithTheory_DiagnosticAsync()
+    {
+        var source = /* lang=c#-test */ @"
+            using Xunit;
+            using Xunit.v3.IntegrationTesting;
+
+            public class MyTests
+            {
+                [Theory]
+                [FactDependsOn]
+                [InlineData(1)]
+                public void {|XIT0014:Test1|}(int x) { }
+            }
+        ";
+
+        var analyzer = GetAnalyzer(source);
+
+        await analyzer.RunAsync(TestContext.Current.CancellationToken);
+    }
+
     private static CSharpAnalyzerTest<MultipleDependsOnAttributeAnalyzer, DefaultVerifier> GetAnalyzer(string source) =>
         new CSharpAnalyzerTest<MultipleDependsOnAttributeAnalyzer, DefaultVerifier>
         {
