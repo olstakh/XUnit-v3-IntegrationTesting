@@ -39,8 +39,7 @@ public class MultipleDependsOnAttributeAnalyzer : DiagnosticAnalyzer
         if (dependsOnBaseSymbol == null)
             return;
 
-        var factAttributeSymbol = compilation.GetTypeByMetadataName("Xunit.FactAttribute");
-        var theoryAttributeSymbol = compilation.GetTypeByMetadataName("Xunit.TheoryAttribute");
+        var iFactAttributeSymbol = compilation.GetTypeByMetadataName("Xunit.v3.IFactAttribute");
 
         int dependsOnCount = 0;
         bool hasOtherFactAttribute = false;
@@ -51,8 +50,8 @@ public class MultipleDependsOnAttributeAnalyzer : DiagnosticAnalyzer
                 var attrType = semanticModel.GetTypeInfo(attr).Type;
                 if (TypeHierarchyHelper.IsOrDerivesFrom(attrType, dependsOnBaseSymbol))
                     dependsOnCount++;
-                else if (TypeHierarchyHelper.IsOrDerivesFrom(attrType, factAttributeSymbol)
-                      || TypeHierarchyHelper.IsOrDerivesFrom(attrType, theoryAttributeSymbol))
+                else if (iFactAttributeSymbol != null && attrType is INamedTypeSymbol namedType
+                      && namedType.AllInterfaces.Contains(iFactAttributeSymbol, SymbolEqualityComparer.Default))
                     hasOtherFactAttribute = true;
             }
         }
