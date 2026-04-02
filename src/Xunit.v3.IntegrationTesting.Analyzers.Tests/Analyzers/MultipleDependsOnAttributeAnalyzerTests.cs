@@ -16,7 +16,7 @@ public class MultipleDependsOnAttributeAnalyzerTests
             {
                 [FactDependsOn]
                 [TheoryDependsOn]
-                public void {|XIT0013:Test1|}() { }
+                public void {|XIT0015:Test1|}() { }
             }
         ";
 
@@ -35,7 +35,7 @@ public class MultipleDependsOnAttributeAnalyzerTests
             {
                 [FactDependsOn(Dependencies = [""Test2""])]
                 [TheoryDependsOn]
-                public void {|XIT0013:Test1|}() { }
+                public void {|XIT0015:Test1|}() { }
 
                 [FactDependsOn]
                 public void Test2() { }
@@ -114,7 +114,7 @@ public class MultipleDependsOnAttributeAnalyzerTests
             {
                 [Fact]
                 [FactDependsOn]
-                public void {|XIT0014:Test1|}() { }
+                public void {|XIT0016:Test1|}() { }
             }
         ";
 
@@ -135,7 +135,7 @@ public class MultipleDependsOnAttributeAnalyzerTests
                 [Theory]
                 [TheoryDependsOn]
                 [InlineData(1)]
-                public void {|XIT0014:Test1|}(int x) { }
+                public void {|XIT0016:Test1|}(int x) { }
             }
         ";
 
@@ -156,7 +156,7 @@ public class MultipleDependsOnAttributeAnalyzerTests
                 [Theory]
                 [FactDependsOn]
                 [InlineData(1)]
-                public void {|XIT0014:Test1|}(int x) { }
+                public void {|XIT0016:Test1|}(int x) { }
             }
         ";
 

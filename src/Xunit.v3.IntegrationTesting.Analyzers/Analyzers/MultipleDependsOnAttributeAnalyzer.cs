@@ -39,10 +39,11 @@ public class MultipleDependsOnAttributeAnalyzer : DiagnosticAnalyzer
         if (dependsOnBaseSymbol == null)
             return;
 
-        var iFactAttributeSymbol = compilation.GetTypeByMetadataName("Xunit.Sdk.IFactAttribute");
+        var factAttributeSymbol = compilation.GetTypeByMetadataName("Xunit.FactAttribute");
+        var theoryAttributeSymbol = compilation.GetTypeByMetadataName("Xunit.TheoryAttribute");
 
         int dependsOnCount = 0;
-        int factAttributeCount = 0;
+        bool hasOtherFactAttribute = false;
         foreach (var attrList in methodDecl.AttributeLists)
         {
             foreach (var attr in attrList.Attributes)
@@ -50,8 +51,9 @@ public class MultipleDependsOnAttributeAnalyzer : DiagnosticAnalyzer
                 var attrType = semanticModel.GetTypeInfo(attr).Type;
                 if (TypeHierarchyHelper.IsOrDerivesFrom(attrType, dependsOnBaseSymbol))
                     dependsOnCount++;
-                if (iFactAttributeSymbol != null && attrType != null && attrType.AllInterfaces.Contains(iFactAttributeSymbol, SymbolEqualityComparer.Default))
-                    factAttributeCount++;
+                else if (TypeHierarchyHelper.IsOrDerivesFrom(attrType, factAttributeSymbol)
+                      || TypeHierarchyHelper.IsOrDerivesFrom(attrType, theoryAttributeSymbol))
+                    hasOtherFactAttribute = true;
             }
         }
 
@@ -66,7 +68,7 @@ public class MultipleDependsOnAttributeAnalyzer : DiagnosticAnalyzer
                     methodSymbol.Name));
             }
         }
-        else if (dependsOnCount >= 1 && factAttributeCount >= 2)
+        else if (dependsOnCount >= 1 && hasOtherFactAttribute)
         {
             var methodSymbol = semanticModel.GetDeclaredSymbol(methodDecl);
             if (methodSymbol != null)
