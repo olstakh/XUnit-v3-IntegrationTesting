@@ -19,3 +19,5 @@ XIT0011 | Usage | Warning | DependsOnCollections attribute requires assembly-lev
 XIT0012 | Usage | Warning | DependsOnCollections attribute requires assembly-level TestCollectionOrderer to be DependencyAwareTestCollectionOrderer to respect test dependencies
 XIT0013 | Usage | Warning | DependsOnClasses dependency type already belongs to a collection
 XIT0014 | Usage | Warning | DependsOnClasses dependency type is not part of a named collection
+XIT0015 | Usage | Warning | Method has multiple DependsOn attributes
+XIT0016 | Usage | Warning | Method has DependsOn attribute combined with another IFactAttribute

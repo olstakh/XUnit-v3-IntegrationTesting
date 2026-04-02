@@ -1,4 +1,7 @@
 {
     "csharp.debug.justMyCode": false,
-    "FSharp.suggestGitignore": false
+    "FSharp.suggestGitignore": false,
+    "chat.tools.terminal.autoApprove": {
+        "dotnet test": true
+    }
 }
