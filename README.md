@@ -148,6 +148,10 @@ Following rules are included as part of the package:
 | XIT0010 | Warning | `CollectionDefinition` with `DependsOnCollections` must have `DisableParallelization` set to `true` |
 | XIT0011 | Warning | `DependsOnCollections` attribute requires assembly-level `TestCollectionOrderer` |
 | XIT0012 | Warning | `DependsOnCollections` attribute requires assembly-level `TestCollectionOrderer` to be `DependencyAwareTestCollectionOrderer` to respect test dependencies |
+| XIT0013 | Warning | `DependsOnClasses` dependency type already belongs to a collection; use `[DependsOnCollections]` directly instead |
+| XIT0014 | Warning | `DependsOnClasses` dependency type is not part of a named collection; add `[DependsOnClasses(Name = "...")]` to it so a collection definition is generated |
+| XIT0015 | Warning | Method has multiple attributes derived from `DependsOnAttributeBase`; only one is allowed per method |
+| XIT0016 | Warning | Method has a `DependsOnAttributeBase`-derived attribute combined with another `IFactAttribute`; use only the DependsOn attribute |
 
 # Common questions
 
