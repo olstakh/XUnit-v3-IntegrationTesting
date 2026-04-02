@@ -1,3 +1,5 @@
+using System.Globalization;
+
 namespace Xunit.v3.IntegrationTesting.Analyzers;
 
 internal static class DiagnosticIds
@@ -17,4 +19,6 @@ internal static class DiagnosticIds
     public const string DependsOnClassesDependencyNotInCollection = "XIT0014";
     public const string MultipleDependsOnAttributes = "XIT0015";
     public const string DependsOnWithOtherFactAttributes = "XIT0016";
+    public static string CreateLink(string id) =>
+        string.Format(CultureInfo.InvariantCulture, "https://github.com/olstakh/XUnit-v3-IntegrationTesting/blob/main/docs/Rules/{0}.md", id);
 }

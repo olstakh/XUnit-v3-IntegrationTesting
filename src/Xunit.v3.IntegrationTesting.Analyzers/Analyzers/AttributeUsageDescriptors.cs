@@ -11,7 +11,8 @@ internal static class AttributeUsageDescriptors
         "Usage",
         DiagnosticSeverity.Warning,
         isEnabledByDefault: true,
-        description: "Any method with [FactDependsOn] must have DependencyAwareTestCaseOrderer set TestCaseOrderer, in order for test to be ordered according to defined dependencies.");
+        description: "Any method with [FactDependsOn] must have DependencyAwareTestCaseOrderer set TestCaseOrderer, in order for test to be ordered according to defined dependencies.",
+        helpLinkUri: DiagnosticIds.CreateLink(DiagnosticIds.NotSupportedClassLevelTestCaseOrderer));
 
     public static readonly DiagnosticDescriptor NotSupportedAssemblyLevelTestCaseOrderer = new DiagnosticDescriptor(
         DiagnosticIds.NotSupportedAssemblyLevelTestCaseOrderer,
@@ -20,7 +21,8 @@ internal static class AttributeUsageDescriptors
         "Usage",
         DiagnosticSeverity.Warning,
         isEnabledByDefault: true,
-        description: "Any method with [FactDependsOn] must have DependencyAwareTestCaseOrderer set TestCaseOrderer, in order for test to be ordered according to defined dependencies.");
+        description: "Any method with [FactDependsOn] must have DependencyAwareTestCaseOrderer set TestCaseOrderer, in order for test to be ordered according to defined dependencies.",
+        helpLinkUri: DiagnosticIds.CreateLink(DiagnosticIds.NotSupportedAssemblyLevelTestCaseOrderer));
 
     public static readonly DiagnosticDescriptor MissingTestCaseAndCollectionOrderer = new DiagnosticDescriptor(
         DiagnosticIds.MissingTestCaseAndCollectionOrderer,
@@ -29,7 +31,8 @@ internal static class AttributeUsageDescriptors
         "Usage",
         DiagnosticSeverity.Warning,
         isEnabledByDefault: true,
-        description: "Any method with [FactDependsOn] must have DependencyAwareTestCaseOrderer set TestCaseOrderer, in order for test to be ordered according to defined dependencies.");
+        description: "Any method with [FactDependsOn] must have DependencyAwareTestCaseOrderer set TestCaseOrderer, in order for test to be ordered according to defined dependencies.",
+        helpLinkUri: DiagnosticIds.CreateLink(DiagnosticIds.MissingTestCaseAndCollectionOrderer));
 
     public static readonly DiagnosticDescriptor DependsOnMissingMethod = new DiagnosticDescriptor(
         DiagnosticIds.DependsOnMissingMethod,
@@ -38,7 +41,8 @@ internal static class AttributeUsageDescriptors
         "Usage",
         DiagnosticSeverity.Warning,
         isEnabledByDefault: true,
-        description: "[FactDependsOn] attribute requires all listed dependencies to be present in the class.");
+        description: "[FactDependsOn] attribute requires all listed dependencies to be present in the class.",
+        helpLinkUri: DiagnosticIds.CreateLink(DiagnosticIds.DependsOnMissingMethod));
 
     public static readonly DiagnosticDescriptor MissingTestFrameworkAttribute = new DiagnosticDescriptor(
         DiagnosticIds.MissingTestFrameworkAttribute,
@@ -48,7 +52,8 @@ internal static class AttributeUsageDescriptors
         DiagnosticSeverity.Warning,
         isEnabledByDefault: true,
         customTags: WellKnownDiagnosticTags.CompilationEnd,
-        description: "Assemblies using FactDependsOn attribute on tests should declare [assembly: TestFramework(typeof(DependencyAwareFramework))] to support full test discovery during filtered test execution.");
+        description: "Assemblies using FactDependsOn attribute on tests should declare [assembly: TestFramework(typeof(DependencyAwareFramework))] to support full test discovery during filtered test execution.",
+        helpLinkUri: DiagnosticIds.CreateLink(DiagnosticIds.MissingTestFrameworkAttribute));
 
     public static readonly DiagnosticDescriptor NotSupportedTestFrameworkAttribute = new DiagnosticDescriptor(
         DiagnosticIds.NotSupportedTestFrameworkAttribute,
@@ -58,7 +63,8 @@ internal static class AttributeUsageDescriptors
         DiagnosticSeverity.Warning,
         isEnabledByDefault: true,
         customTags: WellKnownDiagnosticTags.CompilationEnd,
-        description: "Assemblies using FactDependsOn attribute on tests should declare [assembly: TestFramework(typeof(DependencyAwareFramework))] (or a type derived from it) to support full test discovery during filtered test execution.");
+        description: "Assemblies using FactDependsOn attribute on tests should declare [assembly: TestFramework(typeof(DependencyAwareFramework))] (or a type derived from it) to support full test discovery during filtered test execution.",
+        helpLinkUri: DiagnosticIds.CreateLink(DiagnosticIds.NotSupportedTestFrameworkAttribute));
 
     public static readonly DiagnosticDescriptor UseFactDependsOnAttribute = new DiagnosticDescriptor(
         DiagnosticIds.UseFactDependsOnAttribute,
@@ -67,7 +73,8 @@ internal static class AttributeUsageDescriptors
         "Usage",
         DiagnosticSeverity.Warning,
         isEnabledByDefault: true,
-        description: "Test methods in classes belonging to collections with [DependsOnCollections] dependencies should use [FactDependsOn] or [TheoryDependsOn] instead of [Fact] or [Theory]. Without dependency-aware attributes, the skip logic for upstream collection failures will not run and the test will execute even when its collection dependencies have failed.");
+        description: "Test methods in classes belonging to collections with [DependsOnCollections] dependencies should use [FactDependsOn] or [TheoryDependsOn] instead of [Fact] or [Theory]. Without dependency-aware attributes, the skip logic for upstream collection failures will not run and the test will execute even when its collection dependencies have failed.",
+        helpLinkUri: DiagnosticIds.CreateLink(DiagnosticIds.UseFactDependsOnAttribute));
 
     public static readonly DiagnosticDescriptor InvalidDependsOnCollectionsAttributeUsage = new DiagnosticDescriptor(
         DiagnosticIds.InvalidDependsOnCollectionsAttributeUsage,
@@ -76,7 +83,8 @@ internal static class AttributeUsageDescriptors
         "Usage",
         DiagnosticSeverity.Warning,
         isEnabledByDefault: true,
-        description: "DependsOnCollections attribute should apply only to collection definitions.");
+        description: "DependsOnCollections attribute should apply only to collection definitions.",
+        helpLinkUri: DiagnosticIds.CreateLink(DiagnosticIds.InvalidDependsOnCollectionsAttributeUsage));
 
     public static readonly DiagnosticDescriptor CollectionDefinitionMissingDisableParallelization = new DiagnosticDescriptor(
         DiagnosticIds.CollectionDefinitionMissingDisableParallelization,
@@ -85,7 +93,8 @@ internal static class AttributeUsageDescriptors
         "Usage",
         DiagnosticSeverity.Warning,
         isEnabledByDefault: true,
-        description: "Collection definitions with DependsOnCollections attribute must have DisableParallelization set to true to ensure sequential execution order according to declared dependencies.");
+        description: "Collection definitions with DependsOnCollections attribute must have DisableParallelization set to true to ensure sequential execution order according to declared dependencies.",
+        helpLinkUri: DiagnosticIds.CreateLink(DiagnosticIds.CollectionDefinitionMissingDisableParallelization));
 
     public static readonly DiagnosticDescriptor MissingTestCollectionOrderer = new DiagnosticDescriptor(
         DiagnosticIds.MissingTestCollectionOrderer,
@@ -94,7 +103,8 @@ internal static class AttributeUsageDescriptors
         "Usage",
         DiagnosticSeverity.Warning,
         isEnabledByDefault: true,
-        description: "Usage of [DependsOnCollections] requires DependencyAwareTestCollectionOrderer set as TestCollectionOrderer, in order for test collections to be ordered according to defined dependencies.");
+        description: "Usage of [DependsOnCollections] requires DependencyAwareTestCollectionOrderer set as TestCollectionOrderer, in order for test collections to be ordered according to defined dependencies.",
+        helpLinkUri: DiagnosticIds.CreateLink(DiagnosticIds.MissingTestCollectionOrderer));
 
     public static readonly DiagnosticDescriptor NotSupportedTestCollectionOrderer = new DiagnosticDescriptor(
         DiagnosticIds.NotSupportedTestCollectionOrderer,
@@ -103,7 +113,8 @@ internal static class AttributeUsageDescriptors
         "Usage",
         DiagnosticSeverity.Warning,
         isEnabledByDefault: true,
-        description: "Usage of [DependsOnCollections] requires DependencyAwareTestCollectionOrderer set as TestCollectionOrderer, in order for test collections to be ordered according to defined dependencies.");
+        description: "Usage of [DependsOnCollections] requires DependencyAwareTestCollectionOrderer set as TestCollectionOrderer, in order for test collections to be ordered according to defined dependencies.",
+        helpLinkUri: DiagnosticIds.CreateLink(DiagnosticIds.NotSupportedTestCollectionOrderer));
 
     public static readonly DiagnosticDescriptor DependsOnClassesDependencyAlreadyInCollection = new DiagnosticDescriptor(
         DiagnosticIds.DependsOnClassesDependencyAlreadyInCollection,
@@ -112,7 +123,8 @@ internal static class AttributeUsageDescriptors
         "Usage",
         DiagnosticSeverity.Warning,
         isEnabledByDefault: true,
-        description: "[DependsOnClasses] should only reference classes that are not already part of a collection. If the dependency class has [Collection] or [CollectionDefinition], use [DependsOnCollections] on the collection definition instead.");
+        description: "[DependsOnClasses] should only reference classes that are not already part of a collection. If the dependency class has [Collection] or [CollectionDefinition], use [DependsOnCollections] on the collection definition instead.",
+        helpLinkUri: DiagnosticIds.CreateLink(DiagnosticIds.DependsOnClassesDependencyAlreadyInCollection));
 
     public static readonly DiagnosticDescriptor DependsOnClassesDependencyNotInCollection = new DiagnosticDescriptor(
         DiagnosticIds.DependsOnClassesDependencyNotInCollection,
@@ -121,7 +133,8 @@ internal static class AttributeUsageDescriptors
         "Usage",
         DiagnosticSeverity.Warning,
         isEnabledByDefault: true,
-        description: "Each dependency in [DependsOnClasses] must belong to a named collection so that collection ordering works reliably. Add [DependsOnClasses(Name = \"...\")] to the dependency class to ensure a collection definition is auto-generated for it.");
+        description: "Each dependency in [DependsOnClasses] must belong to a named collection so that collection ordering works reliably. Add [DependsOnClasses(Name = \"...\")] to the dependency class to ensure a collection definition is auto-generated for it.",
+        helpLinkUri: DiagnosticIds.CreateLink(DiagnosticIds.DependsOnClassesDependencyNotInCollection));
 
     public static readonly DiagnosticDescriptor MultipleDependsOnAttributes = new DiagnosticDescriptor(
         DiagnosticIds.MultipleDependsOnAttributes,
@@ -130,7 +143,8 @@ internal static class AttributeUsageDescriptors
         "Usage",
         DiagnosticSeverity.Warning,
         isEnabledByDefault: true,
-        description: "A test method should have at most one attribute derived from DependsOnAttributeBase (e.g. [FactDependsOn] or [TheoryDependsOn]). Having multiple dependency attributes on the same method is not supported.");
+        description: "A test method should have at most one attribute derived from DependsOnAttributeBase (e.g. [FactDependsOn] or [TheoryDependsOn]). Having multiple dependency attributes on the same method is not supported.",
+        helpLinkUri: DiagnosticIds.CreateLink(DiagnosticIds.MultipleDependsOnAttributes));
 
     public static readonly DiagnosticDescriptor DependsOnWithOtherFactAttributes = new DiagnosticDescriptor(
         DiagnosticIds.DependsOnWithOtherFactAttributes,
@@ -139,5 +153,6 @@ internal static class AttributeUsageDescriptors
         "Usage",
         DiagnosticSeverity.Warning,
         isEnabledByDefault: true,
-        description: "A test method with an attribute derived from DependsOnAttributeBase (e.g. [FactDependsOn] or [TheoryDependsOn]) should not also have another IFactAttribute (e.g. [Fact] or [Theory]). The DependsOn attribute already acts as a fact/theory attribute.");
+        description: "A test method with an attribute derived from DependsOnAttributeBase (e.g. [FactDependsOn] or [TheoryDependsOn]) should not also have another IFactAttribute (e.g. [Fact] or [Theory]). The DependsOn attribute already acts as a fact/theory attribute.",
+        helpLinkUri: DiagnosticIds.CreateLink(DiagnosticIds.DependsOnWithOtherFactAttributes));
 }
