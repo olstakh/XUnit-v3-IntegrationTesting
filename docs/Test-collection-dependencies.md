@@ -37,8 +37,50 @@ if we want `CollectionC` to depend on the other two (meaning all tests that belo
 You can also specify `typeof` of a concrete test class, instead of collection definition. Then at runtime it would be translated into getting the actual collection this test class is part of and taking dependency on that.
 
 Now, if you don't have a collection definition, there are two options to declare dependencies
-1. Create a an empty collection definition (like in the above example) and declare dependencies like was described
+1. Create an empty collection definition (like in the above example) and declare dependencies like was described
 2. Decorate a test class with `[DependsOnClasses(...)]` attribute, which will lead to source-generated empty collection definition with all the dependencies declared
+
+## DependsOnClasses attribute
+
+`[DependsOnClasses]` is a simplified syntax for declaring class-level dependencies without manually creating collection definitions. It has two properties:
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `Name` | `string` (required) | The collection name. The class is treated as belonging to this collection (the attribute implements `ICollectionAttribute`). |
+| `Dependencies` | `Type[]` | The types this class depends on. Can be other test classes or collection definitions. |
+
+A source generator automatically creates a corresponding `[CollectionDefinition]` class with `DisableParallelization = true` and a `[DependsOnCollections]` attribute pointing to the dependency types.
+
+For example, given:
+
+```csharp
+[DependsOnClasses(Dependencies = [typeof(ClassB), typeof(ClassC)], Name = "DefinitionA")]
+public class ClassA
+{
+    [FactDependsOn]
+    public void Test1() { }
+}
+
+[DependsOnClasses(Name = "DefinitionB")]
+public class ClassB
+{
+    [FactDependsOn]
+    public void Test2() { }
+}
+```
+
+The source generator will emit something like:
+
+```csharp
+[CollectionDefinition("DefinitionA", DisableParallelization = true)]
+[DependsOnCollections(typeof(ClassB), typeof(ClassC))]
+public sealed class Generated_CollectionDefinition_ClassA;
+
+[CollectionDefinition("DefinitionB", DisableParallelization = true)]
+public sealed class Generated_CollectionDefinition_ClassB;
+```
+
+**Important:** Each dependency class must also belong to a named collection. If a dependency class doesn't have `[DependsOnClasses(Name = "...")]` (or an explicit `[Collection]`/`[CollectionDefinition]`), analyzer rule XIT0014 will warn you. Conversely, if a dependency class already belongs to an explicit collection, XIT0013 will suggest using `[DependsOnCollections]` directly instead.
 
 Ordering collections is achieved by having the following assembly level attribute
 ```csharp
